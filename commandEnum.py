@@ -1,0 +1,7 @@
+RIGHT = 'Right'
+LEFT = 'Left'
+FORWARD = 'Forward'
+BACKWARD = 'Backward'
+DELIVER = 'Deliver'
+UNSTUCK = 'Unstuck'
+START_CONVEYER = 'StartConveyer'
