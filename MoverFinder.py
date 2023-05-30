@@ -26,4 +26,4 @@ def find_move() -> MoveClass:
     return move
 
 
-find_move()
+
