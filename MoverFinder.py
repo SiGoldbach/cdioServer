@@ -1,7 +1,7 @@
 # Class that encapsulates the move into a type and the potential argument that it comes with
 # Here speed is only speed
 # Argument can be an angle or time
-import commandEnum
+import moveOptions
 
 
 class MoveClass:
@@ -21,7 +21,7 @@ def as_payload(dct):
 # The move function that for now just returns right and 500
 
 def find_move() -> MoveClass:
-    move = MoveClass(commandEnum.RIGHT, 500, 100)
+    move = MoveClass(moveOptions.RIGHT, 500, 100)
     move.print()
     return move
 
