@@ -5,10 +5,13 @@ import MoverFinder
 # import main
 
 coordinates_array = [[2, 4], [6, 3], [8, 8], [8, 3], [10, 10], [20, 20], [1, 9], [16, 14]] # Example of table tennis balls
+robot_location = [[0, 0]] # example of robot location
 obstacles = [[5, 5], [5, 6], [5, 7], [5, 8], [5, 9]]  # Example obstacle coordinates (representing a wall)
 grid_size = [21, 21]  # Grid size representing the workspace
 robot_x = 0
 robot_y = 0
+goal_x = 0
+goal_y = 0
 
 class Node:
     def __init__(self, x, y):
@@ -80,21 +83,21 @@ def astar_pathfinding(start_x, start_y, target_x, target_y, grid, obstacles):
 
 def find_nearest_ball(robot_x, robot_y, coordinates_array):
     closest_distance = float('inf')
-    closest_coordinates = []
+    closest_coordinate = []
 
-    for coordinates in coordinates_array:
-        x = coordinates[0]
-        y = coordinates[1]
+    for coordinate in coordinates_array:
+        x = coordinate[0]
+        y = coordinate[1]
         distance = math.sqrt((x - robot_x) ** 2 + (y - robot_y) ** 2)
 
         if distance < closest_distance:
             closest_distance = distance
-            closest_coordinates = coordinates
+            closest_coordinate = coordinate
 
-    return closest_coordinates, closest_distance
+    return closest_coordinate, closest_distance
 
 def calculate_angle(target_x, target_y, robot_x, robot_y):
-    angle = math.atan2(target_y - robot_y, target_x - robot_x) * (180 / math.pi)
+    angle = math.atan2(target_y - robot_location[1], target_x - robot_location[0]) * (180 / math.pi)
     return angle
 
 
@@ -102,6 +105,7 @@ def move_robot(target_x, target_y):
     global robot_x, robot_y
     path = astar_pathfinding(robot_x, robot_y, target_x, target_y, grid, obstacles)
     print("Moving robot from", (robot_x, robot_y), "to", (target_x, target_y))
+
 
     if path:
         for i in range(1, len(path)):
@@ -120,7 +124,7 @@ def move_robot(target_x, target_y):
     if counter % 6 == 0 | len(coordinates_array) == 0:
         capacity_full = True
 
-    return MoveFinder.MoveClass()
+    return angle, distance
 
 # Create the grid based on the workspace size
 grid = [[0 for _ in range(grid_size[1])] for _ in range(grid_size[0])]
@@ -148,6 +152,9 @@ while coordinates_array:
     # Increment the counter
     counter += 1
     print("Current targets reached:", counter)
+    print(angle)
+    print(closest_distance)
+    print(closest_coordinates)
 
     # Remove the target coordinates from the array
     coordinates_array.remove(closest_coordinates)
@@ -166,4 +173,14 @@ while coordinates_array:
 # After processing all targets
 print("All targets processed.")
 print("Total targets reached:", counter)
+print(angle)
+
+def next_move(frame):
+    closest_coordinates, closest_distance = find_nearest_ball(robot_x, robot_y, coordinates_array)
+    angle = calculate_angle(closest_coordinates[0], closest_coordinates[1], robot_x, robot_y)
+    move_robot(closest_coordinates[0], closest_coordinates[1])
+
+    return closest_distance, closest_coordinates, angle
+    print("Finding the next move")
+
 

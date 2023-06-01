@@ -1,6 +1,7 @@
 from flask import Flask
 import test
 import Image
+import Pathfinding
 
 app = Flask(__name__)
 
