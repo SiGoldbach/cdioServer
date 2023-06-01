@@ -1,7 +1,7 @@
 from flask import Flask
 import test
-import Image
-import Pathfinding
+# import Image
+# import Pathfinding
 
 app = Flask(__name__)
 
@@ -15,7 +15,7 @@ def hello_world():  # put application's code here
 
 @app.route('/test')
 def fun():
-    Image.calculate_move()
+    # Image.calculate_move()
     return test.test_json()
 
 

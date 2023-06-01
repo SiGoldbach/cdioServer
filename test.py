@@ -7,7 +7,7 @@ import moveOptions
 
 
 def test_json():
-    move1 = MoverFinder.MoveClass(commandEnum.FORWARD, 500, 0)
+    move1 = MoverFinder.MoveClass(moveOptions.FORWARD, 500, 0)
     move_as_json = json.dumps(move1.__dict__)
     return move_as_json
 

@@ -1,6 +1,7 @@
-import requests
 import MoverFinder
 import json
+
+import requests
 
 url = 'http://192.168.198.237:5000/test'
 
@@ -12,4 +13,4 @@ print(response.text)
 
 move = json.loads(response.text, object_hook=MoverFinder.as_payload)
 
-move.print()
+# move.print()
