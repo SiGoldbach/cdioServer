@@ -3,7 +3,7 @@
 
 import MoverFinder
 import json
-import commandEnum
+import moveOptions
 
 
 def test_json():
