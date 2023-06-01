@@ -28,7 +28,7 @@ def calculate_angle(ball_x, ball_y, robot_x, robot_y):
     return angle
 
 
-def make_move():
+def make_move(frame):
     ball_locations = [[2, 4], [2, 3], [8, 8], [8, 3], [10, 10], [20, 20], [1, 9], [16, 14]]  # Example of table balls
     orange_ball = [0, 0]  # the orange ball
     robot_location = [0, 0]  # example of robot location
