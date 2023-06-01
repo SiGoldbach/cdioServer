@@ -27,6 +27,8 @@ blank[..., :][green_mask1 == 1] = (0, 255, 255)
 # Red color detection
 red_mask = ((200 <= image[..., 2]) & (100 >= image[..., 1])).astype(np.uint8)
 red_pixels += np.sum(red_mask)
+blank[..., 0][red_mask == 1] = 0
+blank[..., 1][red_mask == 1] = 0
 blank[..., 2][red_mask == 1] = 255
 
 # Orange color dectection
@@ -53,10 +55,7 @@ blank[..., 2][green_mask == 1] = 100
 # White color dectection
 white_mask = ((200 <= image[..., 2]) & (200 <= image[..., 0]) & (195 <= image[..., 1])).astype(np.uint8)
 white_pixels = np.sum(white_mask)
-blank[..., 0][white_mask == 1] = 255
-blank[..., 1][white_mask == 1] = 0
-blank[..., 2][white_mask == 1] = 0
-blank[..., :][white_mask == 1] = (255, 0, 0)
+blank[..., :][white_mask == 1] = (255, 255, 255)
 
 end = time.time()
 
@@ -71,7 +70,7 @@ detected_circles = cv.HoughCircles(
     param1=50,
     param2=13,
     minRadius=3,
-    maxRadius=13
+    maxRadius=12
 )
 
 if detected_circles is not None:
@@ -87,14 +86,13 @@ if detected_circles is not None:
             cv.circle(blank, (a, b), r, (0, 150, 255), -1)
             continue
 
-        if (blank[b, a][0] == 255 and blank[b, a][1] == 255):
+        if (blank[b, a][0] == 255 and blank[b, a][1] == 255 and blank[b, a][2] != 255):
             print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
             cv.circle(blank, (a, b), r, (255, 255, 0), -1)
             continue
 
-        cv.circle(blank, (a, b), r, (0, 255, 0), -1)
+        cv.circle(blank, (a, b), r, (255, 255, 255), -1)
         print("Center of this circle should be: " + str(a) + " " + str(b))
-        cv.circle(blank, (a, b), 1, (0, 0, 0), 1)
 
 # Square detection
 blur = cv.GaussianBlur(gray, (5, 5),
