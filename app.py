@@ -1,5 +1,6 @@
 from flask import Flask
-import test
+from VariousTests import test
+
 # import Image
 # import Pathfinding
 
