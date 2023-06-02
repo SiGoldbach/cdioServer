@@ -2,9 +2,9 @@ import cv2 as cv
 import numpy as np
 import time
 
-image = cv.imread('Resources/Pictures/withRobot13.jpg')
+image = cv.imread('Resources/Pictures/withRobot10.jpg')
 if image is None:
-    print("No image found")
+    print("No image was found")
 print(image[0][0])
 
 img_hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
@@ -37,14 +37,14 @@ blank[..., 0][orange_mask == 1] = 0
 blank[..., 1][orange_mask == 1] = 150
 blank[..., 2][orange_mask == 1] = 255
 
-# Blue color detection AKA front of robot
+# Blue color detection (Robot front))
 blue_mask = ((165 <= image[..., 0]) & (75 <= image[..., 1]) & (115 >= image[..., 1]) & (45 <= image[..., 2]) & (
             100 >= image[..., 2])).astype(np.uint8)
 blank[..., 0][blue_mask == 1] = 255
 blank[..., 1][blue_mask == 1] = 255
 blank[..., 2][blue_mask == 1] = 0
 
-# Green color detection AKA back of robot
+# Green color detection (Robot back)
 green_mask = ((95 <= image[..., 0]) & (150 <= image[..., 1]) & (185 >= image[..., 1]) & (80 <= image[..., 2]) & (
             120 >= image[..., 2])).astype(np.uint8)
 blank[..., 0][green_mask == 1] = 100
@@ -59,7 +59,7 @@ blank[..., :][white_mask == 1] = (255, 255, 255)
 
 end = time.time()
 
-# Circle detection
+# Mapping of circles
 gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 gray_blurred = cv.blur(gray, (3, 3))
 detected_circles = cv.HoughCircles(
