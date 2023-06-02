@@ -2,14 +2,17 @@ import cv2 as cv
 import numpy as np
 import time
 
-image = cv.imread('Resources/Pictures/High_Qual.jpg')
+image = cv.imread('Resources/Pictures/withRobot14.jpg')
 if image is None:
     print("No image found")
 print(image[0][0])
 
 img_hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-blank = np.zeros((2736, 3648, 3), dtype='uint8')
+
+height, width = image.shape[:2]
+
+blank = np.zeros((height, width, 3), dtype='uint8')
 
 lower_red = np.array([170, 50, 180])
 upper_red = np.array([180, 255, 255])
@@ -32,13 +35,13 @@ blank[..., 1][red_mask == 1] = 0
 blank[..., 2][red_mask == 1] = 255
 
 # Orange color dectection
-orange_mask = ((190 <= image[..., 2]) & (120 >= image[..., 0]) & (155 <= image[..., 1])).astype(np.uint8)
+orange_mask = ((120 >= image[..., 0]) & (155 <= image[..., 1]) & (190 <= image[..., 2])).astype(np.uint8)
 blank[..., 0][orange_mask == 1] = 0
 blank[..., 1][orange_mask == 1] = 150
 blank[..., 2][orange_mask == 1] = 255
 
 # Blue color detection AKA front of robot
-blue_mask = ((165 <= image[..., 0]) & (75 <= image[..., 1]) & (115 >= image[..., 1]) & (45 <= image[..., 2]) & (
+blue_mask = ((165 <= image[..., 0]) & (75 <= image[..., 1]) & (130 >= image[..., 1]) & (45 <= image[..., 2]) & (
             100 >= image[..., 2])).astype(np.uint8)
 blank[..., 0][blue_mask == 1] = 255
 blank[..., 1][blue_mask == 1] = 255
@@ -68,7 +71,7 @@ detected_Balls = cv.HoughCircles(
     20,
     param1=50,
     param2=13,
-    minRadius=2,
+    minRadius=6,
     maxRadius=9
 )
 
@@ -80,9 +83,9 @@ detected_Robot = cv.HoughCircles(
     param1=50,
     param2=13,
     minRadius=9,
-    maxRadius=15
+    maxRadius=12
 )
-
+circle = 0
 if detected_Balls is not None:
     detected_circles = np.uint16(np.around(detected_Balls))
     for pt in detected_circles[0, :]:
@@ -91,22 +94,25 @@ if detected_Balls is not None:
         if blank[b, a][1] == 150 and blank[b, a][2] == 255:
             print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
             cv.circle(blank, (a, b), r, (0, 150, 255), -1)
+            circle+=1
             continue
         cv.circle(blank, (a, b), r, (255, 255, 255), -1)
         print("Center of this circle should be: " + str(a) + " " + str(b))
-
+        circle+=1
 if detected_Robot is not None:
-    detected_circles = np.uint16(np.around(detected_Balls))
+    detected_circles = np.uint16(np.around(detected_Robot))
     for pt in detected_circles[0, :]:
         a, b, r = pt[0], pt[1], pt[2]
         if blank[b, a][1] == 255 and blank[b, a][2] == 100:
             print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
             cv.circle(blank, (a, b), r, (130, 255, 20), -1)
+            circle += 1
             continue
 
         if blank[b, a][0] == 255 and blank[b, a][1] == 255 and blank[b, a][2] != 255:
             print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
             cv.circle(blank, (a, b), r, (255, 255, 0), -1)
+            circle += 1
             continue
 end = time.time()
 
@@ -123,7 +129,7 @@ time_for_transform = end - start
 
 print("Amount of red pixels: " + str(red_pixels))
 print("Amount of white pixels: " + str(white_pixels))
-print("Amount of circles: " + str(len(detected_circles[0])))
+print("Amount of circles: " + str(circle))
 
 cv.imshow('Original', image)
 cv.imshow('Obstacles and balls drawn: ', blank)
