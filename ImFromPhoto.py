@@ -63,7 +63,7 @@ def imageRecognition(image):
     blank[..., :][white_mask == 1] = (255, 255, 255)
 
     # Circle detection
-    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    gray = cv.cvtColor(blank, cv.COLOR_BGR2GRAY)
     gray_blurred = cv.blur(gray, (3, 3))
     detected_Balls = cv.HoughCircles(
         gray_blurred,
@@ -121,16 +121,27 @@ def imageRecognition(image):
                 robot.append([a, b])
                 circle += 1
                 continue
+
+    thresh = cv.threshold(gray, 0, 150, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
+
+    horizontal_kernel = cv.getStructuringElement(cv.MORPH_RECT, (1, 1))
+    detect_horizontal = cv.morphologyEx(thresh, cv.MORPH_OPEN, horizontal_kernel, iterations=2)
+    cnts = cv.findContours(detect_horizontal, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+    for c in cnts:
+        x, y, w, h = cv.boundingRect(c)
+        if blank[y, x][2] == 255:
+            cv.drawContours(blank, [c], -1, (36, 255, 12), 2)
+            M = cv.moments(c)
+
+            # Calculate the center of the contour
+            if M["m00"] != 0:
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+
+            cv.circle(blank, (cX, cY), 5, (255, 0, 0), -1)
+
     end = time.time()
-
-    # Square detection
-    blur = cv.GaussianBlur(gray, (5, 5),
-                           cv.BORDER_DEFAULT)
-    ret, thresh = cv.threshold(blur, 200, 255,
-                               cv.THRESH_BINARY_INV)
-
-    contours, hierarchies = cv.findContours(
-        thresh, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
 
     time_for_transform = end - start
 
