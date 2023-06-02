@@ -2,14 +2,14 @@ import cv2 as cv
 import numpy as np
 import time
 
-image = cv.imread('Resources/Pictures/withRobot13.jpg')
+image = cv.imread('Resources/Pictures/High_Qual.jpg')
 if image is None:
     print("No image found")
 print(image[0][0])
 
 img_hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-blank = np.zeros((480, 640, 3), dtype='uint8')
+blank = np.zeros((2736, 3648, 3), dtype='uint8')
 
 lower_red = np.array([170, 50, 180])
 upper_red = np.array([180, 255, 255])
@@ -57,42 +57,58 @@ white_mask = ((200 <= image[..., 2]) & (200 <= image[..., 0]) & (195 <= image[..
 white_pixels = np.sum(white_mask)
 blank[..., :][white_mask == 1] = (255, 255, 255)
 
-end = time.time()
 
 # Circle detection
 gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 gray_blurred = cv.blur(gray, (3, 3))
-detected_circles = cv.HoughCircles(
+detected_Balls = cv.HoughCircles(
     gray_blurred,
     cv.HOUGH_GRADIENT,
     1,
     20,
     param1=50,
     param2=13,
-    minRadius=3,
-    maxRadius=12
+    minRadius=2,
+    maxRadius=9
 )
 
-if detected_circles is not None:
-    detected_circles = np.uint16(np.around(detected_circles))
+detected_Robot = cv.HoughCircles(
+    gray_blurred,
+    cv.HOUGH_GRADIENT,
+    1,
+    20,
+    param1=50,
+    param2=13,
+    minRadius=9,
+    maxRadius=15
+)
+
+if detected_Balls is not None:
+    detected_circles = np.uint16(np.around(detected_Balls))
     for pt in detected_circles[0, :]:
         a, b, r = pt[0], pt[1], pt[2]
-        if (blank[b, a][1] == 255 and blank[b, a][2] == 100):
-            print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
-            cv.circle(blank, (a, b), r, (130, 255, 20), -1)
-            continue
-        if (blank[b, a][1] == 150 and blank[b, a][2] == 255):
+
+        if blank[b, a][1] == 150 and blank[b, a][2] == 255:
             print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
             cv.circle(blank, (a, b), r, (0, 150, 255), -1)
             continue
+        cv.circle(blank, (a, b), r, (255, 255, 255), -1)
+        print("Center of this circle should be: " + str(a) + " " + str(b))
 
-        if (blank[b, a][0] == 255 and blank[b, a][1] == 255 and blank[b, a][2] != 255):
+if detected_Robot is not None:
+    detected_circles = np.uint16(np.around(detected_Balls))
+    for pt in detected_circles[0, :]:
+        a, b, r = pt[0], pt[1], pt[2]
+        if blank[b, a][1] == 255 and blank[b, a][2] == 100:
+            print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
+            cv.circle(blank, (a, b), r, (130, 255, 20), -1)
+            continue
+
+        if blank[b, a][0] == 255 and blank[b, a][1] == 255 and blank[b, a][2] != 255:
             print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
             cv.circle(blank, (a, b), r, (255, 255, 0), -1)
             continue
-
-        cv.circle(blank, (a, b), r, (255, 255, 255), -1)
-        print("Center of this circle should be: " + str(a) + " " + str(b))
+end = time.time()
 
 # Square detection
 blur = cv.GaussianBlur(gray, (5, 5),
