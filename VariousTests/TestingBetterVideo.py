@@ -13,7 +13,7 @@ while True:
     cv2.imshow('frame', gray)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         height, width = frame.shape[:2]
-        print("Height: " + height + " Width: " + width)
+        print("Height: " + str(height) + " Width: " + str(width))
         break
 
     # When everything done, release the capture
