@@ -72,7 +72,7 @@ def imageRecognition(image):
         20,
         param1=50,
         param2=13,
-        minRadius=6,
+        minRadius=5,
         maxRadius=9
     )
 
