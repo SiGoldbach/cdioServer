@@ -28,6 +28,15 @@ coefficient = 0.027569
 4: speed 500, argument = 300 left; angle: -66 degrees
 5: speed 500, argument = 400 left; angle: -82 degrees
 6: speed 500, argument = 400 left; angle: -78 degrees
+5: speed 500, argument = 500 left; angle: -95 degrees
+6: speed 500, argument = 500 left; angle: -95 degrees
+5: speed 500, argument = 600 left; angle: -105 degrees
+6: speed 500, argument = 2057 left; angle: -428 degrees
+5: speed 500, argument =  left; angle:  degrees
+6: speed 500, argument =  left; angle:  degrees
+5: speed 500, argument =  left; angle:  degrees
+6: speed 500, argument =  left; angle:  degrees
+
 
 
 
