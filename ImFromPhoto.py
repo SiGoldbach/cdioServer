@@ -37,7 +37,7 @@ def imageRecognition(image):
     blank[..., 2][orange_mask == 1] = 255
 
     # Blue color detection AKA front of robot
-    blue_mask = ((165 <= image[..., 0]) & (75 <= image[..., 1]) & (145 >= image[..., 1]) & (40 <= image[..., 2]) & (
+    blue_mask = ((160 <= image[..., 0]) & (75 <= image[..., 1]) & (145 >= image[..., 1]) & (40 <= image[..., 2]) & (
             100 >= image[..., 2])).astype(np.uint8)
     blank[..., 0][blue_mask == 1] = 255
     blank[..., 1][blue_mask == 1] = 255
@@ -76,7 +76,7 @@ def imageRecognition(image):
         20,
         param1=55,
         param2=12,
-        minRadius=8,
+        minRadius=9,
         maxRadius=15
     )
     circle = 0
