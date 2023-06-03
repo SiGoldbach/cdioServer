@@ -37,20 +37,19 @@ def imageRecognition(image):
     blank[..., 2][orange_mask == 1] = 255
 
     # Blue color detection AKA front of robot
-    blue_mask = ((165 <= image[..., 0]) & (75 <= image[..., 1]) & (130 >= image[..., 1]) & (45 <= image[..., 2]) & (
+    blue_mask = ((165 <= image[..., 0]) & (75 <= image[..., 1]) & (145 >= image[..., 1]) & (40 <= image[..., 2]) & (
             100 >= image[..., 2])).astype(np.uint8)
     blank[..., 0][blue_mask == 1] = 255
     blank[..., 1][blue_mask == 1] = 255
     blank[..., 2][blue_mask == 1] = 0
 
     # Green color detection AKA back of robot
-    green_mask = ((95 <= image[..., 0]) & (150 <= image[..., 1]) & (185 >= image[..., 1]) & (80 <= image[..., 2]) & (
+    green_mask = ((85 <= image[..., 0]) & (150 <= image[..., 1]) & (185 >= image[..., 1]) & (75 <= image[..., 2]) & (
             120 >= image[..., 2])).astype(np.uint8)
     blank[..., 0][green_mask == 1] = 100
     blank[..., 1][green_mask == 1] = 255
     blank[..., 2][green_mask == 1] = 100
 
-    # 108 164 100
     # White color dectection
     white_mask = ((205 <= image[..., 2]) & (200 <= image[..., 0]) & (195 <= image[..., 1])).astype(np.uint8)
     white_pixels = np.sum(white_mask)
@@ -75,10 +74,10 @@ def imageRecognition(image):
         cv.HOUGH_GRADIENT,
         1,
         20,
-        param1=50,
-        param2=13,
-        minRadius=9,
-        maxRadius=12
+        param1=55,
+        param2=12,
+        minRadius=8,
+        maxRadius=15
     )
     circle = 0
     balls = []
@@ -124,7 +123,6 @@ def imageRecognition(image):
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
 
     for contour in cnts:
-        print("HELLO")
         x, y, w, h = cv.boundingRect(contour)
         if blank[y, x][2] == 255:
             cv.drawContours(blank, [contour], -1, (36, 255, 12), 2)
