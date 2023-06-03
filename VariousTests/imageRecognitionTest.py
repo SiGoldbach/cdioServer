@@ -3,4 +3,7 @@ import ImFromPhoto
 
 image = cv.imread('../Resources/Pictures/withRobot14.jpg')
 
-ImFromPhoto.imageRecognition(image)
+balls, robot = ImFromPhoto.imageRecognition(image)
+print(balls)
+print(robot)
+print(len(balls))
