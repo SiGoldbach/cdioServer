@@ -30,7 +30,6 @@ def calculate_angle(ball_x, ball_y, robot_x, robot_y):
     angle = math.atan2(ball_y - robot_y, ball_x - robot_x) * (180 / math.pi)
     return angle
 
-
 def find_goal_distance(goal_x, goal_y, robot_x, robot_y):
     goal_distance = math.sqrt((goal_x - robot_x) ** 2 + (goal_y - robot_y) ** 2)
     return goal_distance
