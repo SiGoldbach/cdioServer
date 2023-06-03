@@ -3,6 +3,7 @@ import math
 import numpy as np
 
 import MoverFinder
+import VectorTest
 import moveOptions
 import ImFromPhoto
 
@@ -82,46 +83,22 @@ def find_goal_distance(goal_x, goal_y, robot_x, robot_y):
 
 
 # Robotens røv er første punkt
+# Lige nu skriver jeg alt i denne funktion om til kun at kunne have den funktionalitet vi er tæt på at kunne få fat på.
+# Indtil videre:
+# Jeg bruger turn
 def make_move(image):
-    ball_locations = [[2, 4], [2, 3], [8, 8], [8, 3], [10, 10], [20, 20], [1, 9], [16, 14]]  # Example of table balls
-    orange_ball = [0, 0]  # the orange ball
-    robot_location = [0, 0]  # example of robot location
     print("Now doing image recognition")
     ball_locations, robot_location = ImFromPhoto.imageRecognition(image)
 
-    obstacles = [[5, 5], [5, 6], [5, 7], [5, 8], [5, 9]]  # Example obstacle coordinates (representing a wall)
-    grid_size = [21, 21]  # Grid size representing the workspace
     closest_ball_location, distanceToBall = find_nearest_ball(robot_location, ball_locations)
     print("Closest ball: " + str(closest_ball_location))
     print("Robot location" + str(robot_location))
-    angle_to_turn = calculate_angle2(robot_location, closest_ball_location)
-    closest_ball_location[0] = closest_ball_location[0] - 20
-    closest_ball_location[1] = closest_ball_location[1] - 20
-    angle_to_turn2 = turnAngleWithVectors(robot_location, closest_ball_location)
-
-    print("The angle between me and the ball is: " + str(angle_to_turn))
-    print("The angle between me and the ball is: " + str(angle_to_turn2))
-
-    angle_to_goal = calculate_angle(goal_x, goal_y, robot_location[0], robot_location[1])
-    goalDistance = find_goal_distance(goal_x, goal_y, robot_location[0], robot_location[1])
-
-    if angle_to_goal > 0 & len(ball_locations) == 5 | 3 | 2 | 1:
-        return MoverFinder.MoveClass(moveOptions.RIGHT, 300, angle_to_goal), MoverFinder.MoveClass(moveOptions.FORWARD,
-                                                                                                   500, goalDistance)
-    if angle_to_goal < 0 & len(ball_locations) == 5 | 3 | 2 | 1:
-        return MoverFinder.MoveClass(moveOptions.LEFT, 300, angle_to_goal), MoverFinder.MoveClass(moveOptions.FORWARD,
-                                                                                                  500, goalDistance)
-    if angle_to_goal == 0 & len(ball_locations) == 5 | 3 | 2 | 1:
-        return MoverFinder.MoveClass(moveOptions.FORWARD, 500, goalDistance)
-
-    if angle_to_turn > 0:
-        return MoverFinder.MoveClass(moveOptions.RIGHT, 300, angle_to_turn), MoverFinder.MoveClass(moveOptions.FORWARD,
-                                                                                                   500, distanceToBall)
-    if angle_to_turn == 0:
-        return MoverFinder.MoveClass(moveOptions.FORWARD, 500, distanceToBall)
-
-    if angle_to_turn < 0:
-        return MoverFinder.MoveClass(moveOptions.LEFT, 300, angle_to_turn), MoverFinder.MoveClass(moveOptions.FORWARD,
-                                                                                                  500, distanceToBall)
-
-    return MoverFinder.MoveClass(moveOptions.UNSTUCK, 500, 100)
+    angle_to_turn = y = VectorTest.calculate_center_angle(int(robot_location[1][0]), -int(robot_location[1][1]),
+                                                          int(robot_location[0][0]), -int(robot_location[0][1]),
+                                                          int(closest_ball_location[0]),
+                                                          -int(closest_ball_location[1]))
+    print("The angle between me and the ball is : " + str(angle_to_turn))
+    if angle_to_turn > 3 or angle_to_turn < -3:
+        print("I should turn")
+    else:
+        print("I am aligned and should move forward")

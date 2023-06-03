@@ -1,7 +1,4 @@
 import math
-import math
-
-import math
 
 
 def calculate_center_angle(vector_start_x, vector_start_y, vector_end_x, vector_end_y, target_x, target_y):
@@ -22,12 +19,12 @@ def calculate_center_angle(vector_start_x, vector_start_y, vector_end_x, vector_
 
 
 # Example usage
-vector_start_x = 4
-vector_start_y = -8
-vector_end_x = 5
-vector_end_y = -6
-target_x = 1
-target_y = -1
+# vector_start_x = 4
+# vector_start_y = -8
+# vector_end_x = 5
+# vector_end_y = -6
+# target_x = 1
+# target_y = -1
 
 
 # center_angle = calculate_center_angle(vector_start_x, vector_start_y, vector_end_x, vector_end_y, target_x, target_y)
@@ -51,15 +48,14 @@ def determine_turn_direction(vector_start_x, vector_start_y, vector_end_x, vecto
 
     return turn_direction
 
-
 # Example usage
-vector_start_x = 4
-vector_start_y = -8
-vector_end_x = 5
-vector_end_y = -6
-target_x = 1
-target_y = -1
-turn_direction = determine_turn_direction(vector_start_x, vector_start_y, vector_end_x, vector_end_y, target_x,
-                                          target_y)
+# vector_start_x = 4
+# vector_start_y = -8
+# vector_end_x = 5
+# vector_end_y = -6
+# target_x = 1
+# target_y = -1
+# turn_direction = determine_turn_direction(vector_start_x, vector_start_y, vector_end_x, vector_end_y, target_x,
+#                                         target_y)
 
-print("Turn", turn_direction)
+# print("Turn", turn_direction)
