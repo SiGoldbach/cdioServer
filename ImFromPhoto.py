@@ -8,15 +8,9 @@ def imageRecognition(image):
         print("No image found")
     print(image[0][0])
 
-    img_hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
-    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-
     height, width = image.shape[:2]
 
     blank = np.zeros((height, width, 3), dtype='uint8')
-
-    lower_red = np.array([170, 50, 180])
-    upper_red = np.array([180, 255, 255])
 
     start = time.time()
 
@@ -30,14 +24,14 @@ def imageRecognition(image):
     blank[..., :][green_mask1 == 1] = (0, 255, 255)
 
     # Red color detection
-    red_mask = ((200 <= image[..., 2]) & (100 >= image[..., 1])).astype(np.uint8)
+    red_mask = ((195 <= image[..., 2]) & (100 >= image[..., 1])).astype(np.uint8)
     red_pixels += np.sum(red_mask)
     blank[..., 0][red_mask == 1] = 0
     blank[..., 1][red_mask == 1] = 0
     blank[..., 2][red_mask == 1] = 255
 
     # Orange color dectection
-    orange_mask = ((120 >= image[..., 0]) & (155 <= image[..., 1]) & (190 <= image[..., 2])).astype(np.uint8)
+    orange_mask = ((140 >= image[..., 0]) & (155 <= image[..., 1]) & (190 <= image[..., 2])).astype(np.uint8)
     blank[..., 0][orange_mask == 1] = 0
     blank[..., 1][orange_mask == 1] = 150
     blank[..., 2][orange_mask == 1] = 255
@@ -58,7 +52,7 @@ def imageRecognition(image):
 
     # 108 164 100
     # White color dectection
-    white_mask = ((200 <= image[..., 2]) & (200 <= image[..., 0]) & (195 <= image[..., 1])).astype(np.uint8)
+    white_mask = ((205 <= image[..., 2]) & (200 <= image[..., 0]) & (195 <= image[..., 1])).astype(np.uint8)
     white_pixels = np.sum(white_mask)
     blank[..., :][white_mask == 1] = (255, 255, 255)
 
@@ -73,7 +67,7 @@ def imageRecognition(image):
         param1=50,
         param2=13,
         minRadius=5,
-        maxRadius=9
+        maxRadius=7
     )
 
     detected_Robot = cv.HoughCircles(
@@ -124,7 +118,7 @@ def imageRecognition(image):
 
     thresh = cv.threshold(gray, 0, 150, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
 
-    horizontal_kernel = cv.getStructuringElement(cv.MORPH_RECT, (1, 1))
+    horizontal_kernel = cv.getStructuringElement(cv.MORPH_RECT, (1, 10))
     detect_horizontal = cv.morphologyEx(thresh, cv.MORPH_OPEN, horizontal_kernel, iterations=2)
     cnts = cv.findContours(detect_horizontal, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
@@ -140,7 +134,6 @@ def imageRecognition(image):
                 cY = int(M["m01"] / M["m00"])
 
             cv.circle(blank, (cX, cY), 5, (255, 0, 0), -1)
-
     end = time.time()
 
     time_for_transform = end - start
