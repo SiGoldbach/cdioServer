@@ -16,8 +16,9 @@ def calculate_center_angle(vector_start_x, vector_start_y, vector_end_x, vector_
     # Calculate the center angle
     center_angle = math.atan2(math.sin(vector_angle) + math.sin(target_angle),
                               math.cos(vector_angle) + math.cos(target_angle))
+    deg = math.degrees(center_angle)
 
-    return center_angle
+    return deg
 
 
 # Example usage
@@ -28,11 +29,11 @@ vector_end_y = -6
 target_x = 1
 target_y = -1
 
-center_angle = calculate_center_angle(vector_start_x, vector_start_y, vector_end_x, vector_end_y, target_x, target_y)
 
-print("Center Angle:", math.degrees(center_angle))
+# center_angle = calculate_center_angle(vector_start_x, vector_start_y, vector_end_x, vector_end_y, target_x, target_y)
 
 
+# Here all the x coordinates need to be swapped to
 def determine_turn_direction(vector_start_x, vector_start_y, vector_end_x, vector_end_y, target_x, target_y):
     # Calculate the vector from the starting point of your vector to the target point
     target_vector_x = target_x - vector_start_x
@@ -62,4 +63,3 @@ turn_direction = determine_turn_direction(vector_start_x, vector_start_y, vector
                                           target_y)
 
 print("Turn", turn_direction)
-
