@@ -1,4 +1,6 @@
 from flask import Flask
+
+import Image
 from VariousTests import test
 
 # import Image
@@ -18,6 +20,9 @@ def hello_world():  # put application's code here
 def fun():
     # Image.calculate_move()
     return test.test_json()
+@app.route('/get_command')
+def command():
+    return Image.calculate_move()
 
 
 if __name__ == '__main__':
