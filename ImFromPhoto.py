@@ -44,7 +44,7 @@ def imageRecognition(image):
     blank[..., 2][blue_mask == 1] = 0
 
     # Green color detection AKA back of robot
-    green_mask = ((85 <= image[..., 0]) & (150 <= image[..., 1]) & (185 >= image[..., 1]) & (75 <= image[..., 2]) & (
+    green_mask = ((85 <= image[..., 0]) & (145 <= image[..., 1]) & (185 >= image[..., 1]) & (75 <= image[..., 2]) & (
             120 >= image[..., 2])).astype(np.uint8)
     blank[..., 0][green_mask == 1] = 100
     blank[..., 1][green_mask == 1] = 255
@@ -74,10 +74,10 @@ def imageRecognition(image):
         cv.HOUGH_GRADIENT,
         1,
         20,
-        param1=55,
-        param2=12,
-        minRadius=9,
-        maxRadius=15
+        param1=45,
+        param2=13,
+        minRadius=8,
+        maxRadius=16
     )
     circle = 0
     balls = []
@@ -96,22 +96,25 @@ def imageRecognition(image):
             print("Center of this circle should be: " + str(a) + " " + str(b))
             balls.append([a, b])
             circle += 1
-    robot = []
+    back = []
+    front = []
     if detected_Robot is not None:
         detected_circles = np.uint16(np.around(detected_Robot))
         for pt in detected_circles[0, :]:
             a, b, r = pt[0], pt[1], pt[2]
             if blank[b, a][1] == 255 and blank[b, a][2] == 100:
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
-                cv.circle(blank, (a, b), r, (130, 255, 20), -1)
-                robot.append([a, b])
+                cv.circle(blank, (a, b), r, (0, 255, 100), -1)
+                back.append(a)
+                back.append(b)
                 circle += 1
                 continue
 
             if blank[b, a][0] == 255 and blank[b, a][1] == 255 and blank[b, a][2] != 255:
                 print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (255, 255, 0), -1)
-                robot.append([a, b])
+                front.append(a)
+                front.append(b)
                 circle += 1
                 continue
 
@@ -148,4 +151,4 @@ def imageRecognition(image):
     print('Time for transform: ' + str(time_for_transform))
 
     cv.waitKey(0)
-    return balls, robot
+    return balls, front, back
