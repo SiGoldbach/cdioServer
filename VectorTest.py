@@ -32,7 +32,7 @@ center_angle = calculate_center_angle(vector_start_x, vector_start_y, vector_end
 
 print("Center Angle:", math.degrees(center_angle))
 
-
+# Here all the x coordinates need to be swapped to
 def determine_turn_direction(vector_start_x, vector_start_y, vector_end_x, vector_end_y, target_x, target_y):
     # Calculate the vector from the starting point of your vector to the target point
     target_vector_x = target_x - vector_start_x

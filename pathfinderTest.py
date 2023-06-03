@@ -68,12 +68,12 @@ def turnAngleWithVectors(robot_location, ball_location):
     print("Angle should be: " + str(angle))
     return angle
 
+
 def is_point_left_or_right(robot_location, ball_location):
     r1 = int(robot_location[1][0])
     r2 = int(robot_location[1][1])
     r21 = int(robot_location[0][0])
     r22 = int(robot_location[0][1])
-
 
 
 def find_goal_distance(goal_x, goal_y, robot_x, robot_y):
