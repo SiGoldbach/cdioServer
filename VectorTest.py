@@ -45,7 +45,7 @@ def determine_turn_direction(vector_start_x, vector_start_y, vector_end_x, vecto
             vector_end_y - vector_start_y) * target_vector_x
 
     # Determine the direction of the turn
-    if cross_product > 0:
+    if cross_product < 0:
         turn_direction = "left"
     else:
         turn_direction = "right"
