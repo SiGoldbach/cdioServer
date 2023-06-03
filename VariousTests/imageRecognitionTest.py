@@ -2,7 +2,7 @@ import cv2 as cv
 import ImFromPhoto
 import VectorTest
 
-image = cv.imread('../Resources/Pictures/withBall2.jpg')
+image = cv.imread('../Resources/Pictures/withBall3.jpg')
 
 balls, robot = ImFromPhoto.imageRecognition(image)
 print("Result from test: ")
