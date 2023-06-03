@@ -8,7 +8,7 @@ import pathfinderTest
 
 def calculate_move():
     # ret, image = video.read()
-    image = cv2.imread('Resources/Pictures/withBall.jpg')
+    image = cv2.imread('Resources/Pictures/ballMiddle.jpg')
     return pathfinderTest.make_move(image)
 
 

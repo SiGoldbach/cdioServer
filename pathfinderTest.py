@@ -1,11 +1,7 @@
 import math
 
-import numpy as np
-
-import MoverFinder
-import VectorTest
-import moveOptions
 import ImFromPhoto
+import moveOptions
 
 # import main
 
@@ -14,11 +10,11 @@ goal_x = 0
 goal_y = 0
 
 
-def find_nearest_ball(robot_location, ball_locations):
+def find_nearest_ball(front, ball_locations):
     closest_distance = float('inf')
     closest_coordinate = []
-    r1 = int(robot_location[1][0])
-    r2 = int(robot_location[1][1])
+    r1 = int(front[0])
+    r2 = int(front[1])
 
     for coordinate in ball_locations:
         x = int(coordinate[0])
@@ -33,48 +29,38 @@ def find_nearest_ball(robot_location, ball_locations):
     return closest_coordinate, closest_distance
 
 
-def calculate_angle(ball_x, ball_y, robot_x, robot_y):
-    angle = math.atan2(ball_y - robot_y, ball_x - robot_x) * (180 / math.pi)
-    return angle
-
-
-def calculate_angle2(robot_location, ball_location):
-    r1 = int(robot_location[1][0])
-    r2 = int(robot_location[1][1])
-    r21 = int(robot_location[0][0])
-    r22 = int(robot_location[0][1])
-    A = math.sqrt((ball_location[0] - r1) ** 2 + (ball_location[1] - r2) ** 2)
-    B = math.sqrt((r21 - r1) ** 2 + (r22 - r2) ** 2)
-    C = math.sqrt((ball_location[0] - r21) ** 2 + (ball_location[1] - r22) ** 2)
-    return math.degrees(math.acos((A * A + B * B - C * C) / (2.0 * A * B)))
-
-
 # This function finds the angle between the two vector that are ass to ball and ass to head
-def turnAngleWithVectors(robot_location, ball_location):
-    ass = robot_location[0]
-    head = robot_location[1]
-    head_vector = [int(head[0]) - int(ass[0]), int(head[1]) - int(ass[1])]
-    ball_vector = [int(ball_location[0] - int(ass[0])), int(ball_location[1]) - int(ass[1])]
-    neutralVector = [1, 0]
-
-    print("Vector describing the robot: " + str(head_vector))
-    print("Vector describing the ass to ball relation: " + str(ball_vector))
-
-    unit_vector_1 = head_vector / np.linalg.norm(head_vector)
-    unit_vector_2 = ball_vector / np.linalg.norm(ball_vector)
-    dot_product = np.dot(unit_vector_1, unit_vector_2)
-    print("Dot product of vectors: " + str(dot_product))
-    angle = np.arccos(dot_product)
-
-    print("Angle should be: " + str(angle))
-    return angle
 
 
-def is_point_left_or_right(robot_location, ball_location):
-    r1 = int(robot_location[1][0])
-    r2 = int(robot_location[1][1])
-    r21 = int(robot_location[0][0])
-    r22 = int(robot_location[0][1])
+def calculate_turn(front_pos, back_pos, target_pos):
+    # Calculate the vector from the front to the back of the robot
+    robot_vector = (int(back_pos[0]) - int(front_pos[0]), int(back_pos[1]) - int(front_pos[1]))
+
+    # Calculate the vector from the front of the robot to the target position
+    target_vector = (int(target_pos[0]) - int(front_pos[0]), int(target_pos[1]) - int(front_pos[1]))
+
+    # Calculate the signed angle between the robot vector and the target vector
+    angle_radians = math.atan2(target_vector[1], target_vector[0]) - math.atan2(robot_vector[1], robot_vector[0])
+    angle_degrees = math.degrees(angle_radians)
+
+    # Normalize the angle to be within the range of -180 to 180 degrees
+    if angle_degrees > 180:
+        angle_degrees -= 360
+    elif angle_degrees < -180:
+        angle_degrees += 360
+
+    if angle_degrees < 0:
+        angle_degrees = -angle_degrees
+        # print("right")
+        # print(180 - angle_degrees)
+        return moveOptions.RIGHT, 180 - angle_degrees
+
+    # print(180 - angle_degrees)
+    return moveOptions.LEFT, 180 - angle_degrees
+
+
+def degree_to_argument():
+    print("Calculating argument ")
 
 
 def find_goal_distance(goal_x, goal_y, robot_x, robot_y):
@@ -88,23 +74,14 @@ def find_goal_distance(goal_x, goal_y, robot_x, robot_y):
 # Jeg bruger turn
 def make_move(image):
     print("Now doing image recognition")
-    ball_locations, robot_location = ImFromPhoto.imageRecognition(image)
+    ball_locations, front, back = ImFromPhoto.imageRecognition(image)
+    nearest_ball, distance = find_nearest_ball(front, ball_locations)
 
-    closest_ball_location, distanceToBall = find_nearest_ball(robot_location, ball_locations)
-    print("Closest ball: " + str(closest_ball_location))
-    print("Robot location" + str(robot_location))
-    direction = VectorTest.determine_turn_direction(int(robot_location[0][0]), -int(robot_location[0][1]),
-                                                    int(robot_location[1][0]), -int(robot_location[1][1]),
-                                                    int(closest_ball_location[0]),
-                                                    -int(closest_ball_location[1]))
-    angle_to_turn = calculate_angle2(robot_location, closest_ball_location)
-    print("The angle should be 39.84")
-    print(angle_to_turn)
-    print("Going this direction")
-    print(direction)
+    angle_to_turn = calculate_turn(front, back, nearest_ball)
 
-    # print("The angle between me and the ball is : " + str(angle_to_turn))
-    if angle_to_turn > 3 or angle_to_turn < -3:
-        print("I should turn")
+    if angle_to_turn[1] > 3:
+        print("I should turn: " + angle_to_turn[0])
+        print(str(angle_to_turn[1]) + " degrees")
+
     else:
         print("I am aligned and should move forward")
