@@ -36,6 +36,9 @@ coefficient = 0.027569
 6: speed 500, argument =  left; angle:  degrees
 5: speed 500, argument =  left; angle:  degrees
 6: speed 500, argument =  left; angle:  degrees
+argumentTurn = (x - Intercept) / argumentTurn coefficient
+Intercept = -5.862845
+argumentTurn coefficient = 0.209388
 
 
 
