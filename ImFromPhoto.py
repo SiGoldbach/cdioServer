@@ -63,7 +63,7 @@ def imageRecognition(image):
     blank[..., :][white_mask == 1] = (255, 255, 255)
 
     # Circle detection
-    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    gray = cv.cvtColor(blank, cv.COLOR_BGR2GRAY)
     gray_blurred = cv.blur(gray, (3, 3))
     detected_Balls = cv.HoughCircles(
         gray_blurred,
@@ -72,7 +72,7 @@ def imageRecognition(image):
         20,
         param1=50,
         param2=13,
-        minRadius=6,
+        minRadius=5,
         maxRadius=9
     )
 
@@ -121,17 +121,88 @@ def imageRecognition(image):
                 robot.append([a, b])
                 circle += 1
                 continue
+
+    thresh = cv.threshold(gray, 0, 150, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
+
+    horizontal_kernel = cv.getStructuringElement(cv.MORPH_RECT, (1, 1))
+    detect_horizontal = cv.morphologyEx(thresh, cv.MORPH_OPEN, horizontal_kernel, iterations=2)
+    cnts = cv.findContours(detect_horizontal, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+    for c in cnts:
+        x, y, w, h = cv.boundingRect(c)
+        if blank[y, x][2] == 255:
+            cv.drawContours(blank, [c], -1, (36, 255, 12), 2)
+            M = cv.moments(c)
+
+            # Calculate the center of the contour
+            if M["m00"] != 0:
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+
+            cv.circle(blank, (cX, cY), 5, (255, 0, 0), -1)
+
+
+# Algorithm for lines between balls
+
+    def euclidean_distance(pt1, pt2):
+        x1, y1 = pt1
+        x2, y2 = pt2
+        return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+    for i in range(len(balls)):
+        for j in range(i + 1, len(balls)):
+            pt1 = (balls[i][0], balls[i][1])
+            pt2 = (balls[j][0], balls[j][1])
+            cv.line(image, pt1, pt2, (255, 0, 0), 2)
+
+            # Shortest path algorithm
+            num_balls = len(balls)
+            if num_balls < 2:
+                continue
+
+            # Create an adjacency matrix for the graph
+            graph = [[0] * num_balls for _ in range(num_balls)]
+            for m in range(num_balls):
+                for n in range(m + 1, num_balls):
+                    distance_mn = euclidean_distance(balls[m], balls[n])
+                    graph[m][n] = distance_mn
+                    graph[n][m] = distance_mn
+
+            # Dijkstra's algorithm
+            start = i
+            distances = [float('inf')] * num_balls
+            distances[start] = 0
+            visited = [False] * num_balls
+
+            for _ in range(num_balls):
+                min_distance = float('inf')
+                min_index = -1
+
+                for v in range(num_balls):
+                    if not visited[v] and distances[v] < min_distance:
+                        min_distance = distances[v]
+                        min_index = v
+
+                if min_index == -1:
+                    break
+
+                visited[min_index] = True
+
+                for v in range(num_balls):
+                    if (not visited[v]) and (distances[v] > distances[min_index] + graph[min_index][v]):
+                        distances[v] = distances[min_index] + graph[min_index][v]
+
+    # Find the ball with the shortest distance
+    end = distances.index(min(distances))
+
+    # Draw the shortest path as a line
+    pt1 = (balls[start][0], balls[start][1])
+    pt2 = (balls[end][0], balls[end][1])
+    cv.line(image, pt1, pt2, (255, 0, 0), 2)
+
+    # Algorithm ends here
+
     end = time.time()
-
-    # Square detection
-    blur = cv.GaussianBlur(gray, (5, 5),
-                           cv.BORDER_DEFAULT)
-    ret, thresh = cv.threshold(blur, 200, 255,
-                               cv.THRESH_BINARY_INV)
-
-    contours, hierarchies = cv.findContours(
-        thresh, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
-
     time_for_transform = end - start
 
     print("Amount of red pixels: " + str(red_pixels))
