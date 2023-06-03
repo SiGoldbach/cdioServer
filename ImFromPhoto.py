@@ -142,10 +142,10 @@ def imageRecognition(image):
     print("Amount of white pixels: " + str(white_pixels))
     print("Amount of circles: " + str(circle))
 
-    #cv.imshow('Original', image)
-    #cv.imshow('Obstacles and balls drawn: ', blank)
+    cv.imshow('Original', image)
+    cv.imshow('Obstacles and balls drawn: ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 
-    #cv.waitKey(0)
+    cv.waitKey(0)
     return balls, robot

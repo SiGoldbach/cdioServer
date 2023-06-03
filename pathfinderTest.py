@@ -93,8 +93,8 @@ def make_move(image):
     closest_ball_location, distanceToBall = find_nearest_ball(robot_location, ball_locations)
     print("Closest ball: " + str(closest_ball_location))
     print("Robot location" + str(robot_location))
-    angle_to_turn = y = VectorTest.calculate_center_angle(int(robot_location[1][0]), -int(robot_location[1][1]),
-                                                          int(robot_location[0][0]), -int(robot_location[0][1]),
+    angle_to_turn = y = VectorTest.calculate_center_angle(int(robot_location[0][0]), -int(robot_location[0][1]),
+                                                          int(robot_location[1][0]), -int(robot_location[1][1]),
                                                           int(closest_ball_location[0]),
                                                           -int(closest_ball_location[1]))
     print("The angle between me and the ball is : " + str(angle_to_turn))
