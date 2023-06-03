@@ -11,10 +11,20 @@ camera width: 640pixel.
 4:    speed 500, argument= 800; movement = 20cm
 5:    speed 500, argument= 1600; movement = 44,5cm
 
-
 33,33 omdrejning/cm  0,033cm/omdrejning
 36,36 omdrejning/cm  0,026cm/omdrejning
 35,55 omdrejning/cm  0,028cm/omdrejning
+
+
+-Move "turn"
+1: speed 500, argument = 200 left; angle: -36 degrees
+2: speed 500, argument = 200 left; angle: -36 degrees
+3: speed 500, argument = 300 left; angle: -63 degrees
+4: speed 500, argument = 300 left; angle: -66 degrees
+5: speed 500, argument = 400 left; angle: -82 degrees
+6: speed 500, argument = 400 left; angle: -78 degrees
+
+
 
 
 teori 1 based on camera:
