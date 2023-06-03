@@ -24,7 +24,7 @@ def imageRecognition(image):
     blank[..., :][green_mask1 == 1] = (0, 255, 255)
 
     # Red color detection
-    red_mask = ((195 <= image[..., 2]) & (100 >= image[..., 1])).astype(np.uint8)
+    red_mask = ((190 <= image[..., 2]) & (105 >= image[..., 1])).astype(np.uint8)
     red_pixels += np.sum(red_mask)
     blank[..., 0][red_mask == 1] = 0
     blank[..., 1][red_mask == 1] = 0
@@ -118,7 +118,7 @@ def imageRecognition(image):
 
     thresh = cv.threshold(gray, 0, 150, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
 
-    horizontal_kernel = cv.getStructuringElement(cv.MORPH_RECT, (1, 10))
+    horizontal_kernel = cv.getStructuringElement(cv.MORPH_RECT, (1, 1))
     detect_horizontal = cv.morphologyEx(thresh, cv.MORPH_OPEN, horizontal_kernel, iterations=2)
     cnts = cv.findContours(detect_horizontal, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
