@@ -1,7 +1,7 @@
 # Use this file for testing the json properties
 
 
-import MoverFinder
+import Moves
 import json
 import MoveTypes
 

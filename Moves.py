@@ -21,6 +21,6 @@ def as_payload(dct):
 # The move function that for now just returns right and 500
 
 def find_move() -> MoveClass:
-    move = MoveClass(moveOptions.RIGHT, 500, 100)
+    move = MoveClass(MoveTypes.RIGHT, 500, 100)
     move.print()
     return move

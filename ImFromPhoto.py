@@ -136,8 +136,7 @@ def imageRecognition(image):
             if M["m00"] != 0:
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
-
-            cv.circle(blank, (cX, cY), 5, (255, 0, 0), -1)
+                cv.circle(blank, (cX, cY), 5, (255, 0, 0), -1)
     end = time.time()
 
     time_for_transform = end - start
