@@ -1,11 +1,5 @@
 import math
-import heapq
-import Moves
-from shapely.geometry import LineString, Point
-from itertools import combinations
-import MoverFinder
 
-# import main
 
 coordinates_array = [[2, 4], [6, 3], [8, 8], [8, 3], [10, 10], [20, 20], [1, 9],
                      [16, 14]]  # Example of table tennis balls
@@ -72,4 +66,3 @@ def check_for_obstacle(red_pixel, line1, line2):
         return True
     else:
         return False
-    

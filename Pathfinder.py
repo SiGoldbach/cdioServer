@@ -5,9 +5,6 @@ import Moves
 import MoveTypes
 
 
-# import main
-
-
 def find_nearest_ball(front, ball_locations):
     closest_distance = float('inf')
     closest_coordinate = []
