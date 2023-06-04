@@ -1,3 +1,5 @@
+# This file was made with the purpose of testing videoQuality of a better camera
+
 import cv2
 
 cap = cv2.VideoCapture(1)

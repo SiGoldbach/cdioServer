@@ -1,5 +1,6 @@
 import math
 import heapq
+import Moves
 from shapely.geometry import LineString, Point
 from itertools import combinations
 import MoverFinder
@@ -71,3 +72,4 @@ def check_for_obstacle(red_pixel, line1, line2):
         return True
     else:
         return False
+    

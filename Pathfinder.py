@@ -1,7 +1,7 @@
 import math
 
 import ImFromPhoto
-import MoverFinder
+import Moves
 import MoveTypes
 
 
@@ -72,13 +72,13 @@ def find_goal_distance(goal_x, goal_y, robot_x, robot_y):
 # Meaning only moves which we have a realistic chance of taking are added to the control flow
 # At current time:
 # The robot can turn and align itself to a ball
-# It can move forward if is is aligned
+# It can move forward if is aligned
 def make_move(image):
     print("Now doing image recognition")
     ball_locations, front, back = ImFromPhoto.imageRecognition(image)
     # Temporary if statement
     if front is None or back is None or ball_locations is None:
-        return MoverFinder.MoveClass(MoveTypes.LEFT, 500, 50)
+        return Moves.MoveClass(MoveTypes.LEFT, 500, 50)
     nearest_ball, distance = find_nearest_ball(front, ball_locations)
 
     angle_to_turn = calculate_turn(front, back, nearest_ball)
@@ -87,8 +87,8 @@ def make_move(image):
         print("I should turn: " + angle_to_turn[0])
         print(str(angle_to_turn[1]) + " degrees")
         argument = degree_to_argument(angle_to_turn[1])
-        return MoverFinder.MoveClass(angle_to_turn[0], 500, argument)
+        return Moves.MoveClass(angle_to_turn[0], 500, argument)
 
     else:
         print("I am aligned and should move forward")
-        return MoverFinder.MoveClass(MoveTypes.FORWARD, 600, 1500)
+        return Moves.MoveClass(MoveTypes.FORWARD, 600, 1500)
