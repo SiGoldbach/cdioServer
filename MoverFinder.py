@@ -1,7 +1,7 @@
 # Class that encapsulates the move into a type and the potential argument that it comes with
 # Here speed is only speed
 # Argument can be an angle or time
-import moveOptions
+import MoveTypes
 
 
 class MoveClass:

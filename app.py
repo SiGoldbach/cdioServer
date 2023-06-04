@@ -1,10 +1,10 @@
 from flask import Flask
 
-import Image
-from VariousTests import test
-
-# import Image
-# import Pathfinding
+# LiveVideoFeed is being initialized here so the rather long start up process start as early as possible
+# The app then calls the live video feeds method calculate move since it has the video-feed,
+# and therefore can give the video feed to the pathfinder as a middle man
+import LiveVideoFeed
+import json
 
 app = Flask(__name__)
 
@@ -19,10 +19,14 @@ def hello_world():  # put application's code here
 @app.route('/test')
 def fun():
     # Image.calculate_move()
-    return test.test_json()
+    move1 = LiveVideoFeed.calculate_move()
+    move_as_json = json.dumps(move1.__dict__)
+    return move_as_json
+
+
 @app.route('/get_command')
 def command():
-    return Image.calculate_move()
+    return LiveVideoFeed.calculate_move()
 
 
 if __name__ == '__main__':

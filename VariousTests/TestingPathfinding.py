@@ -1,10 +1,12 @@
-import cv2 as cv
-import pathfinderTest
+# This file is for testing the Pathfinder algorithm we have implemented.
+# This is not much of a black box test
+# This
 
-image = cv.imread('../Resources/Pictures/withRobot14.jpg')
+import cv2 as cv
+import Pathfinder
+
+image = cv.imread('../Resources/Pictures/TestRun1.jpg')
 if image is None:
     print("None")
-pathfinderTest.make_move(image)
+Pathfinder.make_move(image)
 
-# I am here checking the angle function
-#pathfinderTest.turnAngleWithVectors([[2, 3], [-3, 2]], [-3, 2])

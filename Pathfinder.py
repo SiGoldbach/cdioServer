@@ -1,13 +1,11 @@
 import math
 
 import ImFromPhoto
-import moveOptions
+import MoverFinder
+import MoveTypes
+
 
 # import main
-
-
-goal_x = 0
-goal_y = 0
 
 
 def find_nearest_ball(front, ball_locations):
@@ -53,14 +51,16 @@ def calculate_turn(front_pos, back_pos, target_pos):
         angle_degrees = -angle_degrees
         # print("right")
         # print(180 - angle_degrees)
-        return moveOptions.RIGHT, 180 - angle_degrees
+        return MoveTypes.RIGHT, 180 - angle_degrees
 
     # print(180 - angle_degrees)
-    return moveOptions.LEFT, 180 - angle_degrees
+    return MoveTypes.LEFT, 180 - angle_degrees
 
 
-def degree_to_argument():
+def degree_to_argument(degrees):
     print("Calculating argument ")
+    argumentTurn = (degrees - -5.862845) / 0.209388
+    return int(argumentTurn) / 2
 
 
 def find_goal_distance(goal_x, goal_y, robot_x, robot_y):
@@ -68,20 +68,27 @@ def find_goal_distance(goal_x, goal_y, robot_x, robot_y):
     return goal_distance
 
 
-# Robotens røv er første punkt
-# Lige nu skriver jeg alt i denne funktion om til kun at kunne have den funktionalitet vi er tæt på at kunne få fat på.
-# Indtil videre:
-# Jeg bruger turn
+# This function is being written iteratively.
+# Meaning only moves which we have a realistic chance of taking are added to the control flow
+# At current time:
+# The robot can turn and align itself to a ball
+# It can move forward if is is aligned
 def make_move(image):
     print("Now doing image recognition")
     ball_locations, front, back = ImFromPhoto.imageRecognition(image)
+    # Temporary if statement
+    if front is None or back is None or ball_locations is None:
+        return MoverFinder.MoveClass(MoveTypes.LEFT, 500, 50)
     nearest_ball, distance = find_nearest_ball(front, ball_locations)
 
     angle_to_turn = calculate_turn(front, back, nearest_ball)
 
-    if angle_to_turn[1] > 3:
+    if angle_to_turn[1] > 6:
         print("I should turn: " + angle_to_turn[0])
         print(str(angle_to_turn[1]) + " degrees")
+        argument = degree_to_argument(angle_to_turn[1])
+        return MoverFinder.MoveClass(angle_to_turn[0], 500, argument)
 
     else:
         print("I am aligned and should move forward")
+        return MoverFinder.MoveClass(MoveTypes.FORWARD, 600, 1500)

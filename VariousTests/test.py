@@ -3,7 +3,7 @@
 
 import MoverFinder
 import json
-import moveOptions
+import MoveTypes
 
 
 def test_json():
