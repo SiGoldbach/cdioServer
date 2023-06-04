@@ -9,4 +9,3 @@ image = cv.imread('../Resources/Pictures/TestRun1.jpg')
 if image is None:
     print("None")
 Pathfinder.make_move(image)
-
