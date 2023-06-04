@@ -9,7 +9,7 @@ import MoverFinder
 coordinates_array = [[2, 4], [6, 3], [8, 8], [8, 3], [10, 10], [20, 20], [1, 9],
                      [16, 14]]  # Example of table tennis balls
 robot_location = [[0, 0]]  # example of robot location
-obstacles = [[5, 5], [5, 6], [5, 7], [5, 8], [5, 9]]  # Example obstacle coordinates (representing a wall)
+obstacles = [[5, 5], [5, 6], [5, 14], [5, 8], [5, 9]]  # Example obstacle coordinates (representing a wall)
 grid_size = [21, 21]  # Grid size representing the workspace
 robot_x = 0
 robot_y = 0
@@ -54,14 +54,20 @@ def calculate_angle(target_x, target_y, robot_x, robot_y):
 def calculate_line(target_x, target_y, robot_x, robot_y, x):
     m = ((target_y - robot_y) / (target_x - robot_x))
     b = robot_y - m * robot_x
-    # vi skal parallelforskyde linjen med 16pixel. ergo b+16 | b-16
+    # vi skal parallelforskyde linjen med 16pixel hver vej. ergo b+16 | b-16
+    line1 = [int(m), int(b + 16)]
+    line2 = [int(m), int(b - 16)]
 
-    return m, b
-
-
-def check_for_obstacle():
-
+    return line1, line2
 
 
-goodmorning = calculate_line(8, 9, 3, 2, 1)
-print(goodmorning)
+def check_for_obstacle(red_pixel, line1, line2):
+    x, y = red_pixel
+    # Calculate the y-values for each line at the given x-coordinate
+    y1 = line1[0] * x + line1[1]
+    y2 = line2[0] * x + line2[1]
+    # Check if the point's y-coordinate is between the y-values of the lines
+    if min(y1, y2) <= y <= max(y1, y2):
+        return True
+    else:
+        return False
