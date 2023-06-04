@@ -1,8 +1,8 @@
 import math
-
 import ImFromPhoto
 import Moves
 import MoveTypes
+import Pathfinding
 
 
 def find_nearest_ball(front, ball_locations):
@@ -60,9 +60,35 @@ def degree_to_argument(degrees):
     return int(argumentTurn) / 2
 
 
-def find_goal_distance(goal_x, goal_y, robot_x, robot_y):
-    goal_distance = math.sqrt((goal_x - robot_x) ** 2 + (goal_y - robot_y) ** 2)
-    return goal_distance
+def calculate_line(target_x, target_y, robot_x, robot_y):
+    m = ((target_y - robot_y) / (target_x - robot_x))
+    b = robot_y - m * robot_x
+    # vi skal parallelforskyde linjen med 16pixel hver vej. ergo b+16 | b-16
+    line1 = [int(m), int(b + 16)]
+    line2 = [int(m), int(b - 16)]
+
+    return line1, line2
+
+
+def check_for_obstacle(red_pixels, target_x, target_y, robot_x, robot_y):
+    line1, line2 = calculate_line(target_x, target_y, robot_x, robot_y)
+    red_counter = 0
+    for red_pixel in red_pixels:
+        if check_for_red_pixel(red_pixel, line1, line2):
+            red_counter += 1
+    print(red_counter)
+
+
+def check_for_red_pixel(red_pixel, line1, line2):
+    x, y = red_pixel
+    # Calculate the y-values for each line at the given x-coordinate
+    y1 = line1[0] * x + line1[1]
+    y2 = line2[0] * x + line2[1]
+    # Check if the point's y-coordinate is between the y-values of the lines
+    if min(y1, y2) <= y <= max(y1, y2):
+        return True
+    else:
+        return False
 
 
 # This function is being written iteratively.
@@ -87,5 +113,6 @@ def make_move(image):
         return Moves.MoveClass(angle_to_turn[0], 500, argument)
 
     else:
-        print("I am aligned and should move forward")
-        return Moves.MoveClass(MoveTypes.FORWARD, 600, 1500)
+        if check_for_obstacle(None, nearest_ball[0], nearest_ball[1], front[0], front[1]):
+            print("I am aligned and should move forward")
+            return Moves.MoveClass(MoveTypes.FORWARD, 600, 1500)

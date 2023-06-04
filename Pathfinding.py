@@ -1,6 +1,5 @@
 import math
 
-
 coordinates_array = [[2, 4], [6, 3], [8, 8], [8, 3], [10, 10], [20, 20], [1, 9],
                      [16, 14]]  # Example of table tennis balls
 robot_location = [[0, 0]]  # example of robot location
@@ -46,23 +45,4 @@ def calculate_angle(target_x, target_y, robot_x, robot_y):
     return angle
 
 
-def calculate_line(target_x, target_y, robot_x, robot_y, x):
-    m = ((target_y - robot_y) / (target_x - robot_x))
-    b = robot_y - m * robot_x
-    # vi skal parallelforskyde linjen med 16pixel hver vej. ergo b+16 | b-16
-    line1 = [int(m), int(b + 16)]
-    line2 = [int(m), int(b - 16)]
 
-    return line1, line2
-
-
-def check_for_obstacle(red_pixel, line1, line2):
-    x, y = red_pixel
-    # Calculate the y-values for each line at the given x-coordinate
-    y1 = line1[0] * x + line1[1]
-    y2 = line2[0] * x + line2[1]
-    # Check if the point's y-coordinate is between the y-values of the lines
-    if min(y1, y2) <= y <= max(y1, y2):
-        return True
-    else:
-        return False
