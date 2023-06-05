@@ -4,10 +4,9 @@ import ImFromPhoto
 
 image = cv.imread('../Resources/Pictures/CheckForObstacle3.jpg')
 
-balls, front, back = ImFromPhoto.imageRecognition(image)
+balls, front, back, red_pixels = ImFromPhoto.imageRecognition(image)
 print("Result from test: ")
-print("I found: "+str(len(balls))+" Balls")
-
+print("I found: " + str(len(balls)) + " Balls")
 
 # print(balls)
 # print(robot)

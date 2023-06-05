@@ -2,7 +2,6 @@ import math
 import ImFromPhoto
 import Moves
 import MoveTypes
-import Pathfinding
 
 
 def find_nearest_ball(front, ball_locations):
@@ -61,11 +60,13 @@ def degree_to_argument(degrees):
 
 
 def calculate_line(target_x, target_y, robot_x, robot_y):
-    m = ((target_y - robot_y) / (target_x - robot_x))
+    m = ((int(target_y) - int(robot_y)) / (int(target_x) - int(robot_x)))
     b = robot_y - m * robot_x
     # vi skal parallelforskyde linjen med 16pixel hver vej. ergo b+16 | b-16
-    line1 = [int(m), int(b + 16)]
-    line2 = [int(m), int(b - 16)]
+    line1 = [m, b + 25]
+    line2 = [m, b - 25]
+    print(line1)
+    print(line2)
 
     return line1, line2
 
@@ -73,10 +74,23 @@ def calculate_line(target_x, target_y, robot_x, robot_y):
 def check_for_obstacle(red_pixels, target_x, target_y, robot_x, robot_y):
     line1, line2 = calculate_line(target_x, target_y, robot_x, robot_y)
     red_counter = 0
+    try_counter = 0
+
     for red_pixel in red_pixels:
-        if check_for_red_pixel(red_pixel, line1, line2):
-            red_counter += 1
-    print(red_counter)
+        if target_x > robot_x:
+            if target_x > red_pixel[0] > robot_x:
+                try_counter += 1
+                if check_for_red_pixel(red_pixel, line1, line2):
+                    red_counter += 1
+        if robot_x > target_x:
+            if robot_x > red_pixel[0] > target_x:
+                try_counter += 1
+                if check_for_red_pixel(red_pixel, line1, line2):
+                    red_counter += 1
+
+    print("I found: " + str(red_counter) + " red pixels in the way")
+    print("I tested: " + str(try_counter) + " Entries")
+    return True
 
 
 def check_for_red_pixel(red_pixel, line1, line2):
@@ -98,21 +112,23 @@ def check_for_red_pixel(red_pixel, line1, line2):
 # It can move forward if is aligned
 def make_move(image):
     print("Now doing image recognition")
-    ball_locations, front, back = ImFromPhoto.imageRecognition(image)
+    ball_locations, front, back, red_pixels = ImFromPhoto.imageRecognition(image)
+    print(red_pixels[0])
     # Temporary if statement
     if front is None or back is None or ball_locations is None:
         return Moves.MoveClass(MoveTypes.LEFT, 500, 50)
     nearest_ball, distance = find_nearest_ball(front, ball_locations)
+    print("This should be 2: "+str(len(front)))
 
     angle_to_turn = calculate_turn(front, back, nearest_ball)
 
-    if angle_to_turn[1] > 6:
+    if angle_to_turn[1] > 5:
         print("I should turn: " + angle_to_turn[0])
         print(str(angle_to_turn[1]) + " degrees")
         argument = degree_to_argument(angle_to_turn[1])
         return Moves.MoveClass(angle_to_turn[0], 500, argument)
 
     else:
-        if check_for_obstacle(None, nearest_ball[0], nearest_ball[1], front[0], front[1]):
+        if check_for_obstacle(red_pixels, nearest_ball[0], nearest_ball[1], front[0], front[1]):
             print("I am aligned and should move forward")
-            return Moves.MoveClass(MoveTypes.FORWARD, 600, 1500)
+            return Moves.MoveClass(MoveTypes.FORWARD, 600, 600)

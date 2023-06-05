@@ -6,7 +6,6 @@ import time
 def imageRecognition(image):
     if image is None:
         print("No image found")
-    print(image[0][0])
 
     height, width = image.shape[:2]
 
@@ -51,9 +50,14 @@ def imageRecognition(image):
     # Red color detection
     red_mask = ((170 <= image[..., 2]) & (110 >= image[..., 1])).astype(np.uint8)
     red_pixels += np.sum(red_mask)
+    red_pixelLocation = []
     blank[..., 0][red_mask == 1] = 0
     blank[..., 1][red_mask == 1] = 0
     blank[..., 2][red_mask == 1] = 255
+
+    red_pixel_indices = np.where(blank[..., 2] == 255)
+    red_pixel_locations = np.column_stack(red_pixel_indices[::-1])
+    print("Red pixels: " + str(len(red_pixel_locations)))
 
     # Circle detection
     gray = cv.cvtColor(blank, cv.COLOR_BGR2GRAY)
@@ -76,7 +80,7 @@ def imageRecognition(image):
         20,
         param1=45,
         param2=10,
-        minRadius=8,
+        minRadius=12,
         maxRadius=20
     )
     circle = 0
@@ -96,7 +100,7 @@ def imageRecognition(image):
             print("Center of this circle should be: " + str(a) + " " + str(b))
             balls.append([a, b])
             circle += 1
-    print("Amount of robot-circles is: "+str(len(detected_Robot)))
+    print("Amount of robot-circles is: " + str(len(detected_Robot)))
     back = []
     front = []
     if detected_Robot is not None:
@@ -152,4 +156,4 @@ def imageRecognition(image):
 
     cv.waitKey(0)
 
-    return balls, front, back
+    return balls, front, back, red_pixel_locations
