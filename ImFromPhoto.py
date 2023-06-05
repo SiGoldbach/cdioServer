@@ -141,6 +141,7 @@ def imageRecognition(image):
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
                 cv.circle(blank, (cX, cY), 5, (255, 0, 0), -1)
+                cv.line(blank, (cX-280, cY), (cX, cY), (0,255,0), thickness=2)
     end = time.time()
 
     time_for_transform = end - start
@@ -153,7 +154,6 @@ def imageRecognition(image):
     cv.imshow('Obstacles and balls drawn: ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
-
     cv.waitKey(0)
 
     return balls, front, back, red_pixel_locations
