@@ -22,28 +22,30 @@ def imageRecognition(image):
                    (image[..., 2] <= 70)).astype(np.uint8)
     blank[..., :][green_mask1 == 1] = (0, 255, 255)
 
+#226 219 164
     # Blue color detection AKA front of robot
-    blue_mask = ((200 <= image[..., 0]) & (75 <= image[..., 1]) & (145 >= image[..., 1]) & (40 <= image[..., 2]) & (
-            100 >= image[..., 2])).astype(np.uint8)
+    blue_mask = ((175 <= image[..., 0]) & (200 <= image[..., 1]) & (140 <= image[..., 2]) & (
+            200 >= image[..., 2])).astype(np.uint8)
     blank[..., 0][blue_mask == 1] = 255
     blank[..., 1][blue_mask == 1] = 255
     blank[..., 2][blue_mask == 1] = 0
 
     # Green color detection AKA back of robot
-    green_mask = ((85 <= image[..., 0]) & (145 <= image[..., 1]) & (200 >= image[..., 1]) & (75 <= image[..., 2]) & (
-            140 >= image[..., 2])).astype(np.uint8)
+    green_mask = ((180 >= image[..., 0]) & (70 <= image[..., 0]) & (200 <= image[..., 1]) & (190 <= image[..., 2]) & (220 >= image[..., 1])
+                    ).astype(np.uint8)
     blank[..., 0][green_mask == 1] = 100
     blank[..., 1][green_mask == 1] = 255
     blank[..., 2][green_mask == 1] = 100
 
+
     # Orange color detection
-    orange_mask = ((140 >= image[..., 0]) & (155 <= image[..., 1]) & (190 <= image[..., 2])).astype(np.uint8)
+    orange_mask = (155 <= (image[..., 0]) & (160 <= image[..., 1]) & (190 <= image[..., 2])).astype(np.uint8)
     blank[..., 0][orange_mask == 1] = 0
     blank[..., 1][orange_mask == 1] = 150
     blank[..., 2][orange_mask == 1] = 255
 
     # White color detection
-    white_mask = ((205 <= image[..., 2]) & (200 <= image[..., 0]) & (195 <= image[..., 1])).astype(np.uint8)
+    white_mask = ((225 <= image[..., 2]) & (225 <= image[..., 0]) & (225 <= image[..., 1])).astype(np.uint8)
     white_pixels = np.sum(white_mask)
     blank[..., :][white_mask == 1] = (255, 255, 255)
 
@@ -69,7 +71,7 @@ def imageRecognition(image):
         20,
         param1=50,
         param2=13,
-        minRadius=5,
+        minRadius=4,
         maxRadius=7
     )
 
@@ -78,9 +80,9 @@ def imageRecognition(image):
         cv.HOUGH_GRADIENT,
         1,
         20,
-        param1=45,
-        param2=10,
-        minRadius=12,
+        param1=30,
+        param2=12,
+        minRadius=9,
         maxRadius=20
     )
     circle = 0
@@ -100,22 +102,20 @@ def imageRecognition(image):
             print("Center of this circle should be: " + str(a) + " " + str(b))
             balls.append([a, b])
             circle += 1
-    print("Amount of robot-circles is: " + str(len(detected_Robot)))
     back = []
     front = []
     if detected_Robot is not None:
         detected_circles = np.uint16(np.around(detected_Robot))
         for pt in detected_circles[0, :]:
             a, b, r = pt[0], pt[1], pt[2]
-            if blank[b, a][1] == 150 and blank[b, a][2] == 255:
+            if blank[b, a][0] == 100 and blank[b, a][1] == 255:
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (0, 255, 100), -1)
                 back.append(a)
                 back.append(b)
                 circle += 1
                 continue
-
-            if blank[b, a][0] == 255 and blank[b, a][1] == 255 and blank[b, a][2] == 255:
+            if blank[b, a][0] == 255 and blank[b, a][1] == 255 and blank[b, a][2] == 0:
                 print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (255, 255, 0), -1)
                 front.append(a)
@@ -125,7 +125,7 @@ def imageRecognition(image):
 
     thresh = cv.threshold(gray, 0, 150, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)[1]
 
-    horizontal_kernel = cv.getStructuringElement(cv.MORPH_RECT, (1, 10))
+    horizontal_kernel = cv.getStructuringElement(cv.MORPH_RECT, (10, 17))
     detect_horizontal = cv.morphologyEx(thresh, cv.MORPH_OPEN, horizontal_kernel, iterations=2)
     cnts = cv.findContours(detect_horizontal, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
