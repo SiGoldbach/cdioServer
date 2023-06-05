@@ -21,19 +21,24 @@ def imageRecognitionHD(image):
         (image[..., 2] <= 40))
     green_mask1 = ((image[..., 0] <= 220) & (100 <= image[..., 1]) & (50 <= image[..., 2]) &
                    (image[..., 2] <= 70)).astype(np.uint8)
-
-    # 178, 84, 44
+    # 252, 252,196
     # Blue color detection AKA front of robot
-    blue_mask = ((155 <= image[..., 0]) & (200 >= image[..., 0]) & (50 <= image[..., 1]) & (100 >= image[..., 1]) & (
-            20 <= image[..., 2]) & (
-                         50 >= image[..., 2])).astype(np.uint8)
+    blue_mask = ((155 <= image[..., 0]) & (255 >= image[..., 0]) & (230 <= image[..., 1]) & (255 >= image[..., 1]) & (
+            170 <= image[..., 2]) & (
+                         200 >= image[..., 2])).astype(np.uint8)
     blank[..., 0][blue_mask == 1] = 255
     blank[..., 1][blue_mask == 1] = 255
     blank[..., 2][blue_mask == 1] = 0
 
+    # White color detection
+    white_mask = ((220 <= image[..., 2]) & (220 <= image[..., 0]) & (220 <= image[..., 1])).astype(np.uint8)
+    white_pixels = np.sum(white_mask)
+    blank[..., :][white_mask == 1] = (255, 255, 255)
+
+
+
     # Green color detection AKA back of robot
-    green_mask = ((170 >= image[..., 0]) & (70 <= image[..., 0]) & (200 <= image[..., 1]) & (180 <= image[..., 2]) & (
-            230 >= image[..., 1])
+    green_mask = ((220 >= image[..., 0]) & (100 <= image[..., 0]) & (200 <= image[..., 1]) & (170 <= image[..., 2])
                   ).astype(np.uint8)
     blank[..., 0][green_mask == 1] = 100
     blank[..., 1][green_mask == 1] = 255
@@ -47,11 +52,6 @@ def imageRecognitionHD(image):
     blank[..., 0][orange_mask == 1] = 0
     blank[..., 1][orange_mask == 1] = 150
     blank[..., 2][orange_mask == 1] = 255
-
-    # White color detection
-    white_mask = ((220 <= image[..., 2]) & (220 <= image[..., 0]) & (220 <= image[..., 1])).astype(np.uint8)
-    white_pixels = np.sum(white_mask)
-    blank[..., :][white_mask == 1] = (255, 255, 255)
 
     # Red color detection
     red_mask = ((170 <= image[..., 2]) & (110 >= image[..., 1])).astype(np.uint8)
