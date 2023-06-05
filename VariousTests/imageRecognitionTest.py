@@ -2,7 +2,7 @@ import cv2 as cv
 
 import ImFromHDPhoto
 
-image = cv.imread('../Resources/Pictures/NewHeight.jpg')
+image = cv.imread('../Resources/Pictures/test.jpg')
 
 balls, front, back, red_pixels = ImFromHDPhoto.imageRecognitionHD(image)
 print("Result from test: ")
