@@ -135,25 +135,16 @@ cnts = cnts[0] if len(cnts) == 2 else cnts[1]
 for contour in cnts:
     x, y, w, h = cv.boundingRect(contour)
     if blank[y, x][2] == 255:
-        field = cv.drawContours(blank, [contour], -1, (20, 255, 35), 2)
+        field = cv.drawContours(blank, [contour], -1, (100, 200, 200), 2)
         M = cv.moments(contour)
 
         # Calculate the center of the contour
         if M["m00"] != 0:
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
-            cv.circle(blank, (cX, cY), 5, (255, 0, 0), -1)
-
-
-for point in field:
-    x, y = point[0], point[1]
-    if point[1] == cY:
-       break
-
-    cv.line(blank, (cX,cY), (cX,y), (0, 255, 0), 2)
-
-
-
+            cv.line(blank, (x, cY), (cX,cY), (0, 255, 0), 2)
+            cv.line(blank, (x+w, cY), (cX, cY), (255, 0, 0), 2)
+            cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
 end = time.time()
 
 time_for_transform = end - start
