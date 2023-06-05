@@ -115,10 +115,25 @@ def make_move(image):
     ball_locations, front, back, red_pixels = ImFromPhoto.imageRecognition(image)
     print(red_pixels[0])
     # Temporary if statement
-    if front is None or back is None or ball_locations is None:
+    if front is None or back is None:
         return Moves.MoveClass(MoveTypes.LEFT, 500, 50)
     nearest_ball, distance = find_nearest_ball(front, ball_locations)
-    print("This should be 2: "+str(len(front)))
+    print("This should be 2: " + str(len(front)))
+
+    # fictive goal location for this purpose. Need information from img-recognation
+    #  goal_location = [0, 0]
+    # angle_to_goal = calculate_turn(front, back, goal_location)
+
+    # if len(ball_locations) == 0 & angle_to_goal[1] > 5:
+    #    print("i should turn to goal: " + angle_to_goal[0])
+    #   print(str(angle_to_goal[1]) + " degrees")
+    #  argument = degree_to_argument(angle_to_goal[1])
+    # return Moves.MoveClass(angle_to_goal[0], 500, argument)
+
+    #   if len(ball_locations) == 0 & angle_to_goal[1] < 5:
+    #      if check_for_obstacle(red_pixels, nearest_ball[0], nearest_ball[1], front[0], front[1]):
+    #         print("I am aligned with the goal and should move forward")
+    #        return Moves.MoveClass(MoveTypes.FORWARD, 600, 600)
 
     angle_to_turn = calculate_turn(front, back, nearest_ball)
 
@@ -127,6 +142,7 @@ def make_move(image):
         print(str(angle_to_turn[1]) + " degrees")
         argument = degree_to_argument(angle_to_turn[1])
         return Moves.MoveClass(angle_to_turn[0], 500, argument)
+
 
     else:
         if check_for_obstacle(red_pixels, nearest_ball[0], nearest_ball[1], front[0], front[1]):
