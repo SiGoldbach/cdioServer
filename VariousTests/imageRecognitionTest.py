@@ -2,7 +2,7 @@ import cv2 as cv
 
 import ImFromPhoto
 
-image = cv.imread('../Resources/Pictures/NewHeight3.jpg')
+image = cv.imread('../Resources/Pictures/NewHeight.jpg')
 
 balls, front, back, red_pixels = ImFromPhoto.imageRecognition(image)
 print("Result from test: ")

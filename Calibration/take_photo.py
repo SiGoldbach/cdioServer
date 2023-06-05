@@ -10,7 +10,7 @@ while 1:
         break
     cv.imshow('Read picture', image)
     if cv.waitKey(1) & 0xFF == ord('q'):
-        cv.imwrite('Calibration/take_photo.py/calibration_photo_1.jpg', image)
+        cv.imwrite('calibration_images/calibration_photo_1.jpg', image)
         break
 
 videoCapture.release()
