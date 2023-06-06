@@ -3,7 +3,7 @@ import cv2
 import glob
 
 # Define the calibration pattern size (number of inner corners)
-pattern_size = (9, 7)  # Width, height
+pattern_size = (12, 8)  # Width, height
 
 # Prepare arrays to store object points and image points from calibration images
 object_points = []  # 3D coordinates of calibration pattern corners
