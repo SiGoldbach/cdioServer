@@ -22,7 +22,6 @@ def imageRecognition(image):
                    (image[..., 2] <= 70)).astype(np.uint8)
     blank[..., :][green_mask1 == 1] = (0, 255, 255)
 
-#226 219 164
     # Blue color detection AKA front of robot
     blue_mask = ((175 <= image[..., 0]) & (200 <= image[..., 1]) & (140 <= image[..., 2]) & (
             200 >= image[..., 2])).astype(np.uint8)
