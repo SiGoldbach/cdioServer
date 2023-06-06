@@ -1,5 +1,6 @@
 import math
 import ImFromPhoto
+import ImFromHDPhoto
 import Moves
 import MoveTypes
 
@@ -112,28 +113,13 @@ def check_for_red_pixel(red_pixel, line1, line2):
 # It can move forward if is aligned
 def make_move(image):
     print("Now doing image recognition")
-    ball_locations, front, back, red_pixels = ImFromPhoto.imageRecognition(image)
+    ball_locations, front, back, red_pixels = ImFromHDPhoto.imageRecognitionHD(image)
     print(red_pixels[0])
     # Temporary if statement
     if front is None or back is None:
         return Moves.MoveClass(MoveTypes.LEFT, 500, 50)
     nearest_ball, distance = find_nearest_ball(front, ball_locations)
     print("This should be 2: " + str(len(front)))
-
-    # fictive goal location for this purpose. Need information from img-recognation
-    #  goal_location = [0, 0]
-    # angle_to_goal = calculate_turn(front, back, goal_location)
-
-    # if len(ball_locations) == 0 & angle_to_goal[1] > 5:
-    #    print("i should turn to goal: " + angle_to_goal[0])
-    #   print(str(angle_to_goal[1]) + " degrees")
-    #  argument = degree_to_argument(angle_to_goal[1])
-    # return Moves.MoveClass(angle_to_goal[0], 500, argument)
-
-    #   if len(ball_locations) == 0 & angle_to_goal[1] < 5:
-    #      if check_for_obstacle(red_pixels, nearest_ball[0], nearest_ball[1], front[0], front[1]):
-    #         print("I am aligned with the goal and should move forward")
-    #        return Moves.MoveClass(MoveTypes.FORWARD, 600, 600)
 
     angle_to_turn = calculate_turn(front, back, nearest_ball)
 
@@ -148,3 +134,36 @@ def make_move(image):
         if check_for_obstacle(red_pixels, nearest_ball[0], nearest_ball[1], front[0], front[1]):
             print("I am aligned and should move forward")
             return Moves.MoveClass(MoveTypes.FORWARD, 600, 600)
+
+
+def drive_to_goal(ball_locations, front_pos, back_pos, center_of_field):
+    # fictive goal location for this purpose. Need information from img-recognation
+    center_of_field = [10, 10]
+    robot_mid_location = (int(back_pos[0]) + int(front_pos[0]) / 2, int(back_pos[1]) + int(front_pos[1]) / 2)
+    align_robot_goal = [robot_mid_location[0], center_of_field[1]]
+    angle_to_turn_y = calculate_turn(front_pos, back_pos, align_robot_goal)
+    drive_distance = math.sqrt(
+        (align_robot_goal[0] - robot_mid_location[0]) ** 2 + (align_robot_goal[1] - robot_mid_location[1]) ** 2)
+    argument_turn = degree_to_argument(angle_to_turn_y[1])
+    # need goal location x and y coordinates.
+    angle_to_goal = calculate_turn(front_pos, back_pos, goal_location)
+
+    if angle_to_turn_y[1] > 6 & len(ball_locations) == 0:
+        print("i should move to center y: " + angle_to_turn_y[0])
+        print(str(angle_to_turn_y[1]) + " degrees")
+        # need to find distance moved for argument
+        return Moves.MoveClass(angle_to_turn_y[0], 500, argument_turn)
+
+    if angle_to_turn_y[1] <= 6:
+        # if the angle to turn is so low, that we are already on track for the correct y-axis,
+        # and the distance to drive is so small we assume we are on the desired x,y spot.
+        if drive_distance < 5:
+            print("I should turn: " + angle_to_goal[0])
+            print(str(angle_to_goal[1]) + " degrees")
+            argument = degree_to_argument(angle_to_goal[1])
+            return Moves.MoveClass(angle_to_goal[0], 500, -argument)
+            # here we have to turn with ass against small goal and reverse there
+
+    return Moves.MoveClass(MoveTypes.FORWARD, 600, drive_distance)
+
+
