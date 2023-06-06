@@ -3,7 +3,7 @@ import cv2
 import glob
 
 # Define the calibration pattern size (number of inner corners)
-pattern_size = (9, 6)  # Width, height
+pattern_size = (12, 8)  # Width, height
 
 # Prepare arrays to store object points and image points from calibration images
 object_points = []  # 3D coordinates of calibration pattern corners
@@ -32,17 +32,23 @@ for image_path in calibration_images:
         cv2.drawChessboardCorners(image, pattern_size, corners, ret)
         cv2.imshow("Chessboard Corners", image)
         cv2.waitKey(500)  # Adjust the wait time as needed
+    else:
+        print("Corners not found in image:", image_path)
 
 cv2.destroyAllWindows()
 
 # Perform camera calibration
 image_size = gray.shape[::-1]  # Image size should be the same for all calibration images
-_, camera_matrix, distortion_coeffs, _, _ = cv2.calibrateCamera(
-    object_points, image_points, image_size, None, None
-)
 
-# Print the obtained camera matrix and distortion coefficients
-print("Camera Matrix:")
-print(camera_matrix)
-print("\nDistortion Coefficients:")
-print(distortion_coeffs)
+if len(object_points) > 0 and len(image_points) > 0:
+    _, camera_matrix, distortion_coeffs, _, _ = cv2.calibrateCamera(
+        object_points, image_points, image_size, None, None
+    )
+
+    # Print the obtained camera matrix and distortion coefficients
+    print("Camera Matrix:")
+    print(camera_matrix)
+    print("\nDistortion Coefficients:")
+    print(distortion_coeffs)
+else:
+    print("Insufficient data for calibration. Check if the corners were detected in any image.")
