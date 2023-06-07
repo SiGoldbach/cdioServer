@@ -3,7 +3,7 @@ import cv2 as cv
 import ImFromHDPhotoNEW
 import ImFromHDPhoto
 
-image = cv.imread('../Resources/Pictures/NewHeight6.jpg')
+image = cv.imread('../Resources/Pictures/caliResult1.jpg')
 
 front, back,balls, red_pixels = ImFromHDPhotoNEW.imageRecognitionHD(image)
 print("Result from test: ")

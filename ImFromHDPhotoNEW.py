@@ -13,6 +13,7 @@ def imageRecognitionHD(image):
 
     start = time.time()
 
+
     img_height, img_width, _ = image.shape
 
     # Circle detection
