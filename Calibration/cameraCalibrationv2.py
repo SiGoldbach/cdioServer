@@ -1,7 +1,6 @@
 import numpy as np
 import cv2 as cv
 import glob
-import pickle
 
 ################ FIND CHESSBOARD CORNERS - OBJECT POINTS AND IMAGE POINTS #############################
 
@@ -46,13 +45,13 @@ cv.destroyAllWindows()
 
 ############## CALIBRATION #######################################################
 
-ret, cameraMatrix, dist = cv.calibrateCamera(
+ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(
     objpoints, imgpoints, frameSize, None, None
 )
 
 ############## UNDISTORTION #####################################################
 
-img = cv.imread('calibration_photo_1.jpg')
+img = cv.imread('calibration_images/calibration_photo_1.jpg')
 h, w = img.shape[:2]
 newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 1, (w, h))
 
@@ -62,7 +61,7 @@ dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
 # Crop the image
 x, y, w, h = roi
 dst = dst[y:y + h, x:x + w]
-cv.imwrite('caliResult1.png', dst)
+cv.imwrite('../Resources/Pictures/caliResult1.jpg', dst)
 
 # Undistort with Remapping
 mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w, h), 5)
@@ -71,7 +70,7 @@ dst = cv.remap(img, mapx, mapy, cv.INTER_LINEAR)
 # Crop the image
 x, y, w, h = roi
 dst = dst[y:y + h, x:x + w]
-cv.imwrite('caliResult2.png', dst)
+cv.imwrite('../Resources/Pictures/caliResult2.jpg', dst)
 
 # Reprojection Error
 mean_error = 0

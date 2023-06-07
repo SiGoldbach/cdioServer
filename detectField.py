@@ -34,11 +34,15 @@ def imageRecognitionHD(image):
     smallGoal = []
     obstacle = []
     corners = []
+    done = 0
     for contour in cnts:
         x, y, w, h = cv.boundingRect(contour)
         epsilon = 0.01 * cv.arcLength(contour, True)
         approx = cv.approxPolyDP(contour, epsilon, True)
-        if np.logical_and(image[y, x][2] > 120, np.logical_and(160 >= image[y, x][0], w > 20)):
+        if np.logical_and(image[y, x][2] > 120, np.logical_and(160 >= image[y, x][0], w > 20) & done ==0):
+            if w > 500:
+                done = 1
+
             cv.drawContours(blank, [approx], -1, (150, 100, 255), 2)
             print(approx)
             M = cv.moments(contour)
@@ -46,7 +50,7 @@ def imageRecognitionHD(image):
             if M["m00"] != 0:
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
-                if np.logical_or(w > 500, np.logical_and(50 < w, 100 > 100)):
+                if w > 500:
                     cv.line(blank, (x, cY), (cX, cY), (0, 255, 0), 2)
                     cv.line(blank, (x + w, cY), (cX, cY), (255, 0, 0), 2)
                     cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
@@ -63,16 +67,23 @@ def imageRecognitionHD(image):
                         corners.append([x, int(cY + h / 2)])
                         corners.append([x + w, int(cY + h / 2)])
 
-                    if w < 100:
-                        for points in contour:
-                            x, y = points[0]
+                if w < 100:
+                    cv.line(blank, (x, cY), (cX, cY), (0, 255, 0), 2)
+                    cv.line(blank, (x + w, cY), (cX, cY), (255, 0, 0), 2)
+                    cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
+                    cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
 
-                            obstacle.append([x, y])
+                    cv.circle(blank, (x, y), 10, (150, 150, 150), -1)
+                    cv.circle(blank, (x + w, y), 10, (150, 150, 150), -1)
+                    cv.circle(blank, (x, int(cY + h / 2)), 10, (150, 150, 150), -1)
+                    cv.circle(blank, (x + w, int(cY + h / 2)), 10, (150, 150, 150), -1)
+                    for points in contour:
+                        x, y = points[0]
+                        obstacle.append([x, y])
 
     end = time.time()
 
     time_for_transform = end - start
-    print(obstacle)
     print("Amount of red pixels: " + str(len(corners)))
 
     cv.imshow('Original', image)
