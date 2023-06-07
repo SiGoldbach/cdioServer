@@ -2,10 +2,11 @@ import cv2 as cv
 
 import ImFromHDPhotoNEW
 import ImFromHDPhoto
+import detectField
 
-image = cv.imread('../Resources/Pictures/NewHeight6.jpg')
+image = cv.imread('../Resources/Pictures/newHeight6.jpg')
 
-front, back,balls, red_pixels = ImFromHDPhotoNEW.imageRecognitionHD(image)
+front, back,balls, red_pixels = detectField.imageRecognitionHD(image)
 print("Result from test: ")
 print("I found: " + str(len(balls)) + " Balls")
 
