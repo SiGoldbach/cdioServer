@@ -72,30 +72,40 @@ def calculate_line(target_x, target_y, robot_x, robot_y):
     return line1, line2
 
 
-def check_for_obstacle(red_pixels, target_x, target_y, robot_x, robot_y):
+# def check_for_obstacle_turn(front_pos, back_pos, obstacles):
+#   for obstacle in obstacles:
+#      obstacle_x, obstacle_y = obstacle
+#     if obstacle_x == front_pos[0] and obstacle_y == front_pos[1]:
+#        return True  # collision detected with robot face
+#   if obstacle_x == back_pos[0] and obstacle_y == back_pos[1]:
+#      return True  # collision detected with robot ass
+# return False  # no collision detected
+
+
+def check_for_obstacle_front(obstacles, target_x, target_y, robot_x, robot_y):
     line1, line2 = calculate_line(target_x, target_y, robot_x, robot_y)
-    red_counter = 0
+    # method scanning for obstacles.
+    obstacle_counter = 0
     try_counter = 0
-
-    for red_pixel in red_pixels:
+    for obstacle in obstacles:
         if target_x > robot_x:
-            if target_x > red_pixel[0] > robot_x:
+            if target_x > obstacle[0] > robot_x:
                 try_counter += 1
-                if check_for_red_pixel(red_pixel, line1, line2):
-                    red_counter += 1
-        if robot_x > target_x:
-            if robot_x > red_pixel[0] > target_x:
-                try_counter += 1
-                if check_for_red_pixel(red_pixel, line1, line2):
-                    red_counter += 1
+                if check_for_obstacle_location(obstacle, line1, line2):
+                    obstacle_counter += 1
+            if robot_x > target_x:
+                if robot_x > obstacle[0] > target_x:
+                    try_counter += 1
+                if check_for_obstacle_location(obstacle, line1, line2):
+                    obstacle_counter += 1
 
-    print("I found: " + str(red_counter) + " red pixels in the way")
+    print("I found: " + str(obstacle_counter) + " obstacles in the way")
     print("I tested: " + str(try_counter) + " Entries")
     return True
 
 
-def check_for_red_pixel(red_pixel, line1, line2):
-    x, y = red_pixel
+def check_for_obstacle_location(obstacles, line1, line2):
+    x, y = obstacles
     # Calculate the y-values for each line at the given x-coordinate
     y1 = line1[0] * x + line1[1]
     y2 = line2[0] * x + line2[1]
@@ -131,7 +141,7 @@ def make_move(image):
 
 
     else:
-        if check_for_obstacle(red_pixels, nearest_ball[0], nearest_ball[1], front[0], front[1]):
+        if check_for_obstacle_front(red_pixels, nearest_ball[0], nearest_ball[1], front[0], front[1]):
             print("I am aligned and should move forward")
             return Moves.MoveClass(MoveTypes.FORWARD, 600, 600)
 
@@ -165,5 +175,3 @@ def drive_to_goal(ball_locations, front_pos, back_pos, center_of_field):
             # here we have to turn with ass against small goal and reverse there
 
     return Moves.MoveClass(MoveTypes.FORWARD, 600, drive_distance)
-
-

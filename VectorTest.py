@@ -5,10 +5,6 @@ def calculate_center_angle(vector_start_x, vector_start_y, vector_end_x, vector_
     # Calculate the midpoint of the vector
     midpoint_x = (vector_start_x + vector_end_x) / 2
     midpoint_y = (vector_start_y + vector_end_y) / 2
-    print(vector_start_y)
-    print(vector_end_y)
-    print(midpoint_x)
-    print(midpoint_y)
 
     # Calculate the angle between the vector and the line connecting the midpoint to the target ball
     vector_angle = math.atan2(vector_end_y - vector_start_y, vector_end_x - vector_start_x)
