@@ -37,7 +37,7 @@ def imageRecognitionHD(image):
         20,
         param1=30,
         param2=12,
-        minRadius=14,
+        minRadius=15,
         maxRadius=17
     )
     circle = 0
@@ -60,7 +60,7 @@ def imageRecognitionHD(image):
                 circle += 1
                 continue
 
-            if np.logical_and.reduce((220 <= image[b, a][2], 220 <= image[b, a][0], 220 <= image[b, a][1])):
+            if np.logical_and.reduce((200 <= image[b, a][2], 200 <= image[b, a][0], 200 <= image[b, a][1])):
                 cv.circle(blank, (a, b), r, (255, 255, 255), -1)
                 print("Center of this circle should be: " + str(a) + " " + str(b))
                 balls.append([a, b])

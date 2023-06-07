@@ -89,4 +89,4 @@ camera_matrix, distortion_coeffs = perform_calibration()
 # Load the calibration parameters (camera matrix and distortion coefficients) from the calibration_data.npz file
 if camera_matrix is not None and distortion_coeffs is not None:
     # Use the camera matrix and distortion coefficients for image undistortion
-    undistort_image('calibration_images/calibration_photo_1.jpg', camera_matrix, distortion_coeffs)
+    undistort_image('../Resources/Pictures/calibration_photo_1.jpg', camera_matrix, distortion_coeffs)
