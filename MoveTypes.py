@@ -1,7 +1,6 @@
 # When creating a file one must use one of these options and NOTHING else so the moves are consistent
 
-RIGHT = 'Right'
-LEFT = 'Left'
+TURN = "Turn"
 FORWARD = 'Forward'
 BACKWARD = 'Backward'
 DELIVER = 'Deliver'

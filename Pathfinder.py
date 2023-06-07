@@ -42,14 +42,9 @@ def calculate_turn(front_pos, back_pos, target_pos):
     elif angle_degrees < -180:
         angle_degrees += 360
 
-    if angle_degrees < 0:
-        angle_degrees = -angle_degrees
-        # print("right")
-        # print(180 - angle_degrees)
-        return MoveTypes.RIGHT, 180 - angle_degrees
 
     # print(180 - angle_degrees)
-    return MoveTypes.LEFT, 180 - angle_degrees
+    return MoveTypes.TURN, 180 - angle_degrees
 
 
 def degree_to_argument(degrees):
@@ -149,7 +144,7 @@ def make_move(image):
     print(red_pixels[0])
     # Temporary if statement
     if front is None or back is None:
-        return Moves.MoveClass(MoveTypes.LEFT, 500, 50)
+        return Moves.MoveClass(MoveTypes.TURN, 500, 50)
     nearest_ball, distance = find_nearest_ball(front, ball_locations)
     print("This should be 2: " + str(len(front)))
 
