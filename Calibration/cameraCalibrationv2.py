@@ -5,8 +5,8 @@ import pickle
 
 ################ FIND CHESSBOARD CORNERS - OBJECT POINTS AND IMAGE POINTS #############################
 
-chessboardSize = (10, 8)
-frameSize = (700, 550)
+chessboardSize = (12, 8)
+frameSize = (1280, 720)
 
 # termination criteria
 criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -15,14 +15,14 @@ criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 objp = np.zeros((chessboardSize[0] * chessboardSize[1], 3), np.float32)
 objp[:, :2] = np.mgrid[0:chessboardSize[0], 0:chessboardSize[1]].T.reshape(-1, 2)
 
-size_of_chessboard_squares_mm = 18
+size_of_chessboard_squares_mm = 30
 objp = objp * size_of_chessboard_squares_mm
 
 # Arrays to store object points and image points from all the images.
 objpoints = []  # 3D point in real-world space
 imgpoints = []  # 2D points in the image plane.
 
-images = glob.glob('calibration_images/checkers.jpg')
+images = glob.glob('calibration_images/*.jpg')
 
 for image in images:
     img = cv.imread(image)
@@ -46,18 +46,13 @@ cv.destroyAllWindows()
 
 ############## CALIBRATION #######################################################
 
-ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(
+ret, cameraMatrix, dist = cv.calibrateCamera(
     objpoints, imgpoints, frameSize, None, None
 )
 
-# Save the camera calibration result for later use (we won't worry about rvecs / tvecs)
-pickle.dump((cameraMatrix, dist), open("calibration.pkl", "wb"))
-pickle.dump(cameraMatrix, open("cameraMatrix.pkl", "wb"))
-pickle.dump(dist, open("dist.pkl", "wb"))
-
 ############## UNDISTORTION #####################################################
 
-img = cv.imread('cali5.png')
+img = cv.imread('calibration_photo_1.jpg')
 h, w = img.shape[:2]
 newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 1, (w, h))
 
