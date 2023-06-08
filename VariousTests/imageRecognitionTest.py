@@ -4,7 +4,7 @@ import detectRobotAndBalls
 import ImFromHDPhoto
 import detectField
 
-image = cv.imread('../Resources/Pictures/caliResult1.jpg')
+image = cv.imread('../Calibration/caliResult1.jpg')
 
 detectField.imageRecognitionHD(image)
 print("Result from test: ")
