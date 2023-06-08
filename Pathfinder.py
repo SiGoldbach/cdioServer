@@ -151,12 +151,12 @@ def make_move(image):
     nearest_ball, distance = find_nearest_ball(front, balls)
 
     angle_to_turn = angle_good(back, front, nearest_ball)
-    print(angle_to_turn[0], angle_to_turn[1])
+    print(angle_to_turn)
 
-    if angle_to_turn[1] > 5 or angle_to_turn[1] < -5:
-        print("I should turn: " + angle_to_turn[0])
-        print(str(angle_to_turn[1]) + " degrees")
-        return Moves.MoveClass(angle_to_turn[0], 500, angle_to_turn[1])
+    if angle_to_turn > 5 or angle_to_turn < -5:
+        print("I should turn: " + str(angle_to_turn))
+        print(str(angle_to_turn) + " degrees")
+        return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
         return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
