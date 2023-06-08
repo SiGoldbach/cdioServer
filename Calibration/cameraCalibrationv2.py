@@ -15,7 +15,7 @@ objp = np.zeros((chessboardSize[0] * chessboardSize[1], 3), np.float32)
 objp[:, :2] = np.mgrid[0:chessboardSize[0], 0:chessboardSize[1]].T.reshape(-1, 2)
 
 size_of_chessboard_squares_mm = 30
-objp = objp * size_of_chessboard_squares_mm
+objp *= size_of_chessboard_squares_mm
 
 # Arrays to store object points and image points from all the images.
 objpoints = []  # 3D point in real-world space
@@ -28,15 +28,13 @@ for image in images:
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
     # Find the chessboard corners
-    ret, corners = cv.findChessboardCorners(gray, chessboardSize, None)
+    ret, corners = cv.findChessboardCorners(gray, chessboardSize, None, cv.CALIB_CB_FAST_CHECK)
 
     # If found, add object points, image points (after refining them)
     if ret:
         objpoints.append(objp)
         corners2 = cv.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
-        imgpoints.append(corners)
-
-        # Draw and display the corners
+        imgpoints.append(corners2)  # Use refined corners
         cv.drawChessboardCorners(img, chessboardSize, corners2, ret)
         cv.imshow('img', img)
         cv.waitKey(1000)
@@ -53,7 +51,7 @@ ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(
 
 img = cv.imread('calibration_images/calibration_photo_1.jpg')
 h, w = img.shape[:2]
-newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 1, (w, h))
+newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 1, frameSize)
 
 # Undistort
 dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
@@ -61,16 +59,20 @@ dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
 # Crop the image
 x, y, w, h = roi
 dst = dst[y:y + h, x:x + w]
-cv.imwrite('../Resources/Pictures/caliResult1.jpg', dst)
+dst = cv.resize(dst, frameSize)
+
+cv.imwrite('caliResult1.jpg', dst)
 
 # Undistort with Remapping
-mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w, h), 5)
+mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w, h), cv.CV_32FC1)  # Use cv.CV_32FC1 for better precision
 dst = cv.remap(img, mapx, mapy, cv.INTER_LINEAR)
 
 # Crop the image
 x, y, w, h = roi
 dst = dst[y:y + h, x:x + w]
-cv.imwrite('../Resources/Pictures/caliResult2.jpg', dst)
+dst = cv.resize(dst, frameSize)
+
+cv.imwrite('caliResult2.jpg', dst)
 
 # Reprojection Error
 mean_error = 0
