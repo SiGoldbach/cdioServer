@@ -5,7 +5,7 @@
 import cv2 as cv
 import Pathfinder
 
-image = cv.imread('../Resources/Pictures/NewHeight7.jpg')
+image = cv.imread('../Resources/Pictures/Test07062.jpg')
 if image is None:
     print("None")
 move = Pathfinder.make_move(image)

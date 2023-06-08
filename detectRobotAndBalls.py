@@ -74,7 +74,7 @@ def imageRecognitionHD(image):
         for pt in detected_circles[0, :]:
             a, b, r = pt[0], pt[1], pt[2]
             if np.logical_and.reduce(
-                    (220 >= image[b, a][0], 70 <= image[b, a][0], 200 <= image[b, a][1], 140 <= image[b, a][2])):
+                    (255 >= image[b, a][0], 70 <= image[b, a][0], 200 <= image[b, a][1], 140 <= image[b, a][2])):
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (0, 255, 100), -1)
                 back.append(a)
