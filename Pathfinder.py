@@ -39,12 +39,14 @@ def calculate_turn(front_pos, back_pos, target_pos):
     # Normalize the angle to be within the range of -180 to 180 degrees
 
     # print(180 - angle_degrees)
-    if angle_degrees > 180:
-        angle_degrees -= 360
-    elif angle_degrees < -180:
-        angle_degrees += 360
 
-    return MoveTypes.TURN, 180-angle_degrees
+    return MoveTypes.TURN, angle_degrees
+
+
+def angle_good(p1, head1, ball1):
+    m1 = (head1[1] - p1[1]) / (head1[0] - p1[0])
+    m2 = (ball1[1] - p1[1]) / (ball1[0] - p1[0])
+    return -math.atan((m2 - m1) / (1 + m1 * m2)) * 180 / math.pi
 
 
 def degree_to_argument(degrees):
@@ -141,14 +143,14 @@ def check_borders(corners, front_pos, back_pos):
 def make_move(image):
     print("Now doing image recognition")
     front, back, balls = detectRobotAndBalls.imageRecognitionHD(image)
-    print("Back is: "+str(front))
+    print("Back is: " + str(front))
     print(back)
     # Temporary if statement
     if front is None or back is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 50)
     nearest_ball, distance = find_nearest_ball(front, balls)
 
-    angle_to_turn = calculate_turn(front, back, nearest_ball)
+    angle_to_turn = angle_good(back, front, nearest_ball)
     print(angle_to_turn[0], angle_to_turn[1])
 
     if angle_to_turn[1] > 5 or angle_to_turn[1] < -5:
