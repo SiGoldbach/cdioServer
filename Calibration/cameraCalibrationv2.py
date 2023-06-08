@@ -15,7 +15,7 @@ objp = np.zeros((chessboardSize[0] * chessboardSize[1], 3), np.float32)
 objp[:, :2] = np.mgrid[0:chessboardSize[0], 0:chessboardSize[1]].T.reshape(-1, 2)
 
 size_of_chessboard_squares_mm = 30
-objp = objp * size_of_chessboard_squares_mm
+objp *= size_of_chessboard_squares_mm
 
 # Arrays to store object points and image points from all the images.
 objpoints = []  # 3D point in real-world space
@@ -34,9 +34,7 @@ for image in images:
     if ret:
         objpoints.append(objp)
         corners2 = cv.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
-        imgpoints.append(corners)
-
-        # Draw and display the corners
+        imgpoints.append(corners2)  # Use refined corners
         cv.drawChessboardCorners(img, chessboardSize, corners2, ret)
         cv.imshow('img', img)
         cv.waitKey(1000)
@@ -66,7 +64,7 @@ dst = cv.resize(dst, frameSize)
 cv.imwrite('caliResult1.jpg', dst)
 
 # Undistort with Remapping
-mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w, h), 5)
+mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w, h), cv.CV_32FC1)  # Use cv.CV_32FC1 for better precision
 dst = cv.remap(img, mapx, mapy, cv.INTER_LINEAR)
 
 # Crop the image
