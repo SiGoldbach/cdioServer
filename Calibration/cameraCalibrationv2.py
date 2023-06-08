@@ -28,7 +28,7 @@ for image in images:
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
     # Find the chessboard corners
-    ret, corners = cv.findChessboardCorners(gray, chessboardSize, None)
+    ret, corners = cv.findChessboardCorners(gray, chessboardSize, None, cv.CALIB_CB_FAST_CHECK)
 
     # If found, add object points, image points (after refining them)
     if ret:
@@ -53,7 +53,7 @@ ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(
 
 img = cv.imread('calibration_images/calibration_photo_1.jpg')
 h, w = img.shape[:2]
-newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 1, (w, h))
+newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 1, frameSize)
 
 # Undistort
 dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
@@ -61,7 +61,9 @@ dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
 # Crop the image
 x, y, w, h = roi
 dst = dst[y:y + h, x:x + w]
-cv.imwrite('../Resources/Pictures/caliResult1.jpg', dst)
+dst = cv.resize(dst, frameSize)
+
+cv.imwrite('caliResult1.jpg', dst)
 
 # Undistort with Remapping
 mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w, h), 5)
@@ -70,7 +72,9 @@ dst = cv.remap(img, mapx, mapy, cv.INTER_LINEAR)
 # Crop the image
 x, y, w, h = roi
 dst = dst[y:y + h, x:x + w]
-cv.imwrite('../Resources/Pictures/caliResult2.jpg', dst)
+dst = cv.resize(dst, frameSize)
+
+cv.imwrite('caliResult2.jpg', dst)
 
 # Reprojection Error
 mean_error = 0

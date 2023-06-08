@@ -144,12 +144,15 @@ def imageRecognition(image):
 
     time_for_transform = end - start
 
+    result = imageRecognition(image, camera_matrix, distortion_coeffs, undistorted_image)
+
     print("Amount of red pixels: " + str(red_pixels))
     print("Amount of white pixels: " + str(white_pixels))
     print("Amount of circles: " + str(circle))
 
     cv.imshow('Original', image)
     cv.imshow('Obstacles and balls drawn: ', blank)
+    cv.imshow('test', result)
 
     print('Time for transform: ' + str(time_for_transform))
     cv.waitKey(0)
