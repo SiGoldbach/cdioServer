@@ -39,7 +39,7 @@ def imageRecognitionHD(image):
         x, y, w, h = cv.boundingRect(contour)
         epsilon = 0.01 * cv.arcLength(contour, True)
         approx = cv.approxPolyDP(contour, epsilon, True)
-        if np.logical_and(image[y, x][2] > 120, np.logical_and(160 >= image[y, x][0], w > 20) & done ==0):
+        if np.logical_and(image[y, x][2] > 120, np.logical_and(160 >= image[y, x][0], w > 40) & done ==0):
             if w > 500:
                 done = 1
 
@@ -84,6 +84,7 @@ def imageRecognitionHD(image):
     end = time.time()
 
     time_for_transform = end - start
+    print(corners)
     print("Amount of red pixels: " + str(len(corners)))
 
     cv.imshow('Original', image)

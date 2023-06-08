@@ -38,14 +38,12 @@ def imageRecognitionHD(image):
         param1=30,
         param2=12,
         minRadius=15,
-        maxRadius=17
+        maxRadius=16
     )
     circle = 0
     balls = []
 
-    # White color detection
-    white_mask = ((220 <= image[..., 2]) & (220 <= image[..., 0]) & (220 <= image[..., 1])).astype(np.uint8)
-    white_pixels = np.sum(white_mask)
+
 
     if detected_Balls is not None:
         detected_circles = np.uint16(np.around(detected_Balls))
@@ -53,7 +51,7 @@ def imageRecognitionHD(image):
             a, b, r = pt[0], pt[1], pt[2]
 
             if np.logical_and.reduce(
-                    (50 >= image[b, a][0], 160 <= image[b, a][1], 200 >= image[b, a][1], 160 <= image[b, a][2])):
+                    (50 >= image[b, a][0], 160 <= image[b, a][1], 190 >= image[b, a][1], 160 <= image[b, a][2])):
                 print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (0, 150, 255), -1)
                 balls.append([a, b])
@@ -94,7 +92,6 @@ def imageRecognitionHD(image):
     end = time.time()
 
     time_for_transform = end - start
-    print("Amount of white pixels: " + str(white_pixels))
     print("Amount of circles: " + str(circle))
     print("Amount of balls: " + str(len(balls)))
     cv.imshow('Original', image)
