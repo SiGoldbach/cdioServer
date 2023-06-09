@@ -78,7 +78,7 @@ def imageRecognitionHD(image):
             green = bgr_pixel[1]
             red = bgr_pixel[2]
 
-            green_threshold = 30
+            green_threshold = 10
             blue_threshold = 20
             light_blue_threshold = 200
 
