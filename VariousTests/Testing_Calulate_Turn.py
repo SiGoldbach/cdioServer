@@ -54,3 +54,16 @@ head9 = [4, 6]
 ball9 = [2, 7]
 # angle should be 32
 print("The angle should be: " + str(Pathfinder.calculate_turn(p9, head9, ball9)))
+
+p10 = [2, -4]
+head10 = [6, -2]
+ball10 = [8, -6]
+# angle should be -45
+print("The angle should be: -45 and is: " + str(Pathfinder.calculate_turn(p10, head10, ball10)))
+
+
+p11 = [3, 3]
+head11 = [4, 6]
+ball11 = [2, 7]
+# angle should be 32
+print("The angle should be: " + str(Pathfinder.calculate_turn(p11, head11, ball11)))

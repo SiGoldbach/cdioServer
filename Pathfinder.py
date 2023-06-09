@@ -44,6 +44,7 @@ def calculate_turn(front_pos, back_pos, target_pos):
 
     return MoveTypes.TURN, angle_degrees
 
+
 def calculate_turn_2(front_pos, back_pos, target_pos):
     robot_middle = (front_pos[0] + back_pos[0]) / 2, (front_pos[1] + back_pos[1]) / 2
     robot_vector = (int(robot_middle[0]) - int(front_pos[0]), int(back_pos[1]) - int(front_pos[1]))
