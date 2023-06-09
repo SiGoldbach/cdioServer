@@ -61,7 +61,8 @@ def degree_to_argument(degrees):
 def calculate_line(target_x, target_y, robot_x, robot_y):
     m = ((int(target_y) - int(robot_y)) / (int(target_x) - int(robot_x)))
     b = robot_y - m * robot_x
-    # vi skal parallelforskyde linjen med 16pixel hver vej. ergo b+16 | b-16
+    # y = m * x + b
+    # vi skal parallelforskyde linjen med 25pixel hver vej. ergo b+25 | b-25
     line1 = [m, b + 25]
     line2 = [m, b - 25]
     print(line1)
@@ -69,14 +70,22 @@ def calculate_line(target_x, target_y, robot_x, robot_y):
     return line1, line2
 
 
-# def check_for_obstacle_turn(front_pos, back_pos, obstacles):
-#   for obstacle in obstacles:
-#      obstacle_x, obstacle_y = obstacle
-#     if obstacle_x == front_pos[0] and obstacle_y == front_pos[1]:
-#        return True  # collision detected with robot face
-#   if obstacle_x == back_pos[0] and obstacle_y == back_pos[1]:
-#      return True  # collision detected with robot ass
-# return False  # no collision detected
+def check_for_max_turn(obstacles, front_pos, back_pos):
+    x, y = obstacles
+    robot_length = math.sqrt((front_pos[0] - back_pos[0]) ^ 2 + (front_pos[1] - back_pos[1]) ^ 2)
+    radius = robot_length / 2
+    obstacle_distance = math.sqrt((front_pos[0] - obstacles[0]) ^ 2 + (front_pos[1] - obstacles[1]) ^ 2)
+    outside_counter = 0
+    inside_counter = 0
+    for obstacle in obstacles:
+        if obstacle_distance > radius:
+            outside_counter += 1
+        if obstacle_distance < radius:
+            inside_counter += 1
+
+    max_turn_left = 0
+    max_turn_right = 0
+
 
 def check_for_obstacle_front(obstacles, target_x, target_y, robot_x, robot_y):
     line1, line2 = calculate_line(target_x, target_y, robot_x, robot_y)
