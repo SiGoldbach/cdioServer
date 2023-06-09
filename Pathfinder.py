@@ -44,6 +44,16 @@ def calculate_turn(front_pos, back_pos, target_pos):
 
     return MoveTypes.TURN, angle_degrees
 
+def calculate_turn_2(front_pos, back_pos, target_pos):
+    robot_middle = (front_pos[0] + back_pos[0]) / 2, (front_pos[1] + back_pos[1]) / 2
+    robot_vector = (int(robot_middle[0]) - int(front_pos[0]), int(back_pos[1]) - int(front_pos[1]))
+    # Calculate the vector from the front of the robot to the target position
+    target_vector = (int(target_pos[0]) - int(front_pos[0]), int(target_pos[1]) - int(front_pos[1]))
+    # Calculate the signed angle between the robot vector and the target vector
+    angle_radians = math.atan2(target_vector[1], target_vector[0]) - math.atan2(robot_vector[1], robot_vector[0])
+    angle_degrees = math.degrees(angle_radians)
+    return MoveTypes.TURN, angle_degrees
+
 
 # Method for calculating angle has been updated based on the quadrant and should now work in most cases
 def angle_good(p1, head1, ball1):
@@ -128,6 +138,27 @@ def check_for_obstacle_location(obstacles, line1, line2):
         return True
     else:
         return False
+
+
+def find_obstacles_in_circle(obstacles, front_pos, back_pos):
+    robot_center = (front_pos[0] + back_pos[0]) / 2, (front_pos[1] + back_pos[1]) / 2
+    x_center = robot_center[0]
+    y_center = robot_center[1]
+    x_radius = front_pos[0] - x_center
+    y_radius = front_pos[1] - y_center
+    obstacles_in_circle = []
+    # hardcode more pixel in here to take in count of the "width" of the robot.
+    for obstacle in obstacles:
+        x_obstacle, y_obstacle = obstacle
+        # Calculate the distance between the center and the obstacle point
+        distance = math.sqrt((x_obstacle - x_center) ** 2 + (y_obstacle - y_center) ** 2)
+        # Check if the obstacle is within the circle
+        if distance <= x_radius or distance <= y_radius:
+            print(f"Obstacle {obstacle} is inside the circle.")
+            obstacles_in_circle.append(obstacle)
+        else:
+            print(f"Obstacle {obstacle} is outside the circle.")
+    return obstacles_in_circle
 
 
 def check_borders(corners, front_pos, back_pos):
