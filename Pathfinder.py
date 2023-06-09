@@ -43,10 +43,20 @@ def calculate_turn(front_pos, back_pos, target_pos):
     return MoveTypes.TURN, angle_degrees
 
 
+# Method for calculating angle has been updated based on the quadrant and should now work in most cases
 def angle_good(p1, head1, ball1):
-    m1 = (int(head1[1]) - int(p1[1])) / (int(head1[0]) - int(p1[0]))
-    m2 = (int(ball1[1]) - int(p1[1])) / (int(ball1[0]) - int(p1[0]))
-    return math.atan((m2 - m1) / (1 + m1 * m2)) * 180 / math.pi
+    m1 = (head1[1] - p1[1]) / (head1[0] - p1[0])
+    m2 = (ball1[1] - p1[1]) / (ball1[0] - p1[0])
+
+    angle_cal = math.atan((m2 - m1) / (1 + m1 * m2)) * 180 / math.pi
+
+    # Adjust the angle based on the quadrant
+    if head1[0] - p1[0] < 0:
+        angle_cal += 180
+    elif ball1[0] - p1[0] < 0:
+        angle_cal += 180
+
+    return angle_cal
 
 
 def degree_to_argument(degrees):
