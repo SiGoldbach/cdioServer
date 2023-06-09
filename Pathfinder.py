@@ -38,11 +38,17 @@ def calculate_turn(front_pos, back_pos, target_pos):
     angle_radians = math.atan2(target_vector[1], target_vector[0]) - math.atan2(robot_vector[1], robot_vector[0])
     angle_degrees = math.degrees(angle_radians)
 
+    if angle_degrees < -180:
+        angle_degrees += 360
+    if angle_degrees > 180:
+        angle_degrees -= 360
+
     # Normalize the angle to be within the range of -180 to 180 degrees
 
     # print(180 - angle_degrees)
 
     return MoveTypes.TURN, angle_degrees
+
 
 def calculate_turn_2(front_pos, back_pos, target_pos):
     robot_middle = (front_pos[0] + back_pos[0]) / 2, (front_pos[1] + back_pos[1]) / 2
@@ -87,6 +93,7 @@ def calculate_line(target_x, target_y, robot_x, robot_y):
     print(line1)
     print(line2)
     return line1, line2
+
 
 def calculate_possible_max_turn(front_pos, back_pos, obstacles):
     # Calculate the max turn angle the robot can make before hitting an obstacle
