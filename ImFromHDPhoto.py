@@ -2,7 +2,6 @@ import cv2 as cv
 import numpy as np
 import time
 
-
 def imageRecognitionHD(image):
     if image is None:
         print("No image found")
@@ -14,10 +13,37 @@ def imageRecognitionHD(image):
 
     start = time.time()
 
-    red_lower = np.array([180, 50, 40], dtype=np.uint8)
-    red_upper = np.array([255, 200, 255], dtype=np.uint8)
-    red_mask = cv.inRange(image, red_lower, red_upper)
-    red_pixels = np.count_nonzero(red_mask)
+    hsv_image = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+
+    # Fine-tune color ranges based on your specific environment
+    orange_lower = np.array([0, 50, 50], dtype=np.uint8)
+    orange_upper = np.array([20, 255, 255], dtype=np.uint8)
+
+    green_lower = np.array([40, 50, 50], dtype=np.uint8)
+    green_upper = np.array([90, 255, 255], dtype=np.uint8)
+
+    blue_lower = np.array([100, 50, 50], dtype=np.uint8)
+    blue_upper = np.array([130, 255, 255], dtype=np.uint8)
+
+    red_lower1 = np.array([0, 50, 50], dtype=np.uint8)
+    red_upper1 = np.array([10, 255, 255], dtype=np.uint8)
+
+    red_lower2 = np.array([170, 50, 50], dtype=np.uint8)
+    red_upper2 = np.array([180, 255, 255], dtype=np.uint8)
+
+    # Create color masks using the updated color ranges
+    orange_mask = cv.inRange(hsv_image, orange_lower, orange_upper)
+    green_mask = cv.inRange(hsv_image, green_lower, green_upper)
+    blue_mask = cv.inRange(hsv_image, blue_lower, blue_upper)
+    red_mask1 = cv.inRange(hsv_image, red_lower1, red_upper1)
+    red_mask2 = cv.inRange(hsv_image, red_lower2, red_upper2)
+    red_mask = cv.bitwise_or(red_mask1, red_mask2)
+
+    # Apply the masks to the blank image
+    blank[np.where(orange_mask == 255)] = (0, 0, 255)
+    blank[np.where(green_mask == 255)] = (0, 255, 100)
+    blank[np.where(blue_mask == 255)] = (255, 255, 0)
+    blank[np.where(red_mask == 255)] = (0, 0, 255)
 
     blank[np.where(red_mask == 255)] = (0, 0, 255)
     red_pixel_indices = np.column_stack(np.where(blank[..., 2] == 255))
