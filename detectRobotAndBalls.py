@@ -13,6 +13,7 @@ def imageRecognitionHD(image):
 
     start = time.time()
 
+
     img_height, img_width, _ = image.shape
 
     # Circle detection
@@ -41,6 +42,8 @@ def imageRecognitionHD(image):
     )
     circle = 0
     balls = []
+
+
 
     if detected_Balls is not None:
         detected_circles = np.uint16(np.around(detected_Balls))
@@ -75,7 +78,7 @@ def imageRecognitionHD(image):
             green = bgr_pixel[1]
             red = bgr_pixel[2]
 
-            green_threshold = 30
+            green_threshold = 10
             blue_threshold = 20
             light_blue_threshold = 200
 
@@ -95,6 +98,7 @@ def imageRecognitionHD(image):
                 circle += 1
                 continue
 
+
     end = time.time()
 
     time_for_transform = end - start
@@ -106,5 +110,4 @@ def imageRecognitionHD(image):
     print('Time for transform: ' + str(time_for_transform))
 
     cv.waitKey(0)
-
     return front, back, balls
