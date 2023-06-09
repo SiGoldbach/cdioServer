@@ -26,16 +26,21 @@ def find_nearest_ball(front, ball_locations):
 # This function finds the angle between the two vector that are ass to ball and ass to head
 # DEN HER LORTE_METODE SER UD TIL AT VIRKE EFTER DEN IKKE VIRKEREDE FLERE GANGE I TRÆK
 # This goes from left to right if the value is negative the robot is to the right.
-def calculate_turn(front_pos, back_pos, target_pos):
+def calculate_turn(back, front, ball):
     # Calculate the vector from the front to the back of the robot
-    robot_vector = (int(back_pos[0]) - int(front_pos[0]), int(back_pos[1]) - int(front_pos[1]))
+    robot_vector = (int(front[0]) - int(back[0]), int(front[1]) - int(back[1]))
 
     # Calculate the vector from the front of the robot to the target position
-    target_vector = (int(target_pos[0]) - int(front_pos[0]), int(target_pos[1]) - int(front_pos[1]))
+    target_vector = (int(ball[0]) - int(back[0]), int(ball[1]) - int(back[1]))
 
     # Calculate the signed angle between the robot vector and the target vector
     angle_radians = math.atan2(target_vector[1], target_vector[0]) - math.atan2(robot_vector[1], robot_vector[0])
     angle_degrees = math.degrees(angle_radians)
+
+    if angle_degrees < -180:
+        angle_degrees += 360
+    if angle_degrees > 180:
+        angle_degrees -= 360
 
     # Normalize the angle to be within the range of -180 to 180 degrees
 
@@ -236,17 +241,19 @@ def make_move(image):
     if front is None or back is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 50)
     nearest_ball, distance = find_nearest_ball(front, balls)
-    print("Back is: " + str(back))
-    print("Front is: " + str(front))
-    print("Closest ball is: " + str(nearest_ball))
 
-    angle_to_turn = angle_good(back, front, nearest_ball)
+    print("The turn will now be calculated with: ")
+    print(str(front))
+    print(str(back))
+    print(str(nearest_ball))
+
+    angle_to_turn = calculate_turn(back, front, nearest_ball)
     print(angle_to_turn)
 
-    if angle_to_turn > 5 or angle_to_turn < -5:
+    if angle_to_turn[1] > 5 or angle_to_turn[1] < -5:
         print("I should turn: " + str(angle_to_turn))
         print(str(angle_to_turn) + " degrees")
-        return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
+        return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn[1])
     else:
         return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
