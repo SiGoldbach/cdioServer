@@ -69,7 +69,7 @@ def imageRecognitionHD(image):
         for pt in detected_circles[0, :]:
             a, b, r = pt[0], pt[1], pt[2]
             if np.logical_and.reduce(
-                    (220 >= image[b, a][0], 70 <= image[b, a][0], 200 <= image[b, a][1], 140 <= image[b, a][2])):
+                    (image[b, a][0] >= 230, image[b, a][1] >= 255, image[b, a][2] >= 199)):
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (0, 255, 100), -1)
                 back.append(a)
@@ -90,10 +90,11 @@ def imageRecognitionHD(image):
     time_for_transform = end - start
     print("Amount of circles: " + str(circle))
     print("Amount of balls: " + str(len(balls)))
-    # cv.imshow('Original', image)
-    # cv.imshow('Obstacles and balls drawn: ', blank)
+    cv.imshow('Original', image)
+    cv.imshow('Obstacles and balls drawn: ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 
-    # cv.waitKey(0)
+    cv.waitKey(0)
+
     return front, back, balls
