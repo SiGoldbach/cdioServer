@@ -17,6 +17,10 @@ def angle(p1, head1, ball1):
         angle_cal += 180
     elif ball[0] - p[0] < 0:
         angle_cal += 180
+    elif ball[0] - p[0] < 0 and ball[1] - p[1] > 0:
+        angle_cal += 180
+    elif head[0] - p[0] > 0 and head[1] - p[1] < 0:
+        angle_cal += 180
     return angle_cal
 
 
