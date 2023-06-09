@@ -1,18 +1,19 @@
 import cv2 as cv
 import numpy as np
 import time
+import Calibration.cameraCalibrationv2
 
 
 def imageRecognitionHD(image):
     if image is None:
         print("No image found")
+    Calibration.cameraCalibrationv2.un_distort(image)
 
     height, width = image.shape[:2]
 
     blank = np.zeros((height, width, 3), dtype=np.uint8)
 
     start = time.time()
-
 
     img_height, img_width, _ = image.shape
 
@@ -42,8 +43,6 @@ def imageRecognitionHD(image):
     )
     circle = 0
     balls = []
-
-
 
     if detected_Balls is not None:
         detected_circles = np.uint16(np.around(detected_Balls))
@@ -78,8 +77,8 @@ def imageRecognitionHD(image):
             green = bgr_pixel[1]
             red = bgr_pixel[2]
 
-            green_threshold = 10
-            blue_threshold = 20
+            green_threshold = 0
+            blue_threshold = 10
             light_blue_threshold = 200
 
             if green > blue + green_threshold and green > red + green_threshold:
@@ -97,7 +96,6 @@ def imageRecognitionHD(image):
                 front.append(b)
                 circle += 1
                 continue
-
 
     end = time.time()
 
