@@ -25,6 +25,8 @@ def find_nearest_ball(front, ball_locations):
 
 
 # This function finds the angle between the two vector that are ass to ball and ass to head
+# DEN HER LORTE_METODE SER UD TIL AT VIRKE EFTER DEN IKKE VIRKEREDE FLERE GANGE I TRÆK
+# This goes from left to right if the value is negative the robot is to the right.
 def calculate_turn(front_pos, back_pos, target_pos):
     # Calculate the vector from the front to the back of the robot
     robot_vector = (int(back_pos[0]) - int(front_pos[0]), int(back_pos[1]) - int(front_pos[1]))
