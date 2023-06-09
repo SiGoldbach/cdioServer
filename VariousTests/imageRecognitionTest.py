@@ -3,7 +3,7 @@ import cv2 as cv
 import detectRobotAndBalls
 
 
-image = cv.imread('../Resources/Pictures/1223.jpg')
+image = cv.imread('../Resources/Pictures/kek.jpg')
 
 detectRobotAndBalls.imageRecognitionHD(image)
 print("Result from test: ")
