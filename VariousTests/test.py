@@ -8,7 +8,7 @@ import MoveTypes
 
 
 def test_json():
-    move1 = Moves.MoveClass(MoveTypes.LEFT, 500, 2057)
+    move1 = Moves.MoveClass(MoveTypes.TURN, 90, 90)
     move_as_json = json.dumps(move1.__dict__)
     return move_as_json
 

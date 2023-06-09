@@ -1,13 +1,15 @@
 import time
 import numpy as np
+import cv2
 
-import LiveVideoFeed
+import detectRobotAndBalls
 
-p1 = LiveVideoFeed.get_image(1)
-time.sleep(1)
-p2 = LiveVideoFeed.get_image(2)
+video = cv2.VideoCapture(1, cv2.CAP_DSHOW)
 
-print(type(p1))
-print(type(p2))
-equals = np.array_equal(p1, p2)
-print(equals)
+video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+video.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+ret, frame = video.read()
+
+detectRobotAndBalls.imageRecognitionHD(frame)
+
+

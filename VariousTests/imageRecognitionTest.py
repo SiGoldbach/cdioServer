@@ -4,7 +4,7 @@ import detectRobotAndBalls
 import ImFromHDPhoto
 import detectField
 
-image = cv.imread('../Resources/Pictures/NewHeight10.jpg')
+image = cv.imread('../Resources/Pictures/funnuy2.jpg')
 
 detectRobotAndBalls.imageRecognitionHD(image)
 print("Result from test: ")

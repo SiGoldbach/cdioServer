@@ -1,8 +1,9 @@
 import cv2
 
 import Pathfinder
-
-video = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+print("Tyring to start liveVideoFeed")
+video = cv2.VideoCapture(0)
+print("LiveVideoFeed has started")
 
 video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 video.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
@@ -16,14 +17,10 @@ def calculate_move():
 
 
 def get_image(counter):
-    print("I am in function")
     ret, image = video.read()
-    if ret:
-        print("Success")
-        cv2.imwrite('Resources/Pictures/WRITEFFS' + str(counter) + '.jpg', image)
-        counter += 1
+    if not ret:
+        print("Fail")
 
-    return image
 
 # move = calculate_move()
 # move.print()

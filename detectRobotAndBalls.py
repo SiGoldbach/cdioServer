@@ -13,7 +13,6 @@ def imageRecognitionHD(image):
 
     start = time.time()
 
-
     img_height, img_width, _ = image.shape
 
     # Circle detection
@@ -43,8 +42,6 @@ def imageRecognitionHD(image):
     circle = 0
     balls = []
 
-
-
     if detected_Balls is not None:
         detected_circles = np.uint16(np.around(detected_Balls))
         for pt in detected_circles[0, :]:
@@ -72,15 +69,15 @@ def imageRecognitionHD(image):
         for pt in detected_circles[0, :]:
             a, b, r = pt[0], pt[1], pt[2]
             if np.logical_and.reduce(
-                    (255 >= image[b, a][0], 70 <= image[b, a][0], 200 <= image[b, a][1], 140 <= image[b, a][2])):
+                    (220 >= image[b, a][0], 70 <= image[b, a][0], 200 <= image[b, a][1], 140 <= image[b, a][2])):
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (0, 255, 100), -1)
                 back.append(a)
                 back.append(b)
                 circle += 1
                 continue
-            if np.logical_and.reduce((150 <= image[b, a][0], 140 <= image[b, a][1], 255 >= image[b, a][1],
-                                      120 <= image[b, a][2], 220 >= image[b, a][2])):
+            if np.logical_and.reduce((120 <= image[b, a][0], 140 <= image[b, a][1], 255 >= image[b, a][1],
+                                      140 <= image[b, a][2], 255 >= image[b, a][2])):
                 print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (255, 255, 0), -1)
                 front.append(a)
@@ -88,16 +85,15 @@ def imageRecognitionHD(image):
                 circle += 1
                 continue
 
-
     end = time.time()
 
     time_for_transform = end - start
     print("Amount of circles: " + str(circle))
     print("Amount of balls: " + str(len(balls)))
-    cv.imshow('Original', image)
-    cv.imshow('Obstacles and balls drawn: ', blank)
+    # cv.imshow('Original', image)
+    # cv.imshow('Obstacles and balls drawn: ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 
-    cv.waitKey(0)
+    # cv.waitKey(0)
     return front, back, balls
