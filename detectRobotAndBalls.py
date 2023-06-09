@@ -68,16 +68,26 @@ def imageRecognitionHD(image):
         detected_circles = np.uint16(np.around(detected_Robot))
         for pt in detected_circles[0, :]:
             a, b, r = pt[0], pt[1], pt[2]
-            if np.logical_and.reduce(
-                    (image[b, a][0] >= 230, image[b, a][1] >= 255, image[b, a][2] >= 199)):
+
+            bgr_pixel = image[b, a]
+
+            blue = bgr_pixel[0]
+            green = bgr_pixel[1]
+            red = bgr_pixel[2]
+
+            green_threshold = 30
+            blue_threshold = 20
+            light_blue_threshold = 200
+
+            if green > blue + green_threshold and green > red + green_threshold:
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (0, 255, 100), -1)
                 back.append(a)
                 back.append(b)
                 circle += 1
                 continue
-            if np.logical_and.reduce((120 <= image[b, a][0], 140 <= image[b, a][1], 255 >= image[b, a][1],
-                                      140 <= image[b, a][2], 255 >= image[b, a][2])):
+
+            if blue > red + blue_threshold and blue > green + blue_threshold or blue >= light_blue_threshold:
                 print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (255, 255, 0), -1)
                 front.append(a)
