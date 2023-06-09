@@ -1,8 +1,8 @@
 import math
-import ImFromPhoto
-import ImFromHDPhoto
+
 import Moves
 import MoveTypes
+import detectRobotAndBalls
 
 
 def find_nearest_ball(front, ball_locations):
@@ -37,19 +37,16 @@ def calculate_turn(front_pos, back_pos, target_pos):
     angle_degrees = math.degrees(angle_radians)
 
     # Normalize the angle to be within the range of -180 to 180 degrees
-    if angle_degrees > 180:
-        angle_degrees -= 360
-    elif angle_degrees < -180:
-        angle_degrees += 360
-
-    if angle_degrees < 0:
-        angle_degrees = -angle_degrees
-        # print("right")
-        # print(180 - angle_degrees)
-        return MoveTypes.RIGHT, 180 - angle_degrees
 
     # print(180 - angle_degrees)
-    return MoveTypes.LEFT, 180 - angle_degrees
+
+    return MoveTypes.TURN, angle_degrees
+
+
+def angle_good(p1, head1, ball1):
+    m1 = (int(head1[1]) - int(p1[1])) / (int(head1[0]) - int(p1[0]))
+    m2 = (int(ball1[1]) - int(p1[1])) / (int(ball1[0]) - int(p1[0]))
+    return math.atan((m2 - m1) / (1 + m1 * m2)) * 180 / math.pi
 
 
 def degree_to_argument(degrees):
@@ -154,27 +151,24 @@ def check_borders(corners, front_pos, back_pos):
 # It can move forward if is aligned
 def make_move(image):
     print("Now doing image recognition")
-    ball_locations, front, back, red_pixels = ImFromHDPhoto.imageRecognitionHD(image)
-    print(red_pixels[0])
+    front, back, balls = detectRobotAndBalls.imageRecognitionHD(image)
     # Temporary if statement
     if front is None or back is None:
-        return Moves.MoveClass(MoveTypes.LEFT, 500, 50)
-    nearest_ball, distance = find_nearest_ball(front, ball_locations)
-    print("This should be 2: " + str(len(front)))
+        return Moves.MoveClass(MoveTypes.TURN, 500, 50)
+    nearest_ball, distance = find_nearest_ball(front, balls)
+    print("Back is: " + str(back))
+    print("Front is: " + str(front))
+    print("Closest ball is: " + str(nearest_ball))
 
-    angle_to_turn = calculate_turn(front, back, nearest_ball)
+    angle_to_turn = angle_good(back, front, nearest_ball)
+    print(angle_to_turn)
 
-    if angle_to_turn[1] > 5:
-        print("I should turn: " + angle_to_turn[0])
-        print(str(angle_to_turn[1]) + " degrees")
-        argument = degree_to_argument(angle_to_turn[1])
-        return Moves.MoveClass(angle_to_turn[0], 500, argument)
-
-
+    if angle_to_turn > 5 or angle_to_turn < -5:
+        print("I should turn: " + str(angle_to_turn))
+        print(str(angle_to_turn) + " degrees")
+        return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
-        if check_for_obstacle_front(red_pixels, nearest_ball[0], nearest_ball[1], front[0], front[1]):
-            print("I am aligned and should move forward")
-            return Moves.MoveClass(MoveTypes.FORWARD, 600, 600)
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
 
 def drive_to_goal(ball_locations, front_pos, back_pos, center_of_field):

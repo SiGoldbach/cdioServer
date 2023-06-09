@@ -13,7 +13,6 @@ def imageRecognitionHD(image):
 
     start = time.time()
 
-
     img_height, img_width, _ = image.shape
 
     # Circle detection
@@ -37,15 +36,11 @@ def imageRecognitionHD(image):
         20,
         param1=30,
         param2=12,
-        minRadius=14,
-        maxRadius=17
+        minRadius=15,
+        maxRadius=16
     )
     circle = 0
     balls = []
-
-    # White color detection
-    white_mask = ((220 <= image[..., 2]) & (220 <= image[..., 0]) & (220 <= image[..., 1])).astype(np.uint8)
-    white_pixels = np.sum(white_mask)
 
     if detected_Balls is not None:
         detected_circles = np.uint16(np.around(detected_Balls))
@@ -53,14 +48,14 @@ def imageRecognitionHD(image):
             a, b, r = pt[0], pt[1], pt[2]
 
             if np.logical_and.reduce(
-                    (50 >= image[b, a][0], 160 <= image[b, a][1], 200 >= image[b, a][1], 160 <= image[b, a][2])):
+                    (50 >= image[b, a][0], 160 <= image[b, a][1], 190 >= image[b, a][1], 160 <= image[b, a][2])):
                 print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (0, 150, 255), -1)
                 balls.append([a, b])
                 circle += 1
                 continue
 
-            if np.logical_and.reduce((220 <= image[b, a][2], 220 <= image[b, a][0], 220 <= image[b, a][1])):
+            if np.logical_and.reduce((200 <= image[b, a][2], 200 <= image[b, a][0], 200 <= image[b, a][1])):
                 cv.circle(blank, (a, b), r, (255, 255, 255), -1)
                 print("Center of this circle should be: " + str(a) + " " + str(b))
                 balls.append([a, b])
@@ -81,8 +76,8 @@ def imageRecognitionHD(image):
                 back.append(b)
                 circle += 1
                 continue
-            if np.logical_and.reduce((150 <= image[b, a][0], 140 <= image[b, a][1], 255 >= image[b, a][1],
-                                      120 <= image[b, a][2], 220 >= image[b, a][2])):
+            if np.logical_and.reduce((120 <= image[b, a][0], 140 <= image[b, a][1], 255 >= image[b, a][1],
+                                      140 <= image[b, a][2], 255 >= image[b, a][2])):
                 print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (255, 255, 0), -1)
                 front.append(a)
@@ -90,17 +85,15 @@ def imageRecognitionHD(image):
                 circle += 1
                 continue
 
-
     end = time.time()
 
     time_for_transform = end - start
-    print("Amount of white pixels: " + str(white_pixels))
     print("Amount of circles: " + str(circle))
     print("Amount of balls: " + str(len(balls)))
-    cv.imshow('Original', image)
-    cv.imshow('Obstacles and balls drawn: ', blank)
+    # cv.imshow('Original', image)
+    # cv.imshow('Obstacles and balls drawn: ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 
-    cv.waitKey(0)
+    # cv.waitKey(0)
     return front, back, balls
