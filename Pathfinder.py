@@ -25,6 +25,8 @@ def find_nearest_ball(front, ball_locations):
 
 
 # This function finds the angle between the two vector that are ass to ball and ass to head
+# DEN HER LORTE_METODE SER UD TIL AT VIRKE EFTER DEN IKKE VIRKEREDE FLERE GANGE I TRÆK
+# This goes from left to right if the value is negative the robot is to the right.
 def calculate_turn(front_pos, back_pos, target_pos):
     # Calculate the vector from the front to the back of the robot
     robot_vector = (int(back_pos[0]) - int(front_pos[0]), int(back_pos[1]) - int(front_pos[1]))
@@ -53,10 +55,20 @@ def calculate_turn_2(front_pos, back_pos, target_pos):
     return MoveTypes.TURN, angle_degrees
 
 
+# Method for calculating angle has been updated based on the quadrant and should now work in most cases
 def angle_good(p1, head1, ball1):
-    m1 = (int(head1[1]) - int(p1[1])) / (int(head1[0]) - int(p1[0]))
-    m2 = (int(ball1[1]) - int(p1[1])) / (int(ball1[0]) - int(p1[0]))
-    return math.atan((m2 - m1) / (1 + m1 * m2)) * 180 / math.pi
+    m1 = (head1[1] - p1[1]) / (head1[0] - p1[0])
+    m2 = (ball1[1] - p1[1]) / (ball1[0] - p1[0])
+
+    angle_cal = math.atan((m2 - m1) / (1 + m1 * m2)) * 180 / math.pi
+
+    # Adjust the angle based on the quadrant
+    if head1[0] - p1[0] < 0:
+        angle_cal += 180
+    elif ball1[0] - p1[0] < 0:
+        angle_cal += 180
+
+    return angle_cal
 
 
 def degree_to_argument(degrees):
