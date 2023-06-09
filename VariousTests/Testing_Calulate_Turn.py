@@ -1,7 +1,6 @@
 import math
 
 import Pathfinder
-
 # I am here making a new formula for calculating a turn I am here using some different tests
 # The method seems to work now it is not here anymore only in pathfinder.
 
@@ -151,3 +150,17 @@ head25g = [8, 14]
 ball25g = [18, 22]
 # angle should be -30
 print("The angle should be: " + str(Pathfinder.calculate_turn(p25g, head25g, ball25g)))
+
+
+p10 = [2, -4]
+head10 = [6, -2]
+ball10 = [8, -6]
+# angle should be -45
+print("The angle should be: -45 and is: " + str(Pathfinder.calculate_turn(p10, head10, ball10)))
+
+
+p11 = [3, 3]
+head11 = [4, 6]
+ball11 = [2, 7]
+# angle should be 32
+print("The angle should be: " + str(Pathfinder.calculate_turn(p11, head11, ball11)))
