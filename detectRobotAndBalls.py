@@ -29,16 +29,28 @@ def imageRecognitionHD(image):
         maxRadius=11
     )
 
-    detected_Robot = cv.HoughCircles(
+    detected_Front = cv.HoughCircles(
         gray_blurred,
         cv.HOUGH_GRADIENT,
         1,
         20,
         param1=30,
         param2=12,
-        minRadius=15,
-        maxRadius=18
+        minRadius=23,
+        maxRadius=26
     )
+
+    detected_Back = cv.HoughCircles(
+        gray_blurred,
+        cv.HOUGH_GRADIENT,
+        1,
+        20,
+        param1=30,
+        param2=12,
+        minRadius=13,
+        maxRadius=17
+    )
+
     circle = 0
     balls = []
 
@@ -55,7 +67,7 @@ def imageRecognitionHD(image):
                 circle += 1
                 continue
 
-            if np.logical_and.reduce((200 <= image[b, a][2], 200 <= image[b, a][0], 200 <= image[b, a][1])):
+            if np.logical_and.reduce((190 <= image[b, a][2], 190 <= image[b, a][0], 190 <= image[b, a][1])):
                 cv.circle(blank, (a, b), r, (255, 255, 255), -1)
                 print("Center of this circle should be: " + str(a) + " " + str(b))
                 balls.append([a, b])
@@ -64,8 +76,8 @@ def imageRecognitionHD(image):
     back = []
     front = []
 
-    if detected_Robot is not None:
-        detected_circles = np.uint16(np.around(detected_Robot))
+    if detected_Front is not None:
+        detected_circles = np.uint16(np.around(detected_Front))
         for pt in detected_circles[0, :]:
             a, b, r = pt[0], pt[1], pt[2]
 
@@ -75,8 +87,31 @@ def imageRecognitionHD(image):
             green = bgr_pixel[1]
             red = bgr_pixel[2]
 
-            green_threshold = 30
-            blue_threshold = 25
+            green_threshold = 0
+            blue_threshold = 0
+            light_blue_threshold = 200
+
+            if blue > red + blue_threshold and blue > green + blue_threshold or blue >= light_blue_threshold:
+                print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
+                cv.circle(blank, (a, b), r, (255, 255, 0), -1)
+                front.append(a)
+                front.append(b)
+                circle += 1
+                continue
+
+    if detected_Back is not None:
+        detected_circles = np.uint16(np.around(detected_Back))
+        for pt in detected_circles[0, :]:
+            a, b, r = pt[0], pt[1], pt[2]
+
+            bgr_pixel = image[b, a]
+
+            blue = bgr_pixel[0]
+            green = bgr_pixel[1]
+            red = bgr_pixel[2]
+
+            green_threshold = 0
+            blue_threshold = 0
             light_blue_threshold = 200
 
             if green > blue + green_threshold and green > red + green_threshold:
@@ -87,23 +122,19 @@ def imageRecognitionHD(image):
                 circle += 1
                 continue
 
-            if (blue > red + blue_threshold and blue > green + blue_threshold) or blue >= light_blue_threshold:
-                print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
-                cv.circle(blank, (a, b), r, (255, 255, 0), -1)
-                front.append(a)
-                front.append(b)
-                circle += 1
-                continue
+
+
+
 
     end = time.time()
 
     time_for_transform = end - start
-    # print("Amount of circles: " + str(circle))
-    # print("Amount of balls: " + str(len(balls)))
+    print("Amount of circles: " + str(circle))
+    print("Amount of balls: " + str(len(balls)))
     cv.imshow('Original', image)
     cv.imshow('Obstacles and balls drawn: ', blank)
 
-    # print('Time for transform: ' + str(time_for_transform))
+    print('Time for transform: ' + str(time_for_transform))
 
     cv.waitKey(0)
     return front, back, balls

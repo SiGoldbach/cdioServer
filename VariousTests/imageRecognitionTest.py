@@ -1,12 +1,11 @@
 import cv2 as cv
 
-import detectField
 import detectRobotAndBalls
+import detectField
 
-image = cv.imread('../Resources/Pictures/kek1.jpg')
+image = cv.imread('../Resources/Pictures/kek.jpg')
 
 detectRobotAndBalls.imageRecognitionHD(image)
-detectField.imageRecognitionHD(image)
 print("Result from test: ")
 
 # print(balls)
