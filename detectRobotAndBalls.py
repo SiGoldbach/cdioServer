@@ -78,7 +78,7 @@ def imageRecognitionHD(image):
             green_threshold = 30
             blue_threshold = 25
             light_blue_threshold = 200
-            print(blue)
+
             if green > blue + green_threshold and green > red + green_threshold:
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (0, 255, 100), -1)

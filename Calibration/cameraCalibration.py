@@ -78,7 +78,8 @@ def undistort_image(image_path, camera_matrix, distortion_coeffs):
 
         # Save the undistorted image
         cv2.imwrite('undistorted_image.jpg', output_image)
-
+        cv2.imshow('hehe', output_image)
+        cv2.waitKey(0)
     else:
         print("Failed to load the image:", image_path)
 
@@ -89,4 +90,6 @@ camera_matrix, distortion_coeffs = perform_calibration()
 # Load the calibration parameters (camera matrix and distortion coefficients) from the calibration_data.npz file
 if camera_matrix is not None and distortion_coeffs is not None:
     # Use the camera matrix and distortion coefficients for image undistortion
-    undistort_image('../Resources/Pictures/calibration_photo_1.jpg', camera_matrix, distortion_coeffs)
+    undist = undistort_image('../Resources/Pictures/calibration_photo_1.jpg', camera_matrix, distortion_coeffs)
+
+

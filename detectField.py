@@ -32,6 +32,7 @@ def imageRecognitionHD(image):
     # Find contours
     cnts, _ = cv.findContours(edges, cv.RETR_LIST, cv.CHAIN_APPROX_NONE)
     smallGoal = []
+    bigGoal = []
     obstacle = []
     corners = []
     done = 0
@@ -44,7 +45,6 @@ def imageRecognitionHD(image):
                 done = 1
 
             cv.drawContours(blank, [approx], -1, (150, 100, 255), 2)
-            print(approx)
             M = cv.moments(contour)
             # Calculate the center of the contour
             if M["m00"] != 0:
@@ -61,7 +61,8 @@ def imageRecognitionHD(image):
                     cv.circle(blank, (x, int(cY + h / 2)), 10, (150, 150, 150), -1)
                     cv.circle(blank, (x + w, int(cY + h / 2)), 10, (150, 150, 150), -1)
                     if w > 500:
-                        smallGoal.append([x + w,cY])
+                        smallGoal.append([x,cY])
+                        bigGoal.append([x+w,cY])
                         corners.append([x, y])
                         corners.append([x + w, y])
                         corners.append([x, int(cY + h / 2)])
@@ -84,8 +85,8 @@ def imageRecognitionHD(image):
     end = time.time()
 
     time_for_transform = end - start
-    print(corners)
-    print("Amount of red pixels: " + str(len(corners)))
+    print("These are the coords of the corners: ",corners)
+    print("Amount of corners: " + str(len(corners)))
 
     cv.imshow('Original', image)
     cv.imshow('Field ', blank)
@@ -93,4 +94,4 @@ def imageRecognitionHD(image):
     print('Time for transform: ' + str(time_for_transform))
 
     cv.waitKey(0)
-    return smallGoal, obstacle, corners
+    return smallGoal, bigGoal, obstacle, corners
