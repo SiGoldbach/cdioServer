@@ -4,6 +4,30 @@ import MoveTypes
 import detectRobotAndBalls
 
 
+def get_robot_length(front_pos, back_pos):
+    robot_length = math.sqrt((front_pos[0] - back_pos[0]) ^ 2 + (front_pos[1] - back_pos[1]) ^ 2)
+    return robot_length
+
+
+def robot_center_coordinates(front_pos, back_pos):
+    robot_center = (front_pos[0] + back_pos[0]) / 2, (front_pos[1] + back_pos[1]) / 2
+    return robot_center
+
+
+def robot_width():
+    width = 2
+    return width
+
+def robot_corner_radius(front_pos, back_pos):
+    robot_center = robot_center_coordinates(front_pos, back_pos)
+    x_center = robot_center[0]
+    y_center = robot_center[1]
+    robot_width = 2
+    robot_radius = math.sqrt((front_pos[0] - x_center) ** 2 + (front_pos[1] - y_center) ** 2)
+    radius = math.sqrt(robot_radius ** 2 + robot_width ** 2)
+    return radius
+
+
 def find_nearest_ball(front, ball_locations):
     closest_distance = float('inf')
     closest_coordinate = []
@@ -226,7 +250,6 @@ def check_borders(corners, front_pos, back_pos):
         # Robot is hitting the top border
         # Take appropriate action here
         print("Robot hit the top border!")
-
 
 
 # This function is being written iteratively.
