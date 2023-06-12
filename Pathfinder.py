@@ -73,33 +73,6 @@ def calculate_turn(back, front, ball):
     return MoveTypes.TURN, angle_degrees
 
 
-def calculate_turn_2(front_pos, back_pos, target_pos):
-    robot_middle = (front_pos[0] + back_pos[0]) / 2, (front_pos[1] + back_pos[1]) / 2
-    robot_vector = (int(robot_middle[0]) - int(front_pos[0]), int(back_pos[1]) - int(front_pos[1]))
-    # Calculate the vector from the front of the robot to the target position
-    target_vector = (int(target_pos[0]) - int(front_pos[0]), int(target_pos[1]) - int(front_pos[1]))
-    # Calculate the signed angle between the robot vector and the target vector
-    angle_radians = math.atan2(target_vector[1], target_vector[0]) - math.atan2(robot_vector[1], robot_vector[0])
-    angle_degrees = math.degrees(angle_radians)
-    return MoveTypes.TURN, angle_degrees
-
-
-# Method for calculating angle has been updated based on the quadrant and should now work in most cases
-def angle_good(p1, head1, ball1):
-    m1 = (head1[1] - p1[1]) / (head1[0] - p1[0])
-    m2 = (ball1[1] - p1[1]) / (ball1[0] - p1[0])
-
-    angle_cal = math.atan((m2 - m1) / (1 + m1 * m2)) * 180 / math.pi
-
-    # Adjust the angle based on the quadrant
-    if head1[0] - p1[0] < 0:
-        angle_cal += 180
-    elif ball1[0] - p1[0] < 0:
-        angle_cal += 180
-
-    return angle_cal
-
-
 def degree_to_argument(degrees):
     print("Calculating argument ")
     argumentTurn = (degrees - -5.862845) / 0.209388
@@ -137,23 +110,6 @@ def calculate_possible_max_turn(front_pos, back_pos, obstacles):
     available_turn_space = max_angle - min_angle
 
     return available_turn_space
-
-
-def check_for_max_turn(obstacles, front_pos, back_pos):
-    x, y = obstacles
-    robot_length = math.sqrt((front_pos[0] - back_pos[0]) ^ 2 + (front_pos[1] - back_pos[1]) ^ 2)
-    radius = robot_length / 2
-    obstacle_distance = math.sqrt((front_pos[0] - obstacles[0]) ^ 2 + (front_pos[1] - obstacles[1]) ^ 2)
-    outside_counter = 0
-    inside_counter = 0
-    for obstacle in obstacles:
-        if obstacle_distance > radius:
-            outside_counter += 1
-        if obstacle_distance < radius:
-            inside_counter += 1
-
-    max_turn_left = 0
-    max_turn_right = 0
 
 
 def check_for_obstacle_front(obstacles, target_x, target_y, robot_x, robot_y):
@@ -292,4 +248,3 @@ def drive_to_goal(ball_locations, front_pos, back_pos, center_of_field):
             # here we have to turn with ass against small goal and reverse there
 
     return Moves.MoveClass(MoveTypes.FORWARD, 600, drive_distance)
-
