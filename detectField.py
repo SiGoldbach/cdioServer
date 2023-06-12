@@ -85,8 +85,8 @@ def imageRecognitionHD(image):
     end = time.time()
 
     time_for_transform = end - start
-    print("These are the coords of the corners: ",corners)
-    print("Amount of corners: " + str(len(corners)))
+    # print("These are the coords of the corners: ",corners)
+    # print("Amount of corners: " + str(len(corners)))
 
     cv.imshow('Original', image)
     cv.imshow('Field ', blank)

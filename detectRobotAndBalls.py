@@ -98,12 +98,12 @@ def imageRecognitionHD(image):
     end = time.time()
 
     time_for_transform = end - start
-    print("Amount of circles: " + str(circle))
-    print("Amount of balls: " + str(len(balls)))
+    # print("Amount of circles: " + str(circle))
+    # print("Amount of balls: " + str(len(balls)))
     cv.imshow('Original', image)
     cv.imshow('Obstacles and balls drawn: ', blank)
 
-    print('Time for transform: ' + str(time_for_transform))
+    # print('Time for transform: ' + str(time_for_transform))
 
     cv.waitKey(0)
     return front, back, balls
