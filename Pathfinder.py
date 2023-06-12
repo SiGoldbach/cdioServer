@@ -5,7 +5,7 @@ import detectRobotAndBalls
 
 
 def get_robot_length(front_pos, back_pos):
-    robot_length = math.sqrt((front_pos[0] - back_pos[0]) ^ 2 + (front_pos[1] - back_pos[1]) ^ 2)
+    robot_length = math.sqrt((front_pos[0] - back_pos[0]) ** 2 + (front_pos[1] - back_pos[1]) ** 2)
     return robot_length
 
 
@@ -190,40 +190,19 @@ def check_for_obstacle_location(obstacles, line1, line2):
         return False
 
 
-def find_obstacles_in_circle(obstacles, front_pos, back_pos, corners):
-    # Remember to check if the "if-statements" checking for radius and borders is correct
-    # delete this when confirmed
-    minX = corners[0][0]
-    maxX = corners[1][0]
-    minY = corners[2][1]
-    maxY = corners[3][1]
-    robot_center = (front_pos[0] + back_pos[0]) / 2, (front_pos[1] + back_pos[1]) / 2
-    x_center = robot_center[0]
-    y_center = robot_center[1]
-    # hard coded width of robot
-    width = robot_width()
-    robot_radius = math.sqrt((front_pos[0] - x_center) ** 2 + (front_pos[1] - y_center) ** 2)
-    radius = math.sqrt(robot_radius ** 2 + width ** 2)
-    obstacles_in_circle = []
-    # hardcode more pixel in here to take in count of the "width" of the robot.
+def find_obstacle_in_circle(obstacles, front_pos, back_pos):
+    robot_length = get_robot_length(front_pos, back_pos)
+    robot_center = robot_center_coordinates(front_pos, back_pos)
+    robot_radius = robot_length / 2
+    obstacles_in_range = []
+    print(robot_center)
+    print(robot_radius)
     for obstacle in obstacles:
-        x_obstacle, y_obstacle = obstacle
-        # Calculate the distance between the center and the obstacle point
-        distance = math.sqrt((x_obstacle - x_center) ** 2 + (y_obstacle - y_center) ** 2)
-        # Check if the obstacle is within the circle
-        if distance <= radius:
-            print(f"Obstacle {obstacle} is inside the circle.")
-            obstacles_in_circle.append(obstacle)
-        else:
-            print(f"Obstacle {obstacle} is outside the circle.")
-
-        if x_center - radius <= minX | x_center + radius >= maxX:
-            obstacles_in_circle.append("wall_x")
-
-        if y_center - radius <= minY | y_center + radius >= maxY:
-            obstacles_in_circle.append("wall_y")
-
-    return obstacles_in_circle
+        x, y = obstacle
+        obstacle_distance = math.sqrt((x - robot_center[0]) ** 2 + (y - robot_center[1]) ** 2)
+        if obstacle_distance <= robot_radius:
+            obstacles_in_range.append(obstacle)
+    return obstacles_in_range
 
 
 def check_borders(corners, front_pos, back_pos):
@@ -313,3 +292,4 @@ def drive_to_goal(ball_locations, front_pos, back_pos, center_of_field):
             # here we have to turn with ass against small goal and reverse there
 
     return Moves.MoveClass(MoveTypes.FORWARD, 600, drive_distance)
+
