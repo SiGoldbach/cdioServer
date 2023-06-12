@@ -1,13 +1,11 @@
 import cv2 as cv
 import numpy as np
 import time
-import Calibration.cameraCalibrationv2
 
 
 def imageRecognitionHD(image):
     if image is None:
         print("No image found")
-    Calibration.cameraCalibrationv2.un_distort(image)
 
     height, width = image.shape[:2]
 
@@ -39,7 +37,7 @@ def imageRecognitionHD(image):
         param1=30,
         param2=12,
         minRadius=15,
-        maxRadius=16
+        maxRadius=17
     )
     circle = 0
     balls = []
