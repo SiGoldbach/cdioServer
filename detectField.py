@@ -99,7 +99,7 @@ def imageRecognitionHD(image):
     print("These are the coords of the corners: ",corn)
 
     cv.imshow('Original', image)
-    cv.imshow('Field ', blank)
+    cv.imshow('Field.py ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 
