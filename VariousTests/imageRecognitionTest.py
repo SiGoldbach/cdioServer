@@ -1,7 +1,7 @@
 import cv2 as cv
 
 import detectRobotAndBalls
-
+import detectField
 
 image = cv.imread('../Resources/Pictures/kek.jpg')
 
