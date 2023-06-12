@@ -13,7 +13,7 @@ def calculate_move():
     ret, image = video.read()
     print("Video has been read")
     if ret:
-        return Pathfinder.make_move(image)
+        return Pathfinder.collect_balls(image)
 
 
 def get_image(counter):

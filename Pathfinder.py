@@ -1,11 +1,12 @@
 import math
 import Moves
 import MoveTypes
+import detectField
 import detectRobotAndBalls
 
 
 def get_robot_length(front_pos, back_pos):
-    robot_length = math.sqrt((front_pos[0] - back_pos[0]) ^ 2 + (front_pos[1] - back_pos[1]) ^ 2)
+    robot_length = math.sqrt((front_pos[0] - back_pos[0]) ** 2 + (front_pos[1] - back_pos[1]) ** 2)
     return robot_length
 
 
@@ -48,7 +49,6 @@ def find_nearest_ball(front, ball_locations):
 
 
 # This function finds the angle between the two vector that are ass to ball and ass to head
-# DEN HER LORTE_METODE SER UD TIL AT VIRKE EFTER DEN IKKE VIRKEREDE FLERE GANGE I TRÆK
 # This goes from left to right if the value is negative the robot is to the right.
 def calculate_turn(back, front, ball):
     # Calculate the vector from the front to the back of the robot
@@ -71,40 +71,6 @@ def calculate_turn(back, front, ball):
     # print(180 - angle_degrees)
 
     return MoveTypes.TURN, angle_degrees
-
-
-def calculate_turn_2(front_pos, back_pos, target_pos):
-    robot_middle = (front_pos[0] + back_pos[0]) / 2, (front_pos[1] + back_pos[1]) / 2
-    robot_vector = (int(robot_middle[0]) - int(front_pos[0]), int(back_pos[1]) - int(front_pos[1]))
-    # Calculate the vector from the front of the robot to the target position
-    target_vector = (int(target_pos[0]) - int(front_pos[0]), int(target_pos[1]) - int(front_pos[1]))
-    # Calculate the signed angle between the robot vector and the target vector
-    angle_radians = math.atan2(target_vector[1], target_vector[0]) - math.atan2(robot_vector[1], robot_vector[0])
-    angle_degrees = math.degrees(angle_radians)
-    return MoveTypes.TURN, angle_degrees
-
-
-# Method for calculating angle has been updated based on the quadrant and should now work in most cases
-def angle_good(p1, head1, ball1):
-    m1 = (head1[1] - p1[1]) / (head1[0] - p1[0])
-    m2 = (ball1[1] - p1[1]) / (ball1[0] - p1[0])
-
-    angle_cal = math.atan((m2 - m1) / (1 + m1 * m2)) * 180 / math.pi
-
-    # Adjust the angle based on the quadrant
-    if head1[0] - p1[0] < 0:
-        angle_cal += 180
-    elif ball1[0] - p1[0] < 0:
-        angle_cal += 180
-
-    return angle_cal
-
-
-def degree_to_argument(degrees):
-    print("Calculating argument ")
-    argumentTurn = (degrees - -5.862845) / 0.209388
-    return int(argumentTurn) / 2
-
 
 def calculate_line(target_x, target_y, robot_x, robot_y):
     m = ((int(target_y) - int(robot_y)) / (int(target_x) - int(robot_x)))
@@ -137,23 +103,6 @@ def calculate_possible_max_turn(front_pos, back_pos, obstacles):
     available_turn_space = max_angle - min_angle
 
     return available_turn_space
-
-
-def check_for_max_turn(obstacles, front_pos, back_pos):
-    x, y = obstacles
-    robot_length = math.sqrt((front_pos[0] - back_pos[0]) ^ 2 + (front_pos[1] - back_pos[1]) ^ 2)
-    radius = robot_length / 2
-    obstacle_distance = math.sqrt((front_pos[0] - obstacles[0]) ^ 2 + (front_pos[1] - obstacles[1]) ^ 2)
-    outside_counter = 0
-    inside_counter = 0
-    for obstacle in obstacles:
-        if obstacle_distance > radius:
-            outside_counter += 1
-        if obstacle_distance < radius:
-            inside_counter += 1
-
-    max_turn_left = 0
-    max_turn_right = 0
 
 
 def check_for_obstacle_front(obstacles, target_x, target_y, robot_x, robot_y):
@@ -190,40 +139,19 @@ def check_for_obstacle_location(obstacles, line1, line2):
         return False
 
 
-def find_obstacles_in_circle(obstacles, front_pos, back_pos, corners):
-    # Remember to check if the "if-statements" checking for radius and borders is correct
-    # delete this when confirmed
-    minX = corners[0][0]
-    maxX = corners[1][0]
-    minY = corners[2][1]
-    maxY = corners[3][1]
-    robot_center = (front_pos[0] + back_pos[0]) / 2, (front_pos[1] + back_pos[1]) / 2
-    x_center = robot_center[0]
-    y_center = robot_center[1]
-    # hard coded width of robot
-    width = robot_width()
-    robot_radius = math.sqrt((front_pos[0] - x_center) ** 2 + (front_pos[1] - y_center) ** 2)
-    radius = math.sqrt(robot_radius ** 2 + width ** 2)
-    obstacles_in_circle = []
-    # hardcode more pixel in here to take in count of the "width" of the robot.
+def find_obstacle_in_circle(obstacles, front_pos, back_pos):
+    robot_length = get_robot_length(front_pos, back_pos)
+    robot_center = robot_center_coordinates(front_pos, back_pos)
+    robot_radius = robot_length / 2
+    obstacles_in_range = []
+    print(robot_center)
+    print(robot_radius)
     for obstacle in obstacles:
-        x_obstacle, y_obstacle = obstacle
-        # Calculate the distance between the center and the obstacle point
-        distance = math.sqrt((x_obstacle - x_center) ** 2 + (y_obstacle - y_center) ** 2)
-        # Check if the obstacle is within the circle
-        if distance <= radius:
-            print(f"Obstacle {obstacle} is inside the circle.")
-            obstacles_in_circle.append(obstacle)
-        else:
-            print(f"Obstacle {obstacle} is outside the circle.")
-
-        if x_center - radius <= minX | x_center + radius >= maxX:
-            obstacles_in_circle.append("wall_x")
-
-        if y_center - radius <= minY | y_center + radius >= maxY:
-            obstacles_in_circle.append("wall_y")
-
-    return obstacles_in_circle
+        x, y = obstacle
+        obstacle_distance = math.sqrt((x - robot_center[0]) ** 2 + (y - robot_center[1]) ** 2)
+        if obstacle_distance <= robot_radius:
+            obstacles_in_range.append(obstacle)
+    return obstacles_in_range
 
 
 def check_borders(corners, front_pos, back_pos):
@@ -257,7 +185,8 @@ def check_borders(corners, front_pos, back_pos):
 # At current time:
 # The robot can turn and align itself to a ball
 # It can move forward if is aligned
-def make_move(image):
+# Change has been added to this function so it is now a collect balls method
+def collect_balls(image):
     print("Now doing image recognition")
     front, back, balls = detectRobotAndBalls.imageRecognitionHD(image)
     # Temporary if statement
@@ -281,35 +210,72 @@ def make_move(image):
         return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
 
-def drive_to_goal(ball_locations, front_pos, back_pos, center_of_field):
-    # fictive goal location for this purpose. Need information from img-recognation
-    center_of_field = [10, 10]
-    # fictive goal location
-    goal_location = [3, 3]
+def drive_to_goal(image):
+    front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
+    smallGoal, bigGoal, obstacle, corners = detectField.imageRecognitionHD(image)
+    print("Front_pos: " + str(front_pos))
+    print("Back_pos: " + str(back_pos))
+    # As of right now I assume the first big goal i get is the correct one
+    print(len(bigGoal))
+    if len(bigGoal) == 0:
+        print("big goal is none")
+        bigGoal.append([1142, 375])
+    if len(smallGoal) == 0:
+        smallGoal.append([300, 375])
+    print("big_goal: " + str(bigGoal[0]))
+    # I make the same assumption with the small goal
+    print("small_goal`: " + str(smallGoal[0]))
 
-    robot_mid_location = (int(back_pos[0]) + int(front_pos[0]) / 2, int(back_pos[1]) + int(front_pos[1]) / 2)
-    align_robot_goal = [robot_mid_location[0], center_of_field[1]]
-    angle_to_turn_y = calculate_turn(front_pos, back_pos, align_robot_goal)
-    drive_distance = math.sqrt(
-        (align_robot_goal[0] - robot_mid_location[0]) ** 2 + (align_robot_goal[1] - robot_mid_location[1]) ** 2)
-    argument_turn = degree_to_argument(angle_to_turn_y[1])
-    # need goal location x and y coordinates.
-    angle_to_goal = calculate_turn(front_pos, back_pos, goal_location)
+    angleToTurn = calculate_turn(front_pos, back_pos, bigGoal[0])
+    print("Angle tu turn is from back: " + str(angleToTurn))
+    # Here angle to turn is calculated from the front since the angle here needs to be low for the two
+    # vectors to point the same direction
+    # I here need to have three cases one i the robot is ready to deliver
+    # 1: can the robot deliver the balls as it is standing right now
+    # 2: Is the robot close enough to the line where it just needs to drive backwards to reach the goal
+    # 3: Is the robot some random place on the field
+    # If the robot enters this if statement it is oriented correctly and should just back or deliver
+    # This is taking care of condition 1
+    if -7 < angleToTurn[1] < 7:
+        print("Robot is close to aligned to the center")
+        # I will now figure out what direction the robot has and how close to the goal the robot is
+        front_to_goal = math.sqrt((bigGoal[0][0] - front_pos[0]) ** 2 + (bigGoal[0][1] - front_pos[1]) ** 2)
+        print("Length from front to goal is: " + str(front_to_goal))
+        back_to_goal = math.sqrt((bigGoal[0][0] - back_pos[0]) ** 2 + (bigGoal[0][1] - back_pos[1]) ** 2)
+        print("Length from back to goal is: " + str(back_to_goal))
+        if back_to_goal < 340:
+            # When the robots back
+            print("I will deliver")
+            return Moves.MoveClass(MoveTypes.DELIVER, 0, 0)
+        else:
+            print("I will go back")
+            # The length of the backwards move is a bit arbitrary right now
+            # should probably be a pretty low value
+            Moves.MoveClass(MoveTypes.BACKWARD, 500, 30)
+    # This is taking further care of condition 2
+    if -175 > angleToTurn[1] or 175 < angleToTurn[1]:
+        # Here the robot should turn 180 degrees
+        return Moves.MoveClass(MoveTypes.TURN, 500, 180)
 
-    if angle_to_turn_y[1] > 6 & len(ball_locations) == 0:
-        print("i should move to center y: " + angle_to_turn_y[0])
-        print(str(angle_to_turn_y[1]) + " degrees")
+    # A problem here is that the robot should not drive to the goal but rather a point somewhat in front of the goal
+    # Therefore I will calculate the center of the field base on
+
+    # Now for number three here the robot should first turn into the point and then afterwards
+
+    center_of_field = [
+        ((int(bigGoal[0][0])) + (int(smallGoal[0][0]))) / 2, ((int(bigGoal[0][1])) + (int(smallGoal[0][1]))) / 2]
+    print("center_of_field: " + str(center_of_field))
+    goal_coordinate = [(int(bigGoal[0][0]) + center_of_field[0]) / 2, center_of_field[1]]
+    print("I will try to go to this coordinate: " + str(goal_coordinate))
+
+    # Here I am calculating the turn needed to go to the arbitrary point
+    angle_to_goal = calculate_turn(back_pos, front_pos, goal_coordinate)
+    print("I should turn: " + str(angle_to_goal) + " so i can drive to the preset point")
+
+    if 6 < angle_to_goal[1] < -6:
+        print("I am already turned the correct directio")
+        print(str(angle_to_goal[1]) + " degrees")
         # need to find distance moved for argument
-        return Moves.MoveClass(angle_to_turn_y[0], 500, argument_turn)
-
-    if angle_to_turn_y[1] <= 6:
-        # if the angle to turn is so low, that we are already on track for the correct y-axis,
-        # and the distance to drive is so small we assume we are on the desired x,y spot.
-        if drive_distance < 5:
-            print("I should turn: " + angle_to_goal[0])
-            print(str(angle_to_goal[1]) + " degrees")
-            argument = degree_to_argument(angle_to_goal[1])
-            return Moves.MoveClass(angle_to_goal[0], 500, -argument)
-            # here we have to turn with ass against small goal and reverse there
-
-    return Moves.MoveClass(MoveTypes.FORWARD, 600, drive_distance)
+        return Moves.MoveClass(angle_to_goal[0], 500, 400)
+    else:
+        return Moves.MoveClass(angle_to_goal[0], 500, angle_to_goal[1])
