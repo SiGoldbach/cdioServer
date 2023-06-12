@@ -34,56 +34,60 @@ def imageRecognitionHD(image):
     smallGoal = []
     bigGoal = []
     obstacle = []
-    corners = []
-    done = 0
+    corn = []
     for contour in cnts:
         x, y, w, h = cv.boundingRect(contour)
-        epsilon = 0.02 * cv.arcLength(contour, True)
+        epsilon = 0.01 * cv.arcLength(contour, True)
         approx = cv.approxPolyDP(contour, epsilon, True)
-        if np.logical_and(image[y, x][2] > 120, np.logical_and(160 >= image[y, x][0], w > 40) & done == 0):
-            if w > 500:
-                cv.drawContours(blank, [approx], -1, (150, 100, 255), 2)
+        print(image[y, x][2], image[y, x][0])
+        if np.logical_and(image[y, x][2] > 100, np.logical_and(170 >= image[y, x][0], w > 40)):
             M = cv.moments(contour)
+
             # Calculate the center of the contour
-            if M["m00"] != 0 & w > 500:
+            if M["m00"] != 0:
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
-                if w > 500:
+                if M["m00"] != 0:
+                    cv.drawContours(blank, [approx], -1, (150, 100, 255), 2)
                     cv.line(blank, (x, cY), (cX, cY), (0, 255, 0), 2)
                     cv.line(blank, (x + w, cY), (cX, cY), (255, 0, 0), 2)
                     cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
                     cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
 
-                    cv.circle(blank, (x, y), 10, (150, 150, 150), -1)
-                    cv.circle(blank, (x + w, y), 10, (150, 150, 150), -1)
-                    cv.circle(blank, (x, int(cY + h / 2)), 10, (150, 150, 150), -1)
-                    cv.circle(blank, (x + w, int(cY + h / 2)), 10, (150, 150, 150), -1)
-                    if w > 500:
-                        smallGoal.append([x,cY])
-                        bigGoal.append([x+w,cY])
-                        corners.append([x, y])
-                        corners.append([x + w, y])
-                        corners.append([x, int(cY + h / 2)])
-                        corners.append([x + w, int(cY + h / 2)])
+                    #cv.circle(blank, (x, y), 10, (150, 150, 150), -1)
+                    #cv.circle(blank, (x + w, y), 10, (150, 150, 150), -1)
+                    #cv.circle(blank, (x, int(cY + h / 2)), 10, (150, 150, 150), -1)
+                    #cv.circle(blank, (x + w, int(cY + h / 2)), 10, (150, 150, 150), -1)
+                    corners = cv.goodFeaturesToTrack(blurred, 4, 0.001, 600)
+                    corners = np.int0(corners)
+
+                    smallGoal.append([x, cY])
+                    bigGoal.append([x + w, cY])
+
+
+
+
+
+
 
 
 
     #detect obstacle
-    #for contour in cnts:
-        #x, y, w, h = cv.boundingRect(contour)
-        #if w < 100:
-            #cv.line(blank, (x, cY), (cX, cY), (0, 255, 0), 2)
-            #cv.line(blank, (x + w, cY), (cX, cY), (255, 0, 0), 2)
-            #cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
-            #cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
+    for contour in cnts:
+        x, y, w, h = cv.boundingRect(contour)
+        if w < 100 & w > 20:
+            cv.line(blank, (x, cY), (cX, cY), (0, 255, 0), 2)
+            cv.line(blank, (x + w, cY), (cX, cY), (255, 0, 0), 2)
+            cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
+            cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
 
-            #cv.circle(blank, (x, y), 10, (150, 150, 150), -1)
-            #cv.circle(blank, (x + w, y), 10, (150, 150, 150), -1)
-            #cv.circle(blank, (x, int(cY + h / 2)), 10, (150, 150, 150), -1)
-            #cv.circle(blank, (x + w, int(cY + h / 2)), 10, (150, 150, 150), -1)
-            #for points in contour:
-            #    x, y = points[0]
-            #    obstacle.append([x, y])
+            cv.circle(blank, (x, y), 10, (150, 150, 150), -1)
+            cv.circle(blank, (x + w, y), 10, (150, 150, 150), -1)
+            cv.circle(blank, (x, int(cY + h / 2)), 10, (150, 150, 150), -1)
+            cv.circle(blank, (x + w, int(cY + h / 2)), 10, (150, 150, 150), -1)
+            for points in contour:
+                x, y = points[0]
+                obstacle.append([x, y])
 
 
 
@@ -92,8 +96,7 @@ def imageRecognitionHD(image):
     end = time.time()
 
     time_for_transform = end - start
-    print("These are the coords of the corners: ",corners)
-    print("Amount of corners: " + str(len(corners)))
+    print("These are the coords of the corners: ",corn)
 
     cv.imshow('Original', image)
     cv.imshow('Field ', blank)
@@ -101,4 +104,4 @@ def imageRecognitionHD(image):
     print('Time for transform: ' + str(time_for_transform))
 
     cv.waitKey(0)
-    return smallGoal, bigGoal, obstacle, corners
+    return smallGoal, bigGoal, obstacle, corn
