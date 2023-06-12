@@ -2,6 +2,7 @@ import math
 
 import Moves
 import MoveTypes
+import detectField
 import detectRobotAndBalls
 
 
@@ -62,19 +63,6 @@ def calculate_turn_2(front_pos, back_pos, target_pos):
 
 
 # Method for calculating angle has been updated based on the quadrant and should now work in most cases
-def angle_good(p1, head1, ball1):
-    m1 = (head1[1] - p1[1]) / (head1[0] - p1[0])
-    m2 = (ball1[1] - p1[1]) / (ball1[0] - p1[0])
-
-    angle_cal = math.atan((m2 - m1) / (1 + m1 * m2)) * 180 / math.pi
-
-    # Adjust the angle based on the quadrant
-    if head1[0] - p1[0] < 0:
-        angle_cal += 180
-    elif ball1[0] - p1[0] < 0:
-        angle_cal += 180
-
-    return angle_cal
 
 
 def degree_to_argument(degrees):
@@ -243,11 +231,11 @@ def make_move(image):
         return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
 
-def drive_to_goal(ball_locations, front_pos, back_pos, center_of_field):
+def drive_to_goal(ball_locations, front_pos, back_pos, image):
+    smallGoal, obstacle, corners = detectField.imageRecognitionHD(image)
     # fictive goal location for this purpose. Need information from img-recognation
     center_of_field = [10, 10]
     # fictive goal location
-    goal_location = [3, 3]
 
     robot_mid_location = (int(back_pos[0]) + int(front_pos[0]) / 2, int(back_pos[1]) + int(front_pos[1]) / 2)
     align_robot_goal = [robot_mid_location[0], center_of_field[1]]
@@ -256,13 +244,13 @@ def drive_to_goal(ball_locations, front_pos, back_pos, center_of_field):
         (align_robot_goal[0] - robot_mid_location[0]) ** 2 + (align_robot_goal[1] - robot_mid_location[1]) ** 2)
     argument_turn = degree_to_argument(angle_to_turn_y[1])
     # need goal location x and y coordinates.
-    angle_to_goal = calculate_turn(front_pos, back_pos, goal_location)
+    angle_to_goal = calculate_turn(front_pos, back_pos, smallGoal)
 
     if angle_to_turn_y[1] > 6 & len(ball_locations) == 0:
         print("i should move to center y: " + angle_to_turn_y[0])
         print(str(angle_to_turn_y[1]) + " degrees")
         # need to find distance moved for argument
-        return Moves.MoveClass(angle_to_turn_y[0], 500, argument_turn)
+        return Moves.MoveClass(angle_to_turn_y[0], 500, angle_to_turn_y)
 
     if angle_to_turn_y[1] <= 6:
         # if the angle to turn is so low, that we are already on track for the correct y-axis,

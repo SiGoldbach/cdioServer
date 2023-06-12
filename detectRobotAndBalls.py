@@ -1,13 +1,11 @@
 import cv2 as cv
 import numpy as np
 import time
-import Calibration.cameraCalibrationv2
 
 
 def imageRecognitionHD(image):
     if image is None:
         print("No image found")
-    Calibration.cameraCalibrationv2.un_distort(image)
 
     height, width = image.shape[:2]
 
@@ -39,7 +37,7 @@ def imageRecognitionHD(image):
         param1=30,
         param2=12,
         minRadius=15,
-        maxRadius=16
+        maxRadius=18
     )
     circle = 0
     balls = []
@@ -77,10 +75,10 @@ def imageRecognitionHD(image):
             green = bgr_pixel[1]
             red = bgr_pixel[2]
 
-            green_threshold = 0
-            blue_threshold = 10
+            green_threshold = 30
+            blue_threshold = 25
             light_blue_threshold = 200
-
+            print(blue)
             if green > blue + green_threshold and green > red + green_threshold:
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (0, 255, 100), -1)
@@ -89,7 +87,7 @@ def imageRecognitionHD(image):
                 circle += 1
                 continue
 
-            if blue > red + blue_threshold and blue > green + blue_threshold or blue >= light_blue_threshold:
+            if (blue > red + blue_threshold and blue > green + blue_threshold) or blue >= light_blue_threshold:
                 print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (255, 255, 0), -1)
                 front.append(a)
