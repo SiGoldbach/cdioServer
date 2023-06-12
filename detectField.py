@@ -94,7 +94,7 @@ def imageRecognitionHD(image):
     time_for_transform = end - start
 
     cv.imshow('Original', image)
-    cv.imshow('Field ', blank)
+    cv.imshow('Field.py ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 
