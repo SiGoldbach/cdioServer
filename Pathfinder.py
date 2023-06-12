@@ -18,13 +18,13 @@ def robot_width():
     width = 2
     return width
 
+
 def robot_corner_radius(front_pos, back_pos):
     robot_center = robot_center_coordinates(front_pos, back_pos)
     x_center = robot_center[0]
     y_center = robot_center[1]
-    robot_width = 2
     robot_radius = math.sqrt((front_pos[0] - x_center) ** 2 + (front_pos[1] - y_center) ** 2)
-    radius = math.sqrt(robot_radius ** 2 + robot_width ** 2)
+    radius = math.sqrt(robot_radius ** 2 + robot_width() ** 2)
     return radius
 
 
@@ -201,9 +201,9 @@ def find_obstacles_in_circle(obstacles, front_pos, back_pos, corners):
     x_center = robot_center[0]
     y_center = robot_center[1]
     # hard coded width of robot
-    robot_width = 2
+    width = robot_width()
     robot_radius = math.sqrt((front_pos[0] - x_center) ** 2 + (front_pos[1] - y_center) ** 2)
-    radius = math.sqrt(robot_radius ** 2 + robot_width ** 2)
+    radius = math.sqrt(robot_radius ** 2 + width ** 2)
     obstacles_in_circle = []
     # hardcode more pixel in here to take in count of the "width" of the robot.
     for obstacle in obstacles:

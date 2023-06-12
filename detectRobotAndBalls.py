@@ -1,13 +1,11 @@
 import cv2 as cv
 import numpy as np
 import time
-import Calibration.cameraCalibrationv2
 
 
 def imageRecognitionHD(image):
     if image is None:
         print("No image found")
-    Calibration.cameraCalibrationv2.un_distort(image)
 
     height, width = image.shape[:2]
 
