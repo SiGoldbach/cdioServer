@@ -122,10 +122,6 @@ def imageRecognitionHD(image):
                 circle += 1
                 continue
 
-
-
-
-
     end = time.time()
 
     time_for_transform = end - start

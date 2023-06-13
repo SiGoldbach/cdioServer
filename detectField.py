@@ -66,7 +66,7 @@ def imageRecognitionHD(image):
                 corners = cv.goodFeaturesToTrack(gray, 4, 0.01, 400)
                 for corner in corners:
                     x, y = corner.ravel().astype(int)
-                    walls.append([x,y])
+                    walls.append([x, y])
                     cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
 
                 # Get goals

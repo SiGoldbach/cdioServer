@@ -1,11 +1,12 @@
 # I do not know how to make this immutable, do not change this objects state ever
 class Field:
-    def __init__(self, small_goal, large_goal, obstacle, corners, balls):
+    def __init__(self, small_goal, large_goal, obstacle, corners, balls,mode):
         self.small_goal = small_goal
         self.large_goal = large_goal
         self.obstacle = obstacle
         self.corners = corners
         self.balls = balls
+        self.mode = mode
 
     def __str__(self):
         return "The small goal's coordinates: " + str(self.small_goal) + "\n" + "The large goal's coordinates: " + str(
