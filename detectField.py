@@ -22,12 +22,14 @@ def imageRecognitionHD(image):
     blank[..., 2][red_mask == 1] = 255
 
     img_gray = cv.cvtColor(blank, cv.COLOR_BGR2GRAY)
-    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    gray = np.zeros((height, width), dtype=np.uint8)
+
     # Apply Gaussian blur to reduce noise
     blurred = cv.GaussianBlur(img_gray, (5, 5), 0)
 
     # Apply Canny edge detection
     edges = cv.Canny(blurred, 50, 150)
+
     # Find contours
     cnts, _ = cv.findContours(edges, cv.RETR_LIST, cv.CHAIN_APPROX_NONE)
     smallGoal = []
@@ -35,6 +37,7 @@ def imageRecognitionHD(image):
     obstacle = []
     walls = []
     done = 0
+
     for contour in cnts:
         x, y, w, h = cv.boundingRect(contour)
         epsilon = 0.01 * cv.arcLength(contour, True)
@@ -42,6 +45,7 @@ def imageRecognitionHD(image):
         if np.logical_and.reduce((image[y, x][2] > 100, 170 >= image[y, x][0], done == 0, w > 600)):
             done = 1
             M = cv.moments(contour)
+
             # Calculate the center of the contour
             if M["m00"] != 0:
                 cX = int(M["m10"] / M["m00"])
@@ -49,6 +53,8 @@ def imageRecognitionHD(image):
 
                 #Draw field
                 cv.drawContours(blank, [approx], -1, (150, 100, 255), 2)
+                cv.drawContours(gray, [approx], 0, 255, thickness=cv.FILLED)
+                corners = cv.goodFeaturesToTrack(gray, 4, 0.01, 400)
                 x, y, w, h = cv.boundingRect(approx)
 
                 #Draw path go goal from the center
@@ -60,8 +66,9 @@ def imageRecognitionHD(image):
                 #Draw corners
                 cv.circle(blank, (x, y), 5, (150, 150, 150), -1)
                 cv.circle(blank, (x + w, y), 5, (150, 150, 150), -1)
-                cv.circle(blank, (x + w - 10, y + h), 5, (150, 150, 150), -1)
+                cv.circle(blank, (x + w, y + h), 5, (150, 150, 150), -1)
                 cv.circle(blank, (x, y + h), 5, (150, 150, 150), -1)
+                print(corners)
 
                 #Get goals
                 smallGoal.append(x)
