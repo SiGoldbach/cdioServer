@@ -86,27 +86,6 @@ def calculate_line(target_x, target_y, robot_x, robot_y):
     return line1, line2
 
 
-def calculate_possible_max_turn(front_pos, back_pos, obstacles):
-    # Calculate the max turn angle the robot can make before hitting an obstacle
-
-    # Determine the robot's orientation
-    robot_orientation = math.atan2(back_pos[1] - front_pos[1], back_pos[0] - front_pos[0])
-
-    # Calculate the vectors to the obstacles
-    obstacle_vectors = [(obstacle[0] - front_pos[0], obstacle[1] - front_pos[1]) for obstacle in obstacles]
-
-    # Calculate the angles between the robot's orientation and the obstacle vectors
-    relative_angles = [math.degrees(math.atan2(vector[1], vector[0]) - robot_orientation) for vector in
-                       obstacle_vectors]
-
-    # Determine the available turning space
-    min_angle = min(relative_angles)
-    max_angle = max(relative_angles)
-    available_turn_space = max_angle - min_angle
-
-    return available_turn_space
-
-
 def check_for_obstacle_front(obstacles, target_x, target_y, robot_x, robot_y):
     line1, line2 = calculate_line(target_x, target_y, robot_x, robot_y)
     # method scanning for obstacles.
