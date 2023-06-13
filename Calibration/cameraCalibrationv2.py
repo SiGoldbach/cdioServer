@@ -2,7 +2,7 @@ import numpy as np
 import cv2 as cv
 import glob
 
-################ FIND CHESSBOARD CORNERS - OBJECT POINTS AND IMAGE POINTS #############################
+# Chessboard calibration, from size and number of squares
 
 chessboardSize = (12, 8)
 frameSize = (1280, 720)
@@ -36,14 +36,12 @@ for image in images:
         corners2 = cv.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
         imgpoints.append(corners2)  # Use refined corners
 
-############## CALIBRATION #######################################################
-
 ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(
     objpoints, imgpoints, frameSize, None, None
 )
 
 
-############## UNDISTORTION #####################################################
+# Undistortion function
 
 def undistort_image(frame):
     h, w = frame.shape[:2]
@@ -64,9 +62,7 @@ def undistort_image(frame):
         return None
 
 
-################ CONTINUOUS UNDISTORTION ########################################
-
+# Continuous undistortion function
 def continuous_undistortion(image):
     undistorted_image = undistort_image(image)
     return undistorted_image
-
