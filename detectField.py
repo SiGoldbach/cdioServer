@@ -54,7 +54,6 @@ def imageRecognitionHD(image):
                 #Draw field
                 cv.drawContours(blank, [approx], -1, (150, 100, 255), 2)
                 cv.drawContours(gray, [approx], 0, 255, thickness=cv.FILLED)
-                corners = cv.goodFeaturesToTrack(gray, 4, 0.01, 400)
                 x, y, w, h = cv.boundingRect(approx)
 
                 #Draw path go goal from the center
@@ -63,12 +62,10 @@ def imageRecognitionHD(image):
                 cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
                 cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
 
-                #Draw corners
-                cv.circle(blank, (x, y), 5, (150, 150, 150), -1)
-                cv.circle(blank, (x + w, y), 5, (150, 150, 150), -1)
-                cv.circle(blank, (x + w, y + h), 5, (150, 150, 150), -1)
-                cv.circle(blank, (x, y + h), 5, (150, 150, 150), -1)
-                print(corners)
+                corners = cv.goodFeaturesToTrack(gray, 4, 0.01, 400)
+                for corner in corners:
+                    x, y = corner.ravel().astype(int)
+                    cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
 
                 #Get goals
                 smallGoal.append(x)

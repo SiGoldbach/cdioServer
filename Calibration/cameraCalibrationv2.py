@@ -66,7 +66,7 @@ def undistort_image(frame):
         return None
 ################ CONTINUOUS UNDISTORTION ########################################
 def continuous_undistortion():
-    cap = cv.VideoCapture(0)  # Use 0 or the appropriate camera index
+    cap = cv.VideoCapture(1,cv.CAP_DSHOW)  # Use 0 or the appropriate camera index
     while True:
         ret, frame = cap.read()
         if ret:
