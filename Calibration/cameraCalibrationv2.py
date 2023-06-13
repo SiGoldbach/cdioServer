@@ -2,15 +2,15 @@ import numpy as np
 import cv2 as cv
 import glob
 
-################ FIND CHESSBOARD CORNERS - OBJECT POINTS AND IMAGE POINTS #############################
+# Chessboard calibration, from size and number of squares
 
 chessboardSize = (12, 8)
 frameSize = (1280, 720)
 
-# termination criteria
+# Termination criteria
 criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
-# prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
+# Prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
 objp = np.zeros((chessboardSize[0] * chessboardSize[1], 3), np.float32)
 objp[:, :2] = np.mgrid[0:chessboardSize[0], 0:chessboardSize[1]].T.reshape(-1, 2)
 
@@ -35,22 +35,15 @@ for image in images:
         objpoints.append(objp)
         corners2 = cv.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
         imgpoints.append(corners2)  # Use refined corners
-        # cv.drawChessboardCorners(img, chessboardSize, corners2, ret)
-        # cv.imshow('img', img)
-        # cv.waitKey(1000)
-
-cv.destroyAllWindows()
-
-############## CALIBRATION #######################################################
 
 ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(
     objpoints, imgpoints, frameSize, None, None
 )
 
 
-############## UNDISTORTION #####################################################
+# Undistortion function
 
-def un_distort(frame):
+def undistort_image(frame):
     h, w = frame.shape[:2]
     newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 1, frameSize)
 
@@ -60,31 +53,16 @@ def un_distort(frame):
     # Crop the image
     x, y, w, h = roi
     dst = dst[y:y + h, x:x + w]
-    dst = cv.resize(dst, frameSize)
 
-    cv.imwrite('caliResult1.jpg', dst)
+    # Check if the resulting image is valid
+    if dst.shape[0] > 0 and dst.shape[1] > 0:
+        dst = cv.resize(dst, frameSize)
+        return dst
+    else:
+        return None
 
-    # Un distort with Remapping
-    mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w, h),
-                                            cv.CV_32FC1)  # Use cv.CV_32FC1 for better precision
-    dst = cv.remap(frame, mapx, mapy, cv.INTER_LINEAR)
 
-    # Crop the image
-    x, y, w, h = roi
-    dst = dst[y:y + h, x:x + w]
-    dst = cv.resize(dst, frameSize)
-
-    cv.imwrite('caliResult3.jpg', dst)
-
-    # Reprojection Error
-    mean_error = 0
-
-    for i in range(len(objpoints)):
-        imgpoints2, _ = cv.projectPoints(objpoints[i], rvecs[i], tvecs[i], cameraMatrix, dist)
-        error = cv.norm(imgpoints[i], imgpoints2, cv.NORM_L2) / len(imgpoints2)
-        mean_error += error
-
-    print("total error: {}".format(mean_error / len(objpoints)))
-    return dst
-
-# un_distort(cv.imread('calibration_images/calibration_photo_1.jpg'))
+# Continuous undistortion function
+def continuous_undistortion(image):
+    undistorted_image = undistort_image(image)
+    return undistorted_image

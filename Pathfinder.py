@@ -1,6 +1,7 @@
 import math
 import Moves
 import MoveTypes
+import detectField
 import detectRobotAndBalls
 
 
@@ -48,7 +49,6 @@ def find_nearest_ball(front, ball_locations):
 
 
 # This function finds the angle between the two vector that are ass to ball and ass to head
-# DEN HER LORTE_METODE SER UD TIL AT VIRKE EFTER DEN IKKE VIRKEREDE FLERE GANGE I TRÆK
 # This goes from left to right if the value is negative the robot is to the right.
 def calculate_turn(back, front, ball):
     # Calculate the vector from the front to the back of the robot
@@ -72,12 +72,6 @@ def calculate_turn(back, front, ball):
     # print(180 - angle_degrees)
 
     return MoveTypes.TURN, angle_degrees
-
-
-def degree_to_argument(degrees):
-    print("Calculating argument ")
-    argumentTurn = (degrees - -5.862845) / 0.209388
-    return int(argumentTurn) / 2
 
 
 def calculate_line(target_x, target_y, robot_x, robot_y):
@@ -193,7 +187,8 @@ def check_borders(corners, front_pos, back_pos):
 # At current time:
 # The robot can turn and align itself to a ball
 # It can move forward if is aligned
-def make_move(image):
+# Change has been added to this function so it is now a collect balls method
+def collect_balls(image):
     print("Now doing image recognition")
     front, back, balls = detectRobotAndBalls.imageRecognitionHD(image)
     # Temporary if statement
@@ -216,36 +211,44 @@ def make_move(image):
     else:
         return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
+def move_to_point(image, point):
+    front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
+    angle_to_turn = calculate_turn(back_pos, front_pos, point)
 
-def drive_to_goal(ball_locations, front_pos, back_pos, center_of_field):
-    # fictive goal location for this purpose. Need information from img-recognation
-    center_of_field = [10, 10]
-    # fictive goal location
-    goal_location = [3, 3]
+    if front_pos is None or back_pos is None:
+        return Moves.MoveClass(MoveTypes.TURN, 500, 50)
 
-    robot_mid_location = (int(back_pos[0]) + int(front_pos[0]) / 2, int(back_pos[1]) + int(front_pos[1]) / 2)
-    align_robot_goal = [robot_mid_location[0], center_of_field[1]]
-    angle_to_turn_y = calculate_turn(front_pos, back_pos, align_robot_goal)
-    drive_distance = math.sqrt(
-        (align_robot_goal[0] - robot_mid_location[0]) ** 2 + (align_robot_goal[1] - robot_mid_location[1]) ** 2)
-    argument_turn = degree_to_argument(angle_to_turn_y[1])
-    # need goal location x and y coordinates.
-    angle_to_goal = calculate_turn(front_pos, back_pos, goal_location)
+    if angle_to_turn[1] > 5 or angle_to_turn[1] < -5:
+        print("I should turn: " + str(angle_to_turn))
+        print(str(angle_to_turn) + " degrees")
+        return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn[1])
+    if front_pos[0] > point[0]:
+        return Moves.MoveClass(MoveTypes.BACKWARD, 500, 10)
+    else:
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
-    if angle_to_turn_y[1] > 6 & len(ball_locations) == 0:
-        print("i should move to center y: " + angle_to_turn_y[0])
-        print(str(angle_to_turn_y[1]) + " degrees")
-        # need to find distance moved for argument
-        return Moves.MoveClass(angle_to_turn_y[0], 500, argument_turn)
+def deliver_balls(image, field):
+    front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
+    print("Front_pos: " + str(front_pos))
+    print("Back_pos: " + str(back_pos))
 
-    if angle_to_turn_y[1] <= 6:
-        # if the angle to turn is so low, that we are already on track for the correct y-axis,
-        # and the distance to drive is so small we assume we are on the desired x,y spot.
-        if drive_distance < 5:
-            print("I should turn: " + angle_to_goal[0])
-            print(str(angle_to_goal[1]) + " degrees")
-            argument = degree_to_argument(angle_to_goal[1])
-            return Moves.MoveClass(angle_to_goal[0], 500, -argument)
-            # here we have to turn with ass against small goal and reverse there
+    # As of right now I assume the first big goal i get is the correct one
+    print(len(field.large_goal))
 
-    return Moves.MoveClass(MoveTypes.FORWARD, 600, drive_distance)
+    if len(field.large_goal) == 0:
+        print("big goal is none")
+        field.large_goal.append([1142, 375])
+    if len(field.small_goal) == 0:
+        field.small_goal.append([300, 375])
+
+    print("big_goal: " + str(field.large_goal[0]))
+    # I make the same assumption with the small goal
+    print("small_goal`: " + str(field.small_goal[0]))
+    robot_center = robot_center_coordinates(front_pos, back_pos)
+    horizontal_to_goal = [robot_center[0], field.large_goal[1]]
+
+    move_to_point(image, horizontal_to_goal)
+
+    #the +50 is a buffer so that the robot doesnt drive into the goal
+    move_to_point(image, [field.large_goal[0]+50, field.large_goal[1]])
+    move_to_point(image, [back_pos, field.large_goal[1]])
