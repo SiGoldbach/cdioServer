@@ -13,7 +13,6 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
     obstacles_in_range = Pathfinder.find_obstacle_in_circle(obstacles, front_pos, back_pos)
 
     for obstacle in obstacles_in_range:
-        print("obstacles: ", obstacle)
         # Calculate the vector from the back of the robot to the obstacle
         robot_to_obstacle = (obstacle[0] - robot_middle[0], obstacle[1] - robot_middle[1])
 
@@ -37,7 +36,7 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
 
     smallest_angle = min(angles)  # Find the smallest angle in the array
 
-    return smallest_angle, angles
+    return smallest_angle
 
 
 def robot_front_edge(front_pos, back_pos, side):
@@ -84,14 +83,31 @@ def robot_mid_edge(front_pos, back_pos, side):
         raise Exception("Wrong input. Only chose 'left' or 'right' ")
 
 
+def calculate_max_turn(front_pos, back_pos, obstacles, side):
+    front_turn = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)
+    back_turn = calculate_obstacle_angle(front_pos, back_pos, obstacles, side)
+    print("front closes angle: ", front_turn)
+    print("back closes angle: ", back_turn)
+
+    if front_turn < back_turn:
+        return front_turn
+    if back_turn < front_turn:
+        return back_turn
+    else:
+        print("max turn is equal left or right")
+        return back_turn
+
+
 back_pos = (5.55, 2.16)
 front_pos = (11.55, 6.16)
 obstacles = [(7.94, 7.52), (6.93521, 1.35819)]  # Corrected the obstacles to be a list of tuples
-side = "right"
+side = "left"
 
 edgepointmid = robot_mid_edge(front_pos, back_pos, side)
 edgepointfront = robot_front_edge(front_pos, back_pos, side)
-testangle = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)
+# testangle = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)
+maxangle = calculate_max_turn(front_pos, back_pos, obstacles, side)
 print("new point mid ", edgepointmid)
 print("new point front: ", edgepointfront)
-print("new angle: ", testangle)
+# print("new angle: ", testangle)
+print("smallest angle: ", maxangle)
