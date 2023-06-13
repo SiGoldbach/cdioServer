@@ -7,24 +7,27 @@ import Moves
 import Pathfinder
 import detectField
 import Field
+import detectRobotAndBalls
 
+# Setting up the video feed
 print("Tyring to start liveVideoFeed")
 video = cv2.VideoCapture(0)
 print("LiveVideoFeed has started")
-
+# Changing the resolution
 video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 video.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 print("Done increasing video quality")
 gotten_field = False
 field = None
-
+# Sleeping to make sure camera is focused before taking picture of the field to get better camera quality
 time.sleep(5)
 
 print("I got this far")
 while not gotten_field:
     ret, field_image = video.read()
-    smallGoal, bigGoal, obstacle = detectField.imageRecognitionHD(field_image)
-    field = Field.Field(smallGoal, bigGoal, obstacle, None)
+    smallGoal, bigGoal, obstacle, corners = detectField.imageRecognitionHD(field_image)
+    front, back, balls = detectRobotAndBalls.imageRecognitionHD(field_image)
+    field = Field.Field(smallGoal, bigGoal, obstacle, corners, balls)
     gotten_field = ret
 print(field.__str__())
 
