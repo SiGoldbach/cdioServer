@@ -82,8 +82,8 @@ def robot_mid_edge(front_pos, back_pos, side):
 
 
 def calculate_max_left_turn(front_pos, back_pos, obstacles, side):
-    smallest_angle_back, not_use = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)
-    smallest_angle_front, not_use2 = calculate_obstacle_angle(front_pos, back_pos, obstacles, side)
+    smallest_angle_front, not_use = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)
+    smallest_angle_back, not_use2 = calculate_obstacle_angle(front_pos, back_pos, obstacles, side)
     print("front closes angle: ", smallest_angle_front)
     print("back closes angle: ", smallest_angle_back)
     if smallest_angle_front < smallest_angle_back:
@@ -118,10 +118,10 @@ def max_turn(front_pos, back_pos, obstacle, side):
         return max_right
 
 
-front_pos = (-12, 10)
-back_pos= (-15, 7)
-obstacles = [(-12, 8), (-15, 10)]
-side = "left"
+back_pos = (-12, 10)
+front_pos = (-15, 7)
+obstacles = [(-15, 11), (-13, 6), (-12, 8)]
+side = "right"
 
 # edgepointmid = robot_mid_edge(front_pos, back_pos, side)
 # edgepointmid2 = robot_mid_edge(back_pos, front_pos, side)
