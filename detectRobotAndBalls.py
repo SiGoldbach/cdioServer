@@ -37,7 +37,7 @@ def imageRecognitionHD(image):
         param1=30,
         param2=12,
         minRadius=23,
-        maxRadius=26
+        maxRadius=24
     )
 
     detected_Back = cv.HoughCircles(
@@ -88,7 +88,7 @@ def imageRecognitionHD(image):
             red = bgr_pixel[2]
 
             green_threshold = 0
-            blue_threshold = 0
+            blue_threshold = 20
             light_blue_threshold = 200
 
             if blue > red + blue_threshold and blue > green + blue_threshold or blue >= light_blue_threshold:

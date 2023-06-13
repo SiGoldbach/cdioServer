@@ -213,7 +213,7 @@ def collect_balls(image):
 
 def drive_to_goal(image):
     front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
-    smallGoal, bigGoal, obstacle = detectField.imageRecognitionHD(image)
+    smallGoal, bigGoal, obstacle, walls = detectField.imageRecognitionHD(image)
     print("Front_pos: " + str(front_pos))
     print("Back_pos: " + str(back_pos))
     # As of right now I assume the first big goal i get is the correct one
@@ -227,7 +227,7 @@ def drive_to_goal(image):
     # I make the same assumption with the small goal
     print("small_goal`: " + str(smallGoal[0]))
 
-    angleToTurn = calculate_turn(front_pos, back_pos, bigGoal[0])
+    angleToTurn = calculate_turn(front_pos, back_pos, bigGoal)
     print("Angle to turn is from back: " + str(angleToTurn))
     # Here angle to turn is calculated from the front since the angle here needs to be low for the two
     # vectors to point the same direction
@@ -240,11 +240,11 @@ def drive_to_goal(image):
     if -7 < angleToTurn[1] < 7:
         print("Robot is close to aligned to the center")
         # I will now figure out what direction the robot has and how close to the goal the robot is
-        front_to_goal = math.sqrt((bigGoal[0][0] - front_pos[0]) ** 2 + (bigGoal[0][1] - front_pos[1]) ** 2)
+        front_to_goal = math.sqrt((bigGoal[0] - front_pos[0]) ** 2 + (bigGoal[1] - front_pos[1]) ** 2)
         print("Length from front to goal is: " + str(front_to_goal))
-        back_to_goal = math.sqrt((bigGoal[0][0] - back_pos[0]) ** 2 + (bigGoal[0][1] - back_pos[1]) ** 2)
+        back_to_goal = math.sqrt((bigGoal[0] - back_pos[0]) ** 2 + (bigGoal[1] - back_pos[1]) ** 2)
         print("Length from back to goal is: " + str(back_to_goal))
-        if back_to_goal < 340:
+        if back_to_goal < 250:
             # When the robots back
             print("I will deliver")
             return Moves.MoveClass(MoveTypes.DELIVER, 0, 0)
@@ -265,9 +265,9 @@ def drive_to_goal(image):
     # Now for number three here the robot should first turn into the point and then afterwards
 
     center_of_field = [
-        ((int(bigGoal[0][0])) + (int(smallGoal[0][0]))) / 2, ((int(bigGoal[0][1])) + (int(smallGoal[0][1]))) / 2]
+        ((int(bigGoal[0])) + (int(smallGoal[0]))) / 2, ((int(bigGoal[1])) + (int(smallGoal[1]))) / 2]
     print("center_of_field: " + str(center_of_field))
-    target_coordinate = [(int(bigGoal[0][0]) + center_of_field[0]) / 2, center_of_field[1]]
+    target_coordinate = [(int(bigGoal[0]) + center_of_field[0]) / 2, center_of_field[1]]
     print("I will try to go to this coordinate: " + str(target_coordinate))
 
     front_len = math.sqrt((center_of_field[0] - int(front_pos[0])) ** 2 + (center_of_field[1] - int(front_pos[1])) ** 2)
@@ -284,7 +284,7 @@ def drive_to_goal(image):
     print("I should turn: " + str(angle_to_goal) + " so i can drive to the preset point")
 
     if 6 < angle_to_goal[1] < -6:
-        print("I am already turned the correct directio")
+        print("I am already turned the correct direction")
         print(str(angle_to_goal[1]) + " degrees")
         # need to find distance moved for argument
         return Moves.MoveClass(angle_to_goal[0], 500, 400)
