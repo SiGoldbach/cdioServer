@@ -1,3 +1,5 @@
+import time
+
 import cv2
 
 import Pathfinder
@@ -14,13 +16,16 @@ print("Done setting vi")
 gotten_field = False
 field = None
 
+time.sleep(5)
+
 print("I got this far")
 while not gotten_field:
     ret, field_image = video.read()
-    smallGoal, bigGoal, obstacle, corners = detectField.imageRecognitionHD(field_image)
-    field = Field.Field(smallGoal, bigGoal, obstacle, corners)
+    smallGoal, bigGoal, obstacle = detectField.imageRecognitionHD(field_image)
+    field = Field.Field(smallGoal, bigGoal, obstacle, None)
     gotten_field = ret
 print(field.__str__())
+
 
 
 def calculate_move():
