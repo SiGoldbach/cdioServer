@@ -244,7 +244,7 @@ def drive_to_goal(image):
         print("Length from front to goal is: " + str(front_to_goal))
         back_to_goal = math.sqrt((bigGoal[0] - back_pos[0]) ** 2 + (bigGoal[1] - back_pos[1]) ** 2)
         print("Length from back to goal is: " + str(back_to_goal))
-        if back_to_goal < 340:
+        if back_to_goal < 250:
             # When the robots back
             print("I will deliver")
             return Moves.MoveClass(MoveTypes.DELIVER, 0, 0)
