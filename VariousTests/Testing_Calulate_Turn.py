@@ -159,8 +159,8 @@ ball10 = [8, -6]
 print("The angle should be: -45 and is: " + str(Pathfinder.calculate_turn(p10, head10, ball10)))
 
 
-p11 = [668, 246]
-head11 = [590, 252]
-ball11 = [378, 450]
+p11 = [906, 168]
+head11 = [796, 180]
+ball11 = [816, 332]
 # angle should be 32
-print("The angle should be: " + str(Pathfinder.calculate_turn(p11, head11, ball11)))
+print("Real test: " + str(Pathfinder.calculate_turn(p11, head11, ball11)))

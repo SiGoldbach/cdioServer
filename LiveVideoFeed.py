@@ -12,7 +12,7 @@ import robot_modes
 
 # Setting up the video feed
 print("Tyring to start liveVideoFeed")
-video = cv2.VideoCapture(0)
+video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 print("LiveVideoFeed has started")
 # Changing the resolution
 video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
@@ -26,9 +26,9 @@ time.sleep(5)
 print("Video quality has been increased and the program have slept 5 seconds to focus")
 while not gotten_field:
     ret, field_image = video.read()
-    smallGoal, bigGoal, obstacle, corners = detectField.imageRecognitionHD(field_image)
-    front, back, balls = detectRobotAndBalls.imageRecognitionHD(field_image)
-    field = Field.Field(smallGoal, bigGoal, obstacle, corners, balls, robot_modes.DELIVER)
+    smallGoal, bigGoal, obstacle, corners = detectField.imageRecognitionHD(video)
+    front, back, balls = detectRobotAndBalls.imageRecognitionHD(video)
+    field = Field.Field(smallGoal, bigGoal, obstacle, corners, balls, robot_modes.COLLECT)
     gotten_field = ret
 print(field.__str__())
 
@@ -36,17 +36,10 @@ print(field.__str__())
 # As for right now this function just returns the tiniest turn just to make sure the client does not crash
 # Now there is a check here if the robot needs to try and collect the balls or try to deliver the balls
 def calculate_move():
-    ret_bool, image = video.read()
-    if ret_bool:
-        print("Image has been read")
-        try:
-            if field.mode == robot_modes.COLLECT:
-                return Pathfinder.collect_balls(image)
-            if field.mode != robot_modes.COLLECT:
-                return Pathfinder.deliver_balls(image, field)
-        except IndexError:
-            print("Index error typically the robot can't be found or the ball array is empty ")
-            return Moves.MoveClass(MoveTypes.TURN, 500, -5)
+    if field.mode == robot_modes.COLLECT:
+        return Pathfinder.collect_balls(video)
+    elif field.mode == robot_modes.DELIVER:
+        return Pathfinder.deliver_balls(video, field)
     else:
         return Moves.MoveClass(MoveTypes.TURN, 500, 5)
 
