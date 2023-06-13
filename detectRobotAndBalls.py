@@ -36,7 +36,7 @@ def imageRecognitionHD(image):
         1,
         20,
         param1=30,
-        param2=12,
+        param2=20,
         minRadius=21,
         maxRadius=24
     )
@@ -47,7 +47,7 @@ def imageRecognitionHD(image):
         1,
         20,
         param1=30,
-        param2=12,
+        param2=20,
         minRadius=13,
         maxRadius=17
     )
