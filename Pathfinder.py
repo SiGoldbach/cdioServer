@@ -147,6 +147,8 @@ def check_for_obstacle_location(obstacles, line1, line2):
         return False
 
 
+
+# MIGHT NOT WORK PROPERLY
 def find_obstacle_in_circle(obstacles, front_pos, back_pos):
     robot_length = get_robot_length(front_pos, back_pos)
     robot_center = robot_center_coordinates(front_pos, back_pos)

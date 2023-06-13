@@ -64,7 +64,7 @@ def robot_edge_point(front_pos, back_pos, side):
 back_pos = (5.55, 2.16)
 front_pos = (11.55, 6.16)
 obstacles = [(7.94, 7.52), (6.93521, 1.35819)]  # Corrected the obstacles to be a list of tuples
-side = "left"
+side = "right"
 
 edgepoint = robot_edge_point(front_pos, back_pos, side)
 testangle = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)

@@ -12,7 +12,7 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
 
     obstacles_in_range = Pathfinder.find_obstacle_in_circle(obstacles, front_pos, back_pos)
 
-    for obstacle in obstacles_in_range:
+    for obstacle in obstacles:
         # Calculate the vector from the back of the robot to the obstacle
         robot_to_obstacle = (obstacle[0] - robot_middle[0], obstacle[1] - robot_middle[1])
 
@@ -35,7 +35,6 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
         angles.append(angle_degrees)  # Add the angle to the array
 
     smallest_angle = min(angles)  # Find the smallest angle in the array
-
     return smallest_angle
 
 
@@ -88,7 +87,6 @@ def calculate_max_turn(front_pos, back_pos, obstacles, side):
     back_turn = calculate_obstacle_angle(front_pos, back_pos, obstacles, side)
     print("front closes angle: ", front_turn)
     print("back closes angle: ", back_turn)
-
     if front_turn < back_turn:
         return front_turn
     if back_turn < front_turn:
@@ -98,12 +96,13 @@ def calculate_max_turn(front_pos, back_pos, obstacles, side):
         return back_turn
 
 
-back_pos = (5.55, 2.16)
-front_pos = (11.55, 6.16)
-obstacles = [(7.94, 7.52), (6.93521, 1.35819)]  # Corrected the obstacles to be a list of tuples
-side = "left"
+back_pos = (-12, 10)
+front_pos = (-15, 7)
+obstacles = [(-15, 11), (-13, 6)]
 
+side = "left"
 edgepointmid = robot_mid_edge(front_pos, back_pos, side)
+edgepointmid2 = robot_mid_edge(back_pos, front_pos, side)
 edgepointfront = robot_front_edge(front_pos, back_pos, side)
 # testangle = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)
 maxangle = calculate_max_turn(front_pos, back_pos, obstacles, side)
@@ -111,3 +110,4 @@ print("new point mid ", edgepointmid)
 print("new point front: ", edgepointfront)
 # print("new angle: ", testangle)
 print("smallest angle: ", maxangle)
+print("new point mid2: ", edgepointmid2)
