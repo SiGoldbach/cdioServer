@@ -120,14 +120,14 @@ def max_turn(front_pos, back_pos, obstacle, side):
 
 back_pos = (-12, 10)
 front_pos = (-15, 7)
-obstacles = [(-15, 11), (-13, 6)]
-
+obstacles = [(-15, 11), (-13, 6), (-12, 8)]
 side = "left"
-edgepointmid = robot_mid_edge(front_pos, back_pos, side)
-edgepointmid2 = robot_mid_edge(back_pos, front_pos, side)
-edgepointfront = robot_front_edge(front_pos, back_pos, side)
+
+# edgepointmid = robot_mid_edge(front_pos, back_pos, side)
+# edgepointmid2 = robot_mid_edge(back_pos, front_pos, side)
+# edgepointfront = robot_front_edge(front_pos, back_pos, side)
 # testangle = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)
-maxangle = calculate_max_left_turn(front_pos, back_pos, obstacles, side)
+# maxangle = calculate_max_left_turn(front_pos, back_pos, obstacles, side)
 maxangle2 = max_turn(front_pos, back_pos, obstacles, side)
 print("max side testtesttest: ", maxangle2)
 # print("new point mid ", edgepointmid)
