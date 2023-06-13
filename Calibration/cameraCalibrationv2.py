@@ -35,9 +35,6 @@ for image in images:
         objpoints.append(objp)
         corners2 = cv.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
         imgpoints.append(corners2)  # Use refined corners
-        # cv.drawChessboardCorners(img, chessboardSize, corners2, ret)
-        # cv.imshow('img', img)
-        # cv.waitKey(1000)
 
 cv.destroyAllWindows()
 
@@ -50,7 +47,7 @@ ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(
 
 ############## UNDISTORTION #####################################################
 
-def un_distort(frame):
+def undistort_image(frame):
     h, w = frame.shape[:2]
     newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 1, frameSize)
 
@@ -60,31 +57,25 @@ def un_distort(frame):
     # Crop the image
     x, y, w, h = roi
     dst = dst[y:y + h, x:x + w]
-    dst = cv.resize(dst, frameSize)
 
-    cv.imwrite('caliResult1.jpg', dst)
-
-    # Un distort with Remapping
-    mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w, h),
-                                            cv.CV_32FC1)  # Use cv.CV_32FC1 for better precision
-    dst = cv.remap(frame, mapx, mapy, cv.INTER_LINEAR)
-
-    # Crop the image
-    x, y, w, h = roi
-    dst = dst[y:y + h, x:x + w]
-    dst = cv.resize(dst, frameSize)
-
-    cv.imwrite('caliResult3.jpg', dst)
-
-    # Reprojection Error
-    mean_error = 0
-
-    for i in range(len(objpoints)):
-        imgpoints2, _ = cv.projectPoints(objpoints[i], rvecs[i], tvecs[i], cameraMatrix, dist)
-        error = cv.norm(imgpoints[i], imgpoints2, cv.NORM_L2) / len(imgpoints2)
-        mean_error += error
-
-    print("total error: {}".format(mean_error / len(objpoints)))
-    return dst
-
-# un_distort(cv.imread('calibration_images/calibration_photo_1.jpg'))
+    # Check if the resulting image is valid
+    if dst.shape[0] > 0 and dst.shape[1] > 0:
+        dst = cv.resize(dst, frameSize)
+        return dst
+    else:
+        return None
+################ CONTINUOUS UNDISTORTION ########################################
+def continuous_undistortion():
+    cap = cv.VideoCapture(0)  # Use 0 or the appropriate camera index
+    while True:
+        ret, frame = cap.read()
+        if ret:
+            undistorted_frame = undistort_image(frame)
+            # Check if the undistorted frame is valid
+            if undistorted_frame is not None:
+                cv.imshow('Undistorted Image', undistorted_frame)
+        if cv.waitKey(1) == ord('q'):
+            break
+    cap.release()
+    cv.destroyAllWindows()
+continuous_undistortion()
