@@ -13,6 +13,7 @@ def imageRecognitionHD(image):
 
     start = time.time()
 
+
     img_height, img_width, _ = image.shape
 
     # Circle detection
@@ -24,8 +25,8 @@ def imageRecognitionHD(image):
         1,
         20,
         param1=50,
-        param2=13,
-        minRadius=9,
+        param2=12,
+        minRadius=8,
         maxRadius=11
     )
 
@@ -56,11 +57,13 @@ def imageRecognitionHD(image):
 
     if detected_Balls is not None:
         detected_circles = np.uint16(np.around(detected_Balls))
+
         for pt in detected_circles[0, :]:
             a, b, r = pt[0], pt[1], pt[2]
 
+            #8, 194, 252
             if np.logical_and.reduce(
-                    (50 >= image[b, a][0], 160 <= image[b, a][1], 190 >= image[b, a][1], 160 <= image[b, a][2])):
+                    (70 >= image[b, a][0], 100 <= image[b, a][1], 240 >= image[b, a][1], 160 <= image[b, a][2])):
                 print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
                 cv.circle(blank, (a, b), r, (0, 150, 255), -1)
                 balls.append([a, b])
@@ -75,7 +78,6 @@ def imageRecognitionHD(image):
 
     back = []
     front = []
-
     if detected_Front is not None:
         detected_circles = np.uint16(np.around(detected_Front))
         for pt in detected_circles[0, :]:
@@ -87,7 +89,6 @@ def imageRecognitionHD(image):
             green = bgr_pixel[1]
             red = bgr_pixel[2]
 
-            green_threshold = 0
             blue_threshold = 20
             light_blue_threshold = 200
 
@@ -111,8 +112,6 @@ def imageRecognitionHD(image):
             red = bgr_pixel[2]
 
             green_threshold = 0
-            blue_threshold = 0
-            light_blue_threshold = 200
 
             if green > blue + green_threshold and green > red + green_threshold:
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
