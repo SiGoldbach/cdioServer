@@ -73,6 +73,10 @@ def calculate_turn(back, front, ball):
     return MoveTypes.TURN, angle_degrees
 
 
+def calculate_drive_distance(distance):
+    return distance * 2
+
+
 def calculate_line(target_x, target_y, robot_x, robot_y):
     m = ((int(target_y) - int(robot_y)) / (int(target_x) - int(robot_x)))
     b = robot_y - m * robot_x

@@ -13,7 +13,6 @@ def imageRecognitionHD(image):
 
     start = time.time()
 
-
     img_height, img_width, _ = image.shape
 
     # Circle detection
@@ -38,7 +37,7 @@ def imageRecognitionHD(image):
         param1=30,
         param2=12,
         minRadius=23,
-        maxRadius=24
+        maxRadius=27
     )
 
     detected_Back = cv.HoughCircles(
@@ -61,7 +60,7 @@ def imageRecognitionHD(image):
         for pt in detected_circles[0, :]:
             a, b, r = pt[0], pt[1], pt[2]
 
-            #8, 194, 252
+            # 8, 194, 252
             if np.logical_and.reduce(
                     (70 >= image[b, a][0], 100 <= image[b, a][1], 240 >= image[b, a][1], 160 <= image[b, a][2])):
                 print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
@@ -111,7 +110,7 @@ def imageRecognitionHD(image):
             green = bgr_pixel[1]
             red = bgr_pixel[2]
 
-            green_threshold = 0
+            green_threshold = -10
 
             if green > blue + green_threshold and green > red + green_threshold:
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
