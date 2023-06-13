@@ -24,8 +24,12 @@ def hello_world():  # put application's code here
 def fun():
     # Image.calculate_move()
     move1 = LiveVideoFeed.calculate_move()
-    move_as_json = json.dumps(move1.__dict__)
-    return move_as_json
+    try:
+        move_as_json = json.dumps(move1.__dict__)
+        return move_as_json
+    except AttributeError:
+        print("Server failure")
+        return json.dumps(Moves.MoveClass(MoveTypes.ERROR, 500, -50).__dict__)
 
 
 @app.route('/get_command')

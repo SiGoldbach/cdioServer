@@ -66,7 +66,7 @@ def imageRecognitionHD(image):
                 corners = cv.goodFeaturesToTrack(gray, 4, 0.01, 400)
                 for corner in corners:
                     x, y = corner.ravel().astype(int)
-                    walls.append([x,y])
+                    walls.append([x, y])
                     cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
 
                 # Get goals
@@ -82,21 +82,14 @@ def imageRecognitionHD(image):
         x, y, w, h = cv.boundingRect(approx)
         if np.logical_and(h > 80, h < 200):
             cv.drawContours(blank, [approx], -1, (255, 100, 150), 2)
-            corners = cv.goodFeaturesToTrack(img_gray, 12, 0.01, 1, useHarrisDetector=True, k=0.04)
-            corners = np.int0(corners)
-            for i in corners:
-                u, j = i.ravel()
-                if np.logical_and(u < 800, u > 300):
-                    cv.circle(blank, (u, j), 5, (0, 255, 0), -1)
 
             for points in contour:
                 p, t = points[0]
-                obstacle.append(p)
-                obstacle.append(t)
+                obstacle.append([p, t])
 
     end = time.time()
     time_for_transform = end - start
-    print(walls)
+
     cv.imshow('Original', image)
     cv.imshow('Field.py ', blank)
 
