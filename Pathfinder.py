@@ -72,6 +72,7 @@ def calculate_turn(back, front, ball):
 
     return MoveTypes.TURN, angle_degrees
 
+
 def calculate_line(target_x, target_y, robot_x, robot_y):
     m = ((int(target_y) - int(robot_y)) / (int(target_x) - int(robot_x)))
     b = robot_y - m * robot_x
@@ -212,7 +213,7 @@ def collect_balls(image):
 
 def drive_to_goal(image):
     front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
-    smallGoal, bigGoal, obstacle, corners = detectField.imageRecognitionHD(image)
+    smallGoal, bigGoal, obstacle = detectField.imageRecognitionHD(image)
     print("Front_pos: " + str(front_pos))
     print("Back_pos: " + str(back_pos))
     # As of right now I assume the first big goal i get is the correct one
@@ -227,7 +228,7 @@ def drive_to_goal(image):
     print("small_goal`: " + str(smallGoal[0]))
 
     angleToTurn = calculate_turn(front_pos, back_pos, bigGoal[0])
-    print("Angle tu turn is from back: " + str(angleToTurn))
+    print("Angle to turn is from back: " + str(angleToTurn))
     # Here angle to turn is calculated from the front since the angle here needs to be low for the two
     # vectors to point the same direction
     # I here need to have three cases one i the robot is ready to deliver
@@ -253,9 +254,10 @@ def drive_to_goal(image):
             # should probably be a pretty low value
             Moves.MoveClass(MoveTypes.BACKWARD, 500, 30)
     # This is taking further care of condition 2
-    if -175 > angleToTurn[1] or 175 < angleToTurn[1]:
+    if -174 > angleToTurn[1] or 174 < angleToTurn[1]:
         # Here the robot should turn 180 degrees
-        return Moves.MoveClass(MoveTypes.TURN, 500, 180)
+        # Robot is in line with the goal and should turn around
+        return Moves.MoveClass(MoveTypes.TURN, 500, angleToTurn[1])
 
     # A problem here is that the robot should not drive to the goal but rather a point somewhat in front of the goal
     # Therefore I will calculate the center of the field base on
@@ -265,11 +267,20 @@ def drive_to_goal(image):
     center_of_field = [
         ((int(bigGoal[0][0])) + (int(smallGoal[0][0]))) / 2, ((int(bigGoal[0][1])) + (int(smallGoal[0][1]))) / 2]
     print("center_of_field: " + str(center_of_field))
-    goal_coordinate = [(int(bigGoal[0][0]) + center_of_field[0]) / 2, center_of_field[1]]
-    print("I will try to go to this coordinate: " + str(goal_coordinate))
+    target_coordinate = [(int(bigGoal[0][0]) + center_of_field[0]) / 2, center_of_field[1]]
+    print("I will try to go to this coordinate: " + str(target_coordinate))
+
+    front_len = math.sqrt((center_of_field[0] - int(front_pos[0])) ** 2 + (center_of_field[1] - int(front_pos[1])) ** 2)
+    back_len = math.sqrt((center_of_field[0] - int(back_pos[0])) ** 2 + (center_of_field[1] - int(back_pos[1])) ** 2)
+
+    if front_len < 100 and back_len < 100:
+        print("The robot is at the preset point and should turn the angle calculated earlier")
+        return Moves.MoveClass(MoveTypes.TURN, 500, angleToTurn[1])
 
     # Here I am calculating the turn needed to go to the arbitrary point
-    angle_to_goal = calculate_turn(back_pos, front_pos, goal_coordinate)
+    # The robot should try to figure out if it is on this point or not
+
+    angle_to_goal = calculate_turn(back_pos, front_pos, target_coordinate)
     print("I should turn: " + str(angle_to_goal) + " so i can drive to the preset point")
 
     if 6 < angle_to_goal[1] < -6:
