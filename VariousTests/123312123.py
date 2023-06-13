@@ -17,7 +17,12 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
                 angles.append(angle)  # Add the angle to the array
 
         if side == "right":
-            if angle < 0:
+
+            if angle > 180:
+                angle = 360 - angle
+                angles.append(angle)
+            elif angle < 0:
+                angle = angle * -1
                 angles.append(angle)
 
     smallest_angle = min(angles)  # Find the smallest angle in the array
@@ -89,17 +94,11 @@ def calculate_max_left_turn(front_pos, back_pos, obstacles, side):
 
 
 def calculate_max_right_turn(front_pos, back_pos, obstacles, side):
-    not_use, largest_angle_front = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)
-    not_use2, largest_angle_back = calculate_obstacle_angle(front_pos, back_pos, obstacles, side)
-    print("front closes angle: ", largest_angle_front)
-    print("back closes angle: ", largest_angle_back)
-    if largest_angle_front < largest_angle_back:
-        return largest_angle_front
-    if largest_angle_back < largest_angle_front:
-        return largest_angle_back
-    else:
-        print("max turn is equal left or right")
-        return largest_angle_back
+    smallest_angle_front, not_use = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)
+    smallest_angle_back, not_use2 = calculate_obstacle_angle(front_pos, back_pos, obstacles, side)
+    print("front closes angle: ", smallest_angle_front)
+    print("back closes angle: ", smallest_angle_back)
+    return min(smallest_angle_front, smallest_angle_back)
 
 
 def max_turn(front_pos, back_pos, obstacle, side):
@@ -114,7 +113,7 @@ def max_turn(front_pos, back_pos, obstacle, side):
 back_pos = (14, -4)
 front_pos = (10, -8)
 obstacles = [(8.69, -5.2), (14.5, -5.6), (12.5, -8.3)]
-side = "right"
+side = "left"
 
 # edgepointmid = robot_mid_edge(front_pos, back_pos, side)
 # edgepointmid2 = robot_mid_edge(back_pos, front_pos, side)
