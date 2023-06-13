@@ -64,8 +64,15 @@ def imageRecognitionHD(image):
                 cv.circle(blank, (x, y + h), 5, (150, 150, 150), -1)
 
                 #Get goals
-                smallGoal.append([x, cY])
-                bigGoal.append([x + w, cY])
+                smallGoal.append(x)
+                smallGoal.append(cY)
+                bigGoal.append(x + w)
+                bigGoal.append(cY)
+
+                for points in contour:
+                    p, t = points[0]
+                    walls.append(p)
+                    walls.append(t)
 
 
     # detect obstacle
@@ -84,13 +91,13 @@ def imageRecognitionHD(image):
 
             for points in contour:
                 p, t = points[0]
-                print(points[0])
-                obstacle.append([p, t])
+                obstacle.append(p)
+                obstacle.append(t)
+
 
 
 
     end = time.time()
-
     time_for_transform = end - start
 
     cv.imshow('Original', image)
@@ -99,4 +106,4 @@ def imageRecognitionHD(image):
     print('Time for transform: ' + str(time_for_transform))
 
     cv.waitKey(0)
-    return smallGoal, bigGoal, obstacle
+    return smallGoal, bigGoal, obstacle, walls
