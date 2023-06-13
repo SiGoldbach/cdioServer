@@ -90,10 +90,10 @@ def imageRecognitionHD(image):
     end = time.time()
     time_for_transform = end - start
 
-    cv.imshow('Original', image)
-    cv.imshow('Field.py ', blank)
+    # cv.imshow('Original', image)
+    # cv.imshow('Field.py ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 
-    cv.waitKey(0)
+    # cv.waitKey(0)
     return smallGoal, bigGoal, obstacle, walls

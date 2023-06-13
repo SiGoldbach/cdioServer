@@ -5,8 +5,8 @@
 import cv2 as cv
 import Pathfinder
 
-image = cv.imread('../Resources/Pictures/funnuy2.jpg')
+image = cv.imread('../Resources/Pictures/dist2.jpg')
 if image is None:
     print("None")
-move = Pathfinder.deliver_balls(image)
+move = Pathfinder.collect_balls(image)
 move.print()

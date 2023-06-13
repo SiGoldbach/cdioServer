@@ -47,7 +47,7 @@ def imageRecognitionHD(image):
         20,
         param1=30,
         param2=12,
-        minRadius=13,
+        minRadius=15,
         maxRadius=17
     )
 
@@ -125,10 +125,10 @@ def imageRecognitionHD(image):
     time_for_transform = end - start
     print("Amount of circles: " + str(circle))
     print("Amount of balls: " + str(len(balls)))
-    cv.imshow('Original', image)
-    cv.imshow('Obstacles and balls drawn: ', blank)
+    # cv.imshow('Original', image)
+    # cv.imshow('Obstacles and balls drawn: ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 
-    cv.waitKey(0)
+    # cv.waitKey(0)
     return front, back, balls

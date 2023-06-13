@@ -53,7 +53,7 @@ def find_nearest_ball(front, ball_locations):
 def calculate_turn(back, front, ball):
     # Calculate the vector from the front to the back of the robot
     # MIGHT HAVE TO CHANGE "front" AND "back"
-    robot_vector = (front[0] - back[0], front[1] - back[1])
+    robot_vector = (int(front[0]) - int(back[0]), int(front[1]) - int(back[1]))
 
     # Calculate the vector from the front of the robot to the target position
     target_vector = (int(ball[0]) - int(back[0]), int(ball[1]) - int(back[1]))
@@ -191,17 +191,15 @@ def check_borders(corners, front_pos, back_pos):
 # It can move forward if is aligned
 # Change has been added to this function so it is now a collect balls method
 def collect_balls(image):
-    print("Now doing image recognition")
     front, back, balls = detectRobotAndBalls.imageRecognitionHD(image)
     # Temporary if statement
     if front is None or back is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 50)
     nearest_ball, distance = find_nearest_ball(front, balls)
 
-    print("The turn will now be calculated with: ")
-    print(str(front))
-    print(str(back))
-    print(str(nearest_ball))
+    print("Back: ", str(back))
+    print("Front: ", str(front))
+    print("Closest ball: ", str(nearest_ball))
 
     angle_to_turn = calculate_turn(back, front, nearest_ball)
     print(angle_to_turn)
@@ -211,7 +209,7 @@ def collect_balls(image):
         print(str(angle_to_turn) + " degrees")
         return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
-        return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance * 1.2))
 
 
 def move_to_bigGoal_hori(image, point):
@@ -236,7 +234,8 @@ def move_to_bigGoal(image, point):
     if front_pos is None or back_pos is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 50)
 
-    if robot_center_coordinates(front_pos, back_pos)[1] > point[1] + 10 & robot_center_coordinates(front_pos, back_pos)[1] < point[1] - 10:
+    if robot_center_coordinates(front_pos, back_pos)[1] > point[1] + 10 & robot_center_coordinates(front_pos, back_pos)[
+        1] < point[1] - 10:
         return "done"
     if angle_to_turn[1] > 5 or angle_to_turn[1] < -5:
         print("I should turn: " + str(angle_to_turn))
