@@ -152,8 +152,6 @@ def find_obstacle_in_circle(obstacles, front_pos, back_pos):
     robot_center = robot_center_coordinates(front_pos, back_pos)
     robot_radius = robot_length / 2
     obstacles_in_range = []
-    print(robot_center)
-    print(robot_radius)
     for obstacle in obstacles:
         x, y = obstacle
         obstacle_distance = math.sqrt((x - robot_center[0]) ** 2 + (y - robot_center[1]) ** 2)
