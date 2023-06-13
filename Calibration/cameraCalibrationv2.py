@@ -64,18 +64,30 @@ def undistort_image(frame):
         return dst
     else:
         return None
+
+
 ################ CONTINUOUS UNDISTORTION ########################################
+
 def continuous_undistortion():
-    cap = cv.VideoCapture(0)  # Use 0 or the appropriate camera index
+    video = cv.VideoCapture(1, cv.CAP_DSHOW)  # Use 0 or the appropriate camera index
+
+    video.set(cv.CAP_PROP_FRAME_WIDTH, frameSize[0])
+    video.set(cv.CAP_PROP_FRAME_HEIGHT, frameSize[1])
+
     while True:
-        ret, frame = cap.read()
+        ret, frame = video.read()
+
         if ret:
             undistorted_frame = undistort_image(frame)
+
             # Check if the undistorted frame is valid
             if undistorted_frame is not None:
                 cv.imshow('Undistorted Image', undistorted_frame)
+
         if cv.waitKey(1) == ord('q'):
             break
-    cap.release()
+
+    video.release()
     cv.destroyAllWindows()
+
 continuous_undistortion()
