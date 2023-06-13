@@ -42,7 +42,7 @@ def calculate_move():
         try:
             if field.mode == robot_modes.COLLECT:
                 return Pathfinder.collect_balls(image)
-            if field.mode == robot_modes.COLLECT:
+            if field.mode != robot_modes.COLLECT:
                 return Pathfinder.deliver_balls(image, field)
         except IndexError:
             print("Index error typically the robot can't be found or the ball array is empty ")

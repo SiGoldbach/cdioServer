@@ -10,7 +10,7 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
     robot_front = robot_front_edge(front_pos, back_pos, side)
     angles = []
 
-    for obstacle in obstacles:
+    for obstacle in Pathfinder.find_obstacle_in_circle(obstacles, front_pos, back_pos):
         # Calculate the vector from the back of the robot to the obstacle
         robot_to_obstacle = (obstacle[0] - robot_middle[0], obstacle[1] - robot_middle[1])
 

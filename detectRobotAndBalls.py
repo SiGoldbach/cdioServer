@@ -37,7 +37,7 @@ def imageRecognitionHD(image):
         20,
         param1=30,
         param2=12,
-        minRadius=23,
+        minRadius=21,
         maxRadius=24
     )
 
@@ -89,7 +89,7 @@ def imageRecognitionHD(image):
             green = bgr_pixel[1]
             red = bgr_pixel[2]
 
-            blue_threshold = 20
+            blue_threshold = 10
             light_blue_threshold = 200
 
             if blue > red + blue_threshold and blue > green + blue_threshold or blue >= light_blue_threshold:
@@ -111,7 +111,7 @@ def imageRecognitionHD(image):
             green = bgr_pixel[1]
             red = bgr_pixel[2]
 
-            green_threshold = 0
+            green_threshold = -40
 
             if green > blue + green_threshold and green > red + green_threshold:
                 print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
