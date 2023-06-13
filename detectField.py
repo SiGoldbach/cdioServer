@@ -3,8 +3,9 @@ import numpy as np
 import time
 
 
-def imageRecognitionHD(image):
-    if image is None:
+def imageRecognitionHD(video):
+    ret, image = video.read()
+    if ret is None:
         print("No image found")
 
     height, width = image.shape[:2]

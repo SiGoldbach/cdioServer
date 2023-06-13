@@ -2,11 +2,13 @@
 # This is not much of a black box test
 # This
 
-import cv2 as cv
+import cv2
 import Pathfinder
 
-image = cv.imread('../Resources/Pictures/dist2.jpg')
-if image is None:
-    print("None")
-move = Pathfinder.collect_balls(image)
+video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+print("LiveVideoFeed has started")
+# Changing the resolution
+video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+video.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+move = Pathfinder.collect_balls(video)
 move.print()

@@ -11,7 +11,7 @@ def get_robot_length(front_pos, back_pos):
 
 
 def robot_center_coordinates(front_pos, back_pos):
-    robot_center = (front_pos[0] + back_pos[0]) / 2, (front_pos[1] + back_pos[1]) / 2
+    robot_center = (int(front_pos[0]) + int(back_pos[0])) / 2, (int(front_pos[1]) + int(back_pos[1])) / 2
     return robot_center
 
 
@@ -29,16 +29,15 @@ def robot_corner_radius(front_pos, back_pos):
     return radius
 
 
-def find_nearest_ball(front, ball_locations):
+def find_nearest_ball(front_pos, ball_locations):
     closest_distance = float('inf')
     closest_coordinate = []
-    r1 = int(front[0])
-    r2 = int(front[1])
+    r1 = int(front_pos[0])
+    r2 = int(front_pos[1])
 
     for coordinate in ball_locations:
         x = int(coordinate[0])
         y = int(coordinate[1])
-        print((x - r1) ** 2 + (y - r2) ** 2)
         distance = math.sqrt((x - r1) ** 2 + (y - r2) ** 2)
 
         if distance < closest_distance:
@@ -50,13 +49,13 @@ def find_nearest_ball(front, ball_locations):
 
 # This function finds the angle between the two vector that are ass to ball and ass to head
 # This goes from left to right if the value is negative the robot is to the right.
-def calculate_turn(back, front, ball):
+def calculate_turn(back_pos, front_pos, ball_pos):
     # Calculate the vector from the front to the back of the robot
     # MIGHT HAVE TO CHANGE "front" AND "back"
-    robot_vector = (int(front[0]) - int(back[0]), int(front[1]) - int(back[1]))
+    robot_vector = (int(front_pos[0]) - int(back_pos[0]), int(front_pos[1]) - int(back_pos[1]))
 
     # Calculate the vector from the front of the robot to the target position
-    target_vector = (int(ball[0]) - int(back[0]), int(ball[1]) - int(back[1]))
+    target_vector = (int(ball_pos[0]) - int(back_pos[0]), int(ball_pos[1]) - int(back_pos[1]))
 
     # Calculate the signed angle between the robot vector and the target vector
     angle_radians = math.atan2(target_vector[1], target_vector[0]) - math.atan2(robot_vector[1], robot_vector[0])
@@ -190,18 +189,18 @@ def check_borders(corners, front_pos, back_pos):
 # The robot can turn and align itself to a ball
 # It can move forward if is aligned
 # Change has been added to this function so it is now a collect balls method
-def collect_balls(image):
-    front, back, balls = detectRobotAndBalls.imageRecognitionHD(image)
+def collect_balls(video):
+    front_pos, back, balls = detectRobotAndBalls.imageRecognitionHD(video)
     # Temporary if statement
-    if front is None or back is None:
+    if front_pos is None or back is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 50)
-    nearest_ball, distance = find_nearest_ball(front, balls)
+    nearest_ball, distance = find_nearest_ball(front_pos, balls)
 
     print("Back: ", str(back))
-    print("Front: ", str(front))
+    print("Front: ", str(front_pos))
     print("Closest ball: ", str(nearest_ball))
 
-    angle_to_turn = calculate_turn(back, front, nearest_ball)
+    angle_to_turn = calculate_turn(back_pos=robot_center_coordinates(front_pos, back), front_pos=front_pos, ball_pos=nearest_ball)
     print(angle_to_turn)
 
     if angle_to_turn > 5 or angle_to_turn < -5:
