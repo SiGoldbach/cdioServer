@@ -8,5 +8,5 @@ import Pathfinder
 image = cv.imread('../Resources/Pictures/funnuy2.jpg')
 if image is None:
     print("None")
-move = Pathfinder.collect_balls(image)
+move = Pathfinder.deliver_balls(image)
 move.print()
