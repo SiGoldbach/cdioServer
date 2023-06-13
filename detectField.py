@@ -40,9 +40,10 @@ def imageRecognitionHD(image):
 
     for contour in cnts:
         x, y, w, h = cv.boundingRect(contour)
-        epsilon = 0.01 * cv.arcLength(contour, True)
-        approx = cv.approxPolyDP(contour, epsilon, True)
+
         if np.logical_and.reduce((image[y, x][2] > 100, 170 >= image[y, x][0], done == 0, w > 600)):
+            epsilon = 0.01 * cv.arcLength(contour, True)
+            approx = cv.approxPolyDP(contour, epsilon, True)
             done = 1
             M = cv.moments(contour)
 
@@ -51,12 +52,12 @@ def imageRecognitionHD(image):
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
 
-                #Draw field
+                # Draw field
                 cv.drawContours(blank, [approx], -1, (150, 100, 255), 2)
                 cv.drawContours(gray, [approx], 0, 255, thickness=cv.FILLED)
                 x, y, w, h = cv.boundingRect(approx)
 
-                #Draw path go goal from the center
+                # Draw path go goal from the center
                 cv.line(blank, (x, cY), (cX, cY), (0, 255, 0), 2)
                 cv.line(blank, (x + w, cY), (cX, cY), (255, 0, 0), 2)
                 cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
@@ -65,19 +66,14 @@ def imageRecognitionHD(image):
                 corners = cv.goodFeaturesToTrack(gray, 4, 0.01, 400)
                 for corner in corners:
                     x, y = corner.ravel().astype(int)
+                    walls.append([x,y])
                     cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
 
-                #Get goals
+                # Get goals
                 smallGoal.append(x)
                 smallGoal.append(cY)
                 bigGoal.append(x + w)
                 bigGoal.append(cY)
-
-                for points in contour:
-                    p, t = points[0]
-                    walls.append(p)
-                    walls.append(t)
-
 
     # detect obstacle
     for contour in cnts:
@@ -98,12 +94,9 @@ def imageRecognitionHD(image):
                 obstacle.append(p)
                 obstacle.append(t)
 
-
-
-
     end = time.time()
     time_for_transform = end - start
-
+    print(walls)
     cv.imshow('Original', image)
     cv.imshow('Field.py ', blank)
 
