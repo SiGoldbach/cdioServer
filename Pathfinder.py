@@ -52,7 +52,8 @@ def find_nearest_ball(front, ball_locations):
 # This goes from left to right if the value is negative the robot is to the right.
 def calculate_turn(back, front, ball):
     # Calculate the vector from the front to the back of the robot
-    robot_vector = (int(front[0]) - int(back[0]), int(front[1]) - int(back[1]))
+    # MIGHT HAVE TO CHANGE "front" AND "back"
+    robot_vector = (front[0] - back[0], front[1] - back[1])
 
     # Calculate the vector from the front of the robot to the target position
     target_vector = (int(ball[0]) - int(back[0]), int(ball[1]) - int(back[1]))
