@@ -71,7 +71,7 @@ def calculate_turn(back, front, ball):
 
     # print(180 - angle_degrees)
 
-    return MoveTypes.TURN, angle_degrees
+    return angle_degrees
 
 
 def calculate_line(target_x, target_y, robot_x, robot_y):
@@ -141,12 +141,10 @@ def check_for_obstacle_location(obstacles, line1, line2):
         return False
 
 
-
 # MIGHT NOT WORK PROPERLY
 def find_obstacle_in_circle(obstacles, front_pos, back_pos):
-    robot_length = get_robot_length(front_pos, back_pos)
     robot_center = robot_center_coordinates(front_pos, back_pos)
-    robot_radius = robot_length / 2
+    robot_radius = robot_corner_radius(front_pos, back_pos)
     obstacles_in_range = []
     for obstacle in obstacles:
         x, y = obstacle
@@ -204,20 +202,38 @@ def collect_balls(image):
     angle_to_turn = calculate_turn(back, front, nearest_ball)
     print(angle_to_turn)
 
-    if angle_to_turn[1] > 5 or angle_to_turn[1] < -5:
+    if angle_to_turn > 5 or angle_to_turn < -5:
         print("I should turn: " + str(angle_to_turn))
         print(str(angle_to_turn) + " degrees")
-        return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn[1])
+        return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
         return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
-def move_to_point(image, point):
+
+def move_to_bigGoal_hori(image, point):
     front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
     angle_to_turn = calculate_turn(back_pos, front_pos, point)
 
     if front_pos is None or back_pos is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 50)
 
+    if angle_to_turn > 5 or angle_to_turn < -5:
+        print("I should turn: " + str(angle_to_turn))
+        print(str(angle_to_turn) + " degrees")
+        return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
+    else:
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
+
+
+def move_to_bigGoal(image, point):
+    front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
+    angle_to_turn = calculate_turn(back_pos, front_pos, point)
+
+    if front_pos is None or back_pos is None:
+        return Moves.MoveClass(MoveTypes.TURN, 500, 50)
+
+    if robot_center_coordinates(front_pos, back_pos)[1] > point[1] + 10 & robot_center_coordinates(front_pos, back_pos)[1] < point[1] - 10:
+        return "done"
     if angle_to_turn[1] > 5 or angle_to_turn[1] < -5:
         print("I should turn: " + str(angle_to_turn))
         print(str(angle_to_turn) + " degrees")
@@ -226,6 +242,7 @@ def move_to_point(image, point):
         return Moves.MoveClass(MoveTypes.BACKWARD, 500, 10)
     else:
         return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
+
 
 def deliver_balls(image, field):
     front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
@@ -246,9 +263,19 @@ def deliver_balls(image, field):
     print("small_goal`: " + str(field.small_goal[0]))
     robot_center = robot_center_coordinates(front_pos, back_pos)
     horizontal_to_goal = [robot_center[0], field.large_goal[1]]
+    big_goal = field.large_goal
+    angle = calculate_turn(back_pos, front_pos, field.large_goal)
 
-    move_to_point(image, horizontal_to_goal)
-
-    #the +50 is a buffer so that the robot doesnt drive into the goal
-    move_to_point(image, [field.large_goal[0]+50, field.large_goal[1]])
-    move_to_point(image, [back_pos, field.large_goal[1]])
+    if angle < 5 & int(angle) > -5:
+        if robot_center_coordinates(front_pos, back_pos)[1] > big_goal[1] + 10 & \
+                robot_center_coordinates(front_pos, back_pos)[1] < big_goal[1] - 10:
+            if robot_center_coordinates(front_pos, back_pos)[0] > big_goal[0] + 90 & \
+                    robot_center_coordinates(front_pos, back_pos)[0] < big_goal[0] + 110:
+                if front_pos[0] > back_pos[0]:
+                    return Moves.MoveClass(MoveTypes.DELIVER, 0, 0)
+                else:
+                    return Moves.MoveClass(MoveTypes.TURN, 350, 180)
+            else:
+                return move_to_bigGoal(image, big_goal)
+        else:
+            return move_to_bigGoal_hori(image, horizontal_to_goal)
