@@ -11,30 +11,23 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
     angles = []
 
     for obstacle in Pathfinder.find_obstacle_in_circle(obstacles, front_pos, back_pos):
-        # Calculate the vector from the back of the robot to the obstacle
-        robot_to_obstacle = (obstacle[0] - robot_middle[0], obstacle[1] - robot_middle[1])
+        angle = getAngle(robot_front, robot_middle, obstacle)
+        if side == "left":
+            if angle > 0:
+                angles.append(angle)  # Add the angle to the array
 
-        # Calculate the vector representing the direction of the robot
-        robot_direction = (robot_front[0] - robot_middle[0], robot_front[1] - robot_middle[1])
-
-        # Calculate the dot product of the two vectors
-        dot_product = robot_to_obstacle[0] * robot_direction[0] + robot_to_obstacle[1] * robot_direction[1]
-
-        # Calculate the magnitudes of the two vectors
-        robot_to_obstacle_magnitude = math.sqrt(robot_to_obstacle[0] ** 2 + robot_to_obstacle[1] ** 2)
-        robot_direction_magnitude = math.sqrt(robot_direction[0] ** 2 + robot_direction[1] ** 2)
-
-        # Calculate the angle in radians using the arccosine function
-        angle_radians = math.acos(dot_product / (robot_to_obstacle_magnitude * robot_direction_magnitude))
-
-        # Convert the angle to degrees
-        angle_degrees = math.degrees(angle_radians)
-
-        angles.append(angle_degrees)  # Add the angle to the array
+        if side == "right":
+            if angle < 0:
+                angles.append(angle)
 
     smallest_angle = min(angles)  # Find the smallest angle in the array
     largest_angle = max(angles)
     return smallest_angle, largest_angle
+
+
+def getAngle(F, D, O):
+    ang = math.degrees(math.atan2(O[1] - D[1], O[0] - D[0]) - math.atan2(F[1] - D[1], F[0] - D[0]))
+    return ang
 
 
 def robot_front_edge(front_pos, back_pos, side):
@@ -121,7 +114,7 @@ def max_turn(front_pos, back_pos, obstacle, side):
 back_pos = (14, -4)
 front_pos = (10, -8)
 obstacles = [(8.69, -5.2), (14.5, -5.6), (12.5, -8.3)]
-side = "left"
+side = "right"
 
 # edgepointmid = robot_mid_edge(front_pos, back_pos, side)
 # edgepointmid2 = robot_mid_edge(back_pos, front_pos, side)
