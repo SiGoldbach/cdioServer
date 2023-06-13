@@ -4,6 +4,11 @@ import numpy as np
 
 np.set_printoptions(precision=3, suppress=True)
 
+#
+#
+# Test this a lot with cases. Debug to make sure i never get a scenario with unhandeled outcome
+#
+#
 
 def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
     robot_middle = robot_mid_edge(front_pos, back_pos, side)
@@ -110,10 +115,10 @@ def max_turn(front_pos, back_pos, obstacle, side):
         return max_right
 
 
-back_pos = (14, -4)
-front_pos = (10, -8)
+back_pos = (10, -8)
+front_pos = (14, -4)
 obstacles = [(8.69, -5.2), (14.5, -5.6), (12.5, -8.3)]
-side = "left"
+side = "right"
 
 # edgepointmid = robot_mid_edge(front_pos, back_pos, side)
 # edgepointmid2 = robot_mid_edge(back_pos, front_pos, side)
