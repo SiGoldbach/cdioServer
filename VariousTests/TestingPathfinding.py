@@ -10,5 +10,5 @@ print("LiveVideoFeed has started")
 # Changing the resolution
 video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 video.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-move = Pathfinder.collect_balls(video)
+move = Pathfinder.deliver_balls(video)
 move.print()
