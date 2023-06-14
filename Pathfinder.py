@@ -171,8 +171,9 @@ def check_borders(corners, front_pos, back_pos):
 def collect_balls(video):
     front_pos, back, balls = detectRobotAndBalls.imageRecognitionHD(video)
     # Temporary if statement
-    if front_pos is None or back is None:
-        return Moves.MoveClass(MoveTypes.TURN, 500, 50)
+    while len(front_pos) != 2 or len(back) != 2:
+        front_pos, back, balls = detectRobotAndBalls.imageRecognitionHD(video)
+
     nearest_ball, distance = find_nearest_ball(front_pos, balls)
 
     print("Back: ", str(back))
