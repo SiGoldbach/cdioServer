@@ -1,9 +1,8 @@
 import sys
-
 import cv2 as cv
 import numpy as np
 import time
-
+import Pathfinder
 
 # Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until
 # the robot is found
@@ -14,15 +13,14 @@ def imageRecognitionHD(frame):
         videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
         videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 
-
         balls = []
         back = []
         front = []
 
         ret, image = videoCapture.read()
+
         if ret is None:
             print("No image found")
-
 
         height, width = image.shape[:2]
 
@@ -76,7 +74,6 @@ def imageRecognitionHD(frame):
             for pt in detected_circles[0, :]:
                 a, b, r = pt[0], pt[1], pt[2]
 
-                # 8, 194, 252
                 if np.logical_and.reduce(
                         (70 >= image[b, a][0], 100 <= image[b, a][1], 240 >= image[b, a][1], 160 <= image[b, a][2])):
                     print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
@@ -105,7 +102,12 @@ def imageRecognitionHD(frame):
                 blue_threshold = 10
                 light_blue_threshold = 200
 
-                if blue > red + blue_threshold and blue > green + blue_threshold or blue >= light_blue_threshold:
+                # Adaptive Gaussian thresholding
+                gray_roi = gray_blurred[b - r: b + r, a - r: a + r]
+                _, threshold = cv.threshold(gray_roi, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+                blue_threshold = np.mean(threshold) * 0.9
+
+                if (blue > red + blue_threshold and blue > green + blue_threshold) or blue >= light_blue_threshold:
                     print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
                     cv.circle(blank, (a, b), r, (255, 255, 0), -1)
                     front.append(a)
@@ -126,6 +128,11 @@ def imageRecognitionHD(frame):
 
                 green_threshold = -40
 
+                # Adaptive Gaussian thresholding
+                gray_roi = gray_blurred[b - r: b + r, a - r: a + r]
+                _, threshold = cv.threshold(gray_roi, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+                green_threshold = np.mean(threshold) * -0.4
+
                 if green > blue + green_threshold and green > red + green_threshold:
                     print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
                     cv.circle(blank, (a, b), r, (0, 255, 100), -1)
@@ -139,13 +146,14 @@ def imageRecognitionHD(frame):
         time_for_transform = end - start
         print("Amount of circles: " + str(circle))
         print("Amount of balls: " + str(len(balls)))
-        #cv.imshow('Original', image)
-        #cv.imshow('Obstacles and balls drawn: ', blank)
+        # cv.imshow('Original', image)
+        # cv.imshow('Obstacles and balls drawn: ', blank)
         print(len(front))
         print(len(back))
 
         print('Time for transform: ' + str(time_for_transform))
 
-        #cv.waitKey(0)
+        # cv.waitKey(0)
         if len(front) == 2 & len(back) == 2:
-            return front, back, balls
+            if Pathfinder.get_robot_length(front, back) < 200:
+                return front, back, balls

@@ -195,12 +195,12 @@ def collect_balls(video):
 def move_to_goal(image, point):
     front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
     angle_to_turn = calculate_turn(back_pos, front_pos, point)
-
+    robot_center = robot_center_coordinates(front_pos, back_pos)
     if front_pos is None or back_pos is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 50)
 
-    if robot_center_coordinates(front_pos, back_pos)[1] > point[1] + 10 & robot_center_coordinates(front_pos, back_pos)[
-        1] < point[1] - 10:
+    if robot_center[1] > point[1] + 10 & \
+            int(robot_center[1]) < point[1] - 10:
         return "done"
     if angle_to_turn > 5 or angle_to_turn < -5:
         print("I should turn: " + str(angle_to_turn))
@@ -226,7 +226,9 @@ def deliver_balls(image, field):
     if len(field.small_goal) == 0:
         field.small_goal.append([300, 375])
 
+
     print("big_goal: " + str(field.large_goal[0]))
+
     # I make the same assumption with the small goal
     print("small_goal`: " + str(field.small_goal[0]))
     robot_center = robot_center_coordinates(front_pos, back_pos)
