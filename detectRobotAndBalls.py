@@ -7,10 +7,10 @@ import time
 
 # Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until
 # the robot is found
-def imageRecognitionHD(frame):
+def imageRecognitionHD():
 
     while 1:
-        videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
+        videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
         videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
         videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 
