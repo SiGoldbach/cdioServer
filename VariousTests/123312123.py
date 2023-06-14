@@ -4,11 +4,13 @@ import numpy as np
 
 np.set_printoptions(precision=3, suppress=True)
 
+
 #
 #
-# Test this a lot with cases. Debug to make sure i never get a scenario with unhandeled outcome
+# Test this a lot with cases. Debug to make sure we never get a scenario with unhandled outcome
 #
 #
+
 
 def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
     robot_middle = robot_mid_edge(front_pos, back_pos, side)
@@ -20,6 +22,9 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
         if side == "left":
             if angle > 0:
                 angles.append(angle)  # Add the angle to the array
+            if angle < 0:
+                angle = 360 - (angle * -1)
+                angles.append(angle)
 
         if side == "right":
 
@@ -29,6 +34,9 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
             elif angle < 0:
                 angle = angle * -1
                 angles.append(angle)
+        else:
+            angle = 500
+            angles.append(angle)
 
     smallest_angle = min(angles)  # Find the smallest angle in the array
     largest_angle = max(angles)
@@ -43,9 +51,7 @@ def getAngle(F, D, O):
 def robot_front_edge(front_pos, back_pos, side):
     # Calculate the vector representing the direction of the robot
     robot_direction = (front_pos[0] - back_pos[0], front_pos[1] - back_pos[1])
-
     angle_radians = math.atan2(robot_direction[1], robot_direction[0]) * -1
-
     point_difference = (
         (Pathfinder.robot_width() / 2) * math.sin(angle_radians),
         Pathfinder.robot_width() / 2 * math.cos(angle_radians))
@@ -106,18 +112,18 @@ def calculate_max_right_turn(front_pos, back_pos, obstacles, side):
     return min(smallest_angle_front, smallest_angle_back)
 
 
-def max_turn(front_pos, back_pos, obstacle, side):
+def max_turn(front_pos, back_pos, obstacles, side):
     if side == "left":
-        max_left = calculate_max_left_turn(front_pos, back_pos, obstacle, side)
+        max_left = calculate_max_left_turn(front_pos, back_pos, obstacles, side)
         return max_left
     if side == "right":
         max_right = calculate_max_right_turn(front_pos, back_pos, obstacles, side)
         return max_right
 
 
-back_pos = (10, -8)
-front_pos = (14, -4)
-obstacles = [(8.69, -5.2), (14.5, -5.6), (12.5, -8.3)]
+front_pos = (20, 3)
+back_pos = (13, 3)
+obstacles = [(15, 5)]
 side = "right"
 
 # edgepointmid = robot_mid_edge(front_pos, back_pos, side)

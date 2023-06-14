@@ -1,6 +1,6 @@
 # I do not know how to make this immutable, do not change this objects state ever
 class Field:
-    def __init__(self, small_goal, large_goal, obstacle, corners, balls,mode):
+    def __init__(self, small_goal, large_goal, obstacle, corners, balls, mode):
         self.small_goal = small_goal
         self.large_goal = large_goal
         self.obstacle = obstacle
