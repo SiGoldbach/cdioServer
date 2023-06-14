@@ -2,22 +2,21 @@ import sys
 import cv2 as cv
 import numpy as np
 import time
-import Pathfinder
-
+import Calibration.cameraCalibrationv2
 # Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until
 # the robot is found
 def imageRecognitionHD(frame):
-
+    videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
+    videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
+    videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
     while 1:
-        videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
-        videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
-        videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
-
         balls = []
         back = []
         front = []
-
         ret, image = videoCapture.read()
+        #image = Calibration.cameraCalibrationv2.continuous_undistortion(image)
+
+
 
         if ret is None:
             print("No image found")
@@ -31,6 +30,8 @@ def imageRecognitionHD(frame):
         img_height, img_width, _ = image.shape
 
         # Circle detection
+        hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+
         gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         gray_blurred = cv.blur(gray, (3, 3))
         detected_Balls = cv.HoughCircles(
@@ -38,7 +39,7 @@ def imageRecognitionHD(frame):
             cv.HOUGH_GRADIENT,
             1,
             20,
-            param1=50,
+            param1=70,
             param2=12,
             minRadius=8,
             maxRadius=11
@@ -62,8 +63,8 @@ def imageRecognitionHD(frame):
             20,
             param1=30,
             param2=20,
-            minRadius=13,
-            maxRadius=17
+            minRadius=14,
+            maxRadius=18
         )
 
         circle = 0
@@ -73,16 +74,25 @@ def imageRecognitionHD(frame):
 
             for pt in detected_circles[0, :]:
                 a, b, r = pt[0], pt[1], pt[2]
+                if a < img_width and b < img_height:
+                    hsv_pixel = hsv[b, a]
 
-                if np.logical_and.reduce(
-                        (70 >= image[b, a][0], 100 <= image[b, a][1], 240 >= image[b, a][1], 160 <= image[b, a][2])):
+                # Orange color range in HSV
+                orange_lower = np.array([10, 70, 50], dtype=np.uint8)
+                orange_upper = np.array([35, 255, 255], dtype=np.uint8)
+
+                if np.all(cv.inRange(hsv_pixel, orange_lower, orange_upper)):
                     print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
                     cv.circle(blank, (a, b), r, (0, 150, 255), -1)
                     balls.append([a, b])
                     circle += 1
                     continue
 
-                if np.logical_and.reduce((190 <= image[b, a][2], 190 <= image[b, a][0], 190 <= image[b, a][1])):
+                # White color range in HSV
+                white_lower = np.array([0, 0, 200], dtype=np.uint8)
+                white_upper = np.array([179, 30, 255], dtype=np.uint8)
+
+                if np.all(cv.inRange(hsv_pixel, white_lower, white_upper)):
                     cv.circle(blank, (a, b), r, (255, 255, 255), -1)
                     print("Center of this circle should be: " + str(a) + " " + str(b))
                     balls.append([a, b])
@@ -92,22 +102,14 @@ def imageRecognitionHD(frame):
             detected_circles = np.uint16(np.around(detected_Front))
             for pt in detected_circles[0, :]:
                 a, b, r = pt[0], pt[1], pt[2]
+                if a < img_width and b < img_height:
+                    hsv_pixel = hsv[b, a]
 
-                bgr_pixel = image[b, a]
+                # Blue color range in HSV
+                blue_lower = np.array([100, 100, 100], dtype=np.uint8)
+                blue_upper = np.array([120, 255, 255], dtype=np.uint8)
 
-                blue = bgr_pixel[0]
-                green = bgr_pixel[1]
-                red = bgr_pixel[2]
-
-                blue_threshold = 10
-                light_blue_threshold = 200
-
-                # Adaptive Gaussian thresholding
-                gray_roi = gray_blurred[b - r: b + r, a - r: a + r]
-                _, threshold = cv.threshold(gray_roi, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-                blue_threshold = np.mean(threshold) * 0.9
-
-                if (blue > red + blue_threshold and blue > green + blue_threshold) or blue >= light_blue_threshold:
+                if np.all(cv.inRange(hsv_pixel, blue_lower, blue_upper)):
                     print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
                     cv.circle(blank, (a, b), r, (255, 255, 0), -1)
                     front.append(a)
@@ -119,21 +121,16 @@ def imageRecognitionHD(frame):
             detected_circles = np.uint16(np.around(detected_Back))
             for pt in detected_circles[0, :]:
                 a, b, r = pt[0], pt[1], pt[2]
+                if a < img_width and b < img_height:
+                    hsv_pixel = hsv[b, a]
 
-                bgr_pixel = image[b, a]
 
-                blue = bgr_pixel[0]
-                green = bgr_pixel[1]
-                red = bgr_pixel[2]
+                # Green color range in HSV
+                green_lower = np.array([30, 50, 50], dtype=np.uint8)
+                green_upper = np.array([120, 255, 255], dtype=np.uint8)
 
-                green_threshold = -40
 
-                # Adaptive Gaussian thresholding
-                gray_roi = gray_blurred[b - r: b + r, a - r: a + r]
-                _, threshold = cv.threshold(gray_roi, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-                green_threshold = np.mean(threshold) * -0.4
-
-                if green > blue + green_threshold and green > red + green_threshold:
+                if np.all(cv.inRange(hsv_pixel, green_lower, green_upper)):
                     print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
                     cv.circle(blank, (a, b), r, (0, 255, 100), -1)
                     back.append(a)
@@ -154,6 +151,5 @@ def imageRecognitionHD(frame):
         print('Time for transform: ' + str(time_for_transform))
 
         # cv.waitKey(0)
-        if len(front) == 2 & len(back) == 2:
-            if Pathfinder.get_robot_length(front, back) < 200:
-                return front, back, balls
+        if len(front) == 2 and len(back) == 2 and len(balls) > 0:
+            return front, back, balls

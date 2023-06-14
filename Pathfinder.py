@@ -189,7 +189,7 @@ def collect_balls(video):
         print(str(angle_to_turn) + " degrees")
         return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
-        return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance * 1.2))
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance + 600))
 
 
 def move_to_goal(image, point):
