@@ -1,3 +1,5 @@
+import sys
+
 import cv2 as cv
 import numpy as np
 import time
@@ -5,18 +7,22 @@ import time
 
 # Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until
 # the robot is found
-def imageRecognitionHD(video):
-    back = []
-    front = []
-    balls = []
-    while len(back) != 2 and len(front) != 2:
+def imageRecognitionHD():
+
+    while 1:
+        videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
+        videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
+        videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
+
+
         balls = []
         back = []
         front = []
-        ret, image = video.read()
+
+        ret, image = videoCapture.read()
         if ret is None:
             print("No image found")
-            continue
+
 
         height, width = image.shape[:2]
 
@@ -133,10 +139,13 @@ def imageRecognitionHD(video):
         time_for_transform = end - start
         print("Amount of circles: " + str(circle))
         print("Amount of balls: " + str(len(balls)))
-        # cv.imshow('Original', image)
-        # cv.imshow('Obstacles and balls drawn: ', blank)
+        #cv.imshow('Original', image)
+        #cv.imshow('Obstacles and balls drawn: ', blank)
+        print(len(front))
+        print(len(back))
 
         print('Time for transform: ' + str(time_for_transform))
 
-        # cv.waitKey(0)
-    return front, back, balls
+        #cv.waitKey(0)
+        if len(front) == 2 & len(back) == 2:
+            return front, back, balls

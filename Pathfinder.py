@@ -169,18 +169,18 @@ def check_borders(corners, front_pos, back_pos):
 # The robot can turn and align itself to a ball
 # It can move forward if is aligned
 # Change has been added to this function so it is now a collect balls method
-def collect_balls(video):
-    front_pos, back, balls = detectRobotAndBalls.imageRecognitionHD(video)
+def collect_balls():
+    front_pos, back, balls = detectRobotAndBalls.imageRecognitionHD()
     # Temporary if statement
-    if front_pos is None or back is None:
-        return Moves.MoveClass(MoveTypes.TURN, 500, 50)
+
     nearest_ball, distance = find_nearest_ball(front_pos, balls)
 
     print("Back: ", str(back))
     print("Front: ", str(front_pos))
     print("Closest ball: ", str(nearest_ball))
 
-    angle_to_turn = calculate_turn(back_pos=robot_center_coordinates(front_pos, back), front_pos=front_pos, ball_pos=nearest_ball)
+    angle_to_turn = calculate_turn(back_pos=robot_center_coordinates(front_pos, back), front_pos=front_pos,
+                                   ball_pos=nearest_ball)
     print(angle_to_turn)
 
     if angle_to_turn > 5 or angle_to_turn < -5:
@@ -188,7 +188,7 @@ def collect_balls(video):
         print(str(angle_to_turn) + " degrees")
         return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
-        return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance * 1.2))
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, distance * 4 + 1000)
 
 
 def move_to_goal(image, point):
