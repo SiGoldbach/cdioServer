@@ -89,6 +89,7 @@ def calculate_line(target_x, target_y, robot_x, robot_y):
     return line1, line2
 
 
+# Method for checking how many obstacles are located in the area in front of the robot between it and the ball.
 def check_for_obstacle_front(obstacles, target_x, target_y, robot_x, robot_y):
     line1, line2 = calculate_line(target_x, target_y, robot_x, robot_y)
     # method scanning for obstacles.
