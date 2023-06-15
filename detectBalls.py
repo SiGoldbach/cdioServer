@@ -1,8 +1,8 @@
-import sys
 import cv2 as cv
 import numpy as np
 import time
-import Calibration.cameraCalibrationv2
+
+
 # Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until
 # the robot is found
 def imageRecognitionHD(frame):
@@ -14,9 +14,7 @@ def imageRecognitionHD(frame):
         back = []
         front = []
         ret, image = videoCapture.read()
-        #image = Calibration.cameraCalibrationv2.continuous_undistortion(image)
-
-
+        # image = Calibration.cameraCalibrationv2.continuous_undistortion(image)
 
         if ret is None:
             print("No image found")
