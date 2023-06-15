@@ -123,7 +123,7 @@ def max_turn(front_pos, back_pos, obstacles, side):
 
 front_pos = (20, 3)
 back_pos = (13, 3)
-obstacles = [(15, 5)]
+obstacles = [(15, 5), (16.5, 1)]
 side = "right"
 
 # edgepointmid = robot_mid_edge(front_pos, back_pos, side)

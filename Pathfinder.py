@@ -89,6 +89,19 @@ def calculate_line(target_x, target_y, robot_x, robot_y):
     return line1, line2
 
 
+# Checks for obstacles between ball and robot.
+def check_for_obstacle_location(obstacles, line1, line2):
+    x, y = obstacles
+    # Calculate the y-values for each line at the given x-coordinate
+    y1 = line1[0] * x + line1[1]
+    y2 = line2[0] * x + line2[1]
+    # Check if the point's y-coordinate is between the y-values of the lines
+    if min(y1, y2) <= y <= max(y1, y2):
+        return True
+    else:
+        return False
+
+
 # Method for checking how many obstacles are located in the area in front of the robot between it and the ball.
 def check_for_obstacle_front(obstacles, target_x, target_y, robot_x, robot_y):
     line1, line2 = calculate_line(target_x, target_y, robot_x, robot_y)
@@ -112,19 +125,7 @@ def check_for_obstacle_front(obstacles, target_x, target_y, robot_x, robot_y):
     return True
 
 
-def check_for_obstacle_location(obstacles, line1, line2):
-    x, y = obstacles
-    # Calculate the y-values for each line at the given x-coordinate
-    y1 = line1[0] * x + line1[1]
-    y2 = line2[0] * x + line2[1]
-    # Check if the point's y-coordinate is between the y-values of the lines
-    if min(y1, y2) <= y <= max(y1, y2):
-        return True
-    else:
-        return False
-
-
-# MIGHT NOT WORK PROPERLY
+# SHOULD find if an obstacle is within turn-range of the robot.
 def find_obstacle_in_circle(obstacles, front_pos, back_pos):
     robot_center = robot_center_coordinates(front_pos, back_pos)
     robot_radius = robot_corner_radius(front_pos, back_pos)
@@ -137,6 +138,8 @@ def find_obstacle_in_circle(obstacles, front_pos, back_pos):
     return obstacles_in_range
 
 
+# Checking if robot is in the within the corners to make sure robot never hits walls. Only works if
+# we get the corners as a single location and not an array of multiple coordinates.
 def check_borders(corners, front_pos, back_pos):
     # here we can hard-code minimum distance "buffer" to the walls.
     minX = corners[0][0]
@@ -216,7 +219,7 @@ def deliver_balls(image, field):
     print("Front_pos: " + str(front_pos))
     print("Back_pos: " + str(back_pos))
 
-    # As of right now I assume the first big goal i get is the correct one
+    # As of right now I assume the first big goal I get is the correct one
     print(len(field.small_goal))
 
     if len(field.large_goal) == 0:
