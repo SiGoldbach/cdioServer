@@ -38,7 +38,6 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
                 angle = 500
                 angles.append(angle)
 
-
     smallest_angle = min(angles)  # Find the smallest angle in the array
     largest_angle = max(angles)
     return smallest_angle, largest_angle

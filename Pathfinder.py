@@ -67,10 +67,6 @@ def calculate_turn(back_pos, front_pos, ball_pos):
     if angle_degrees > 180:
         angle_degrees -= 360
 
-    # Normalize the angle to be within the range of -180 to 180 degrees
-
-    # print(180 - angle_degrees)
-
     return angle_degrees
 
 
@@ -147,24 +143,20 @@ def check_borders(corners, front_pos, back_pos):
     maxX = corners[1][0]
     minY = corners[2][1]
     maxY = corners[3][1]
-
     # check if the robot back or front's x-coordinate is
     if front_pos[0] <= minX or back_pos[0] <= minX:
-        # Robot is hitting the left border
-        # Take appropriate action here
+        # Robot is hitting the left border, take appropriate action here
         print("Robot hit the left border!")
     elif front_pos[0] >= maxX or back_pos[0] >= maxX:
-        # Robot is hitting the right border
-        # Take appropriate action here
+        # Robot is hitting the right border, take appropriate action here
         print("Robot hit the right border!")
     elif front_pos[1] <= minY or back_pos[1] <= minY:
-        # Robot is hitting the bottom border
-        # Take appropriate action here
+        # Robot is hitting the bottom border, take appropriate action here
         print("Robot hit the bottom border!")
     elif front_pos[1] >= maxY or back_pos[1] >= maxY:
-        # Robot is hitting the top border
-        # Take appropriate action here
+        # Robot is hitting the top border, take appropriate action here
         print("Robot hit the top border!")
+    return minX, maxX, minY, maxY
 
 
 # This function is being written iteratively.
@@ -220,7 +212,6 @@ def deliver_balls(image):
     smallGoal, bigGoal, obstacle, walls = detectField.imageRecognitionHD(image)
     front_pos, back_pos = detectRobot.imageRecognitionHD(image)
 
-
     print("Front_pos: " + str(front_pos))
     print("Back_pos: " + str(back_pos))
 
@@ -262,6 +253,8 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
     robot_middle = robot_mid_edge(front_pos, back_pos, side)
     robot_front = robot_front_edge(front_pos, back_pos, side)
     angles = []
+    if not find_obstacle_in_circle(obstacles, front_pos, back_pos):
+        angles.append(180)
 
     for obstacle in find_obstacle_in_circle(obstacles, front_pos, back_pos):
         angle = getAngle(robot_front, robot_middle, obstacle)
@@ -357,6 +350,7 @@ def calculate_max_right_turn(front_pos, back_pos, obstacles, side):
     print("back closes angle: ", smallest_angle_back)
     return min(smallest_angle_front, smallest_angle_back)
 
+
 # Finds the max turn if any obstacle is within range
 def max_turn(front_pos, back_pos, obstacles, side):
     if side == "left":
@@ -365,4 +359,3 @@ def max_turn(front_pos, back_pos, obstacles, side):
     if side == "right":
         max_right = calculate_max_right_turn(front_pos, back_pos, obstacles, side)
         return max_right
-

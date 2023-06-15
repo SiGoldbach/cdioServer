@@ -1,24 +1,9 @@
 This file explains the robots movements with specific input to estimate for future reference and the settings of our project.
 Formulas for deciding the argument pr cm / degree is located below.
-height of camera 151cm
-distance fra pole to field: 32cm
+height of camera 164.5cm
+distance fra pole to field: 32cm // incorrect
 Width of camera-angle: 190cm
 camera width: 640pixel.
-
--Move forward (100 = 3,507cm avg)
-1:    speed 500, argument= 200; movement = 6cm
-2:    speed 500, argument= 400; movement = 11cm
-3:    speed 500, argument= 800; movement = 22,5cm
-4:    speed 500, argument= 800; movement = 20cm
-5:    speed 500, argument= 1600; movement = 44,5cm
-argument = (x - intercept) / coefficient
-intercept = -0.152778
-coefficient = 0.027569
-
-33,33 omdrejning/cm  0,033cm/omdrejning
-36,36 omdrejning/cm  0,026cm/omdrejning
-35,55 omdrejning/cm  0,028cm/omdrejning
-
 
 -Move "turn"
 
