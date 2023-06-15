@@ -67,6 +67,5 @@ def undistort_image(frame):
 # Continuous undistortion function
 def continuous_undistortion(image):
     undistorted_image = undistort_image(image)
-    cv.imshow("distort", undistorted_image)
 
     return undistorted_image
