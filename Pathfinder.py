@@ -44,6 +44,12 @@ def big_goal_location(corners):
     goal = [(maxX, maxY / 2)]
     return goal
 
+def small_goal_location(corners):
+    minX = corners[2][0]
+    maxY = corners[0][1]
+    goal = [(minX, maxY / 2)]
+    return goal
+
 
 def robot_corner_radius(front_pos, back_pos):
     robot_center = robot_center_coordinates(front_pos, back_pos)

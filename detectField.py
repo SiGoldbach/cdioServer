@@ -78,11 +78,6 @@ def detect_field():
                     cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
                     cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
 
-                    # Get goals
-                    smallGoal.append(x)
-                    smallGoal.append(cY)
-                    bigGoal.append(x + w)
-                    bigGoal.append(cY)
 
                     corners = cv.goodFeaturesToTrack(gray, 4, 0.01, 400)
                     for corner in corners:
@@ -90,10 +85,10 @@ def detect_field():
                         walls.append([x, y])
                         print(x,y)
                         cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
-                    if(len(walls)==4):
-                        M = Pathfinder.center_field(walls)
-                        print(M)
-                        smallGoal.append([])
+                    if len(walls)==4:
+                        smallGoal.append(Pathfinder.small_goal_location(walls))
+                        bigGoal.append(Pathfinder.big_goal_location(walls))
+                        print(smallGoal, bigGoal)
 
         # detect obstacle
         for contour in cnts:
