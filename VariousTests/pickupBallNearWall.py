@@ -14,13 +14,13 @@ def collection_of_wall_balls(front_pos, back_pos, obstacles, ball_locations, cor
     return 0
 
 
-def ball_direction(front_pos, back_pos, ball_locations, corners):
+def wall_ball_align(front_pos, back_pos, ball_locations, corners):
     robot_mid = Pathfinder.robot_center_coordinates(front_pos, back_pos)
     isTrue, direction = is_ball_near_wall(front_pos, back_pos, ball_locations, corners)
-    direction = ""
     if isTrue:
         if direction == "left":
-        return direction
+
+            return 0
     else:
         print("Ball is not near wall")
         return False
@@ -30,13 +30,17 @@ def is_ball_near_wall(front_pos, back_pos, ball_location, corners):
     minX, maxX, minY, maxY = Pathfinder.check_borders(corners, front_pos, back_pos)
     # Hardcoded a pixel-difference. May need change
     if ball_location[0] - 20 <= minX and ball_location[1] + 20 >= minY and ball_location[1] - 20 <= maxY:
-        return True, "left"
+        direction = "left"
+        return True, direction
     if ball_location[0] + 20 >= maxX and ball_location[1] + 20 >= minY and ball_location[1] - 20 <= maxY:
-        return True, "right"
+        direction = "right"
+        return True, direction
     if ball_location[1] - 20 <= minY and ball_location[0] + 20 >= minX and ball_location[0] - 20 <= maxX:
-        return True, "top"
+        direction = "top"
+        return True, direction
     if ball_location[1] + 20 >= maxY and ball_location[0] + 20 >= minX and ball_location[0] - 20 <= maxX:
-        return True, "down"
+        direction = "down"
+        return True, direction
     else:
         print("Ball is not near wall")
         return False, "false"
