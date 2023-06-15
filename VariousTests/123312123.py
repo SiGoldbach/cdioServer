@@ -1,8 +1,5 @@
 import math
 import Pathfinder
-import numpy as np
-
-np.set_printoptions(precision=3, suppress=True)
 
 
 #
@@ -16,8 +13,11 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
     robot_middle = robot_mid_edge(front_pos, back_pos, side)
     robot_front = robot_front_edge(front_pos, back_pos, side)
     angles = []
+    if not Pathfinder.find_obstacle_in_circle(obstacles, front_pos, back_pos):
+        angles.append(180)
 
     for obstacle in Pathfinder.find_obstacle_in_circle(obstacles, front_pos, back_pos):
+
         angle = getAngle(robot_front, robot_middle, obstacle)
         if side == "left":
             if angle > 0:
@@ -123,18 +123,8 @@ def max_turn(front_pos, back_pos, obstacles, side):
 
 front_pos = (20, 3)
 back_pos = (13, 3)
-obstacles = [(15, 5)]
+obstacles = [(200, 200)]
 side = "right"
 
-# edgepointmid = robot_mid_edge(front_pos, back_pos, side)
-# edgepointmid2 = robot_mid_edge(back_pos, front_pos, side)
-# edgepointfront = robot_front_edge(front_pos, back_pos, side)
-# testangle = calculate_obstacle_angle(back_pos, front_pos, obstacles, side)
-# maxangle = calculate_max_left_turn(front_pos, back_pos, obstacles, side)
 maxangle2 = max_turn(front_pos, back_pos, obstacles, side)
 print("max side testtesttest: ", maxangle2)
-# print("new point mid ", edgepointmid)
-# print("new point front: ", edgepointfront)
-# print("new angle: ", testangle)
-# print("smallest angle: ", maxangle)
-# print("new point mid2: ", edgepointmid2)
