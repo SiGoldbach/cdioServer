@@ -4,10 +4,11 @@ import time
 
 
 def detect_field():
-    videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
+    videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
     ret, image = videoCapture.read()
+
     if ret is None:
         print("No image found")
 
@@ -19,11 +20,18 @@ def detect_field():
 
     img_height, img_width, _ = image.shape
 
-    # Red color detection
-    red_mask = ((170 <= image[..., 2]) & (120 >= image[..., 1]) & (160 >= image[..., 0])).astype(np.uint8)
-    blank[..., 0][red_mask == 1] = 0
-    blank[..., 1][red_mask == 1] = 0
-    blank[..., 2][red_mask == 1] = 255
+    # Convert image to HSV color space
+    hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+
+    # Define the lower and upper red color thresholds in HSV
+    lower_red = np.array([0, 110, 160])
+    upper_red = np.array([40, 255, 255])
+
+    # Create a mask for red color detection
+    red_mask = cv.inRange(hsv, lower_red, upper_red)
+
+    # Set the pixels within the red mask to red color in the blank image
+    blank[red_mask != 0] = (0, 0, 255)
 
     img_gray = cv.cvtColor(blank, cv.COLOR_BGR2GRAY)
     gray = np.zeros((height, width), dtype=np.uint8)
@@ -45,7 +53,7 @@ def detect_field():
     for contour in cnts:
         x, y, w, h = cv.boundingRect(contour)
 
-        if np.logical_and.reduce((image[y, x][2] > 100, 170 >= image[y, x][0], done == 0, w > 600)):
+        if np.logical_and.reduce((image[y, x][2] > 140, 170 >= image[y, x][0], done == 0, w > 600)):
             epsilon = 0.01 * cv.arcLength(contour, True)
             approx = cv.approxPolyDP(contour, epsilon, True)
             done = 1
@@ -67,21 +75,21 @@ def detect_field():
                 cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
                 cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
 
+                # Get goals
+                smallGoal.append(x)
+                smallGoal.append(cY)
+                bigGoal.append(x + w)
+                bigGoal.append(cY)
+
                 corners = cv.goodFeaturesToTrack(gray, 4, 0.01, 400)
                 for corner in corners:
                     x, y = corner.ravel().astype(int)
                     walls.append([x, y])
                     cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
 
-                # Get goals
-                smallGoal.append(x)
-                smallGoal.append(cY)
-                bigGoal.append(x - w)
-                bigGoal.append(cY)
-
     # detect obstacle
     for contour in cnts:
-        epsilon = 0.01 * cv.arcLength(contour, True)
+        epsilon = 0.05 * cv.arcLength(contour, True)
         approx = cv.approxPolyDP(contour, epsilon, True)
         x, y, w, h = cv.boundingRect(approx)
         if np.logical_and(h > 80, h < 200):
@@ -94,10 +102,10 @@ def detect_field():
     end = time.time()
     time_for_transform = end - start
 
-    # cv.imshow('Original', image)
-    # cv.imshow('State.py ', blank)
+    cv.imshow('Original', image)
+    cv.imshow('State.py', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 
-    # cv.waitKey(0)
+    cv.waitKey(0)
     return smallGoal, bigGoal, obstacle, walls
