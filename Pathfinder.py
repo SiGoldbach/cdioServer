@@ -20,9 +20,26 @@ def robot_center_coordinates(front_pos, back_pos):
     return robot_center
 
 
+# Width of the robot
 def robot_width():
     width = 2
     return width
+
+
+# Center of the field
+def center_field(corners):
+    maxX = corners[1][0]
+    maxY = corners[3][1]
+    field_center = [(maxX / 2, maxY / 2)]
+    return field_center
+
+
+# Location of a given goal
+def goal_location(corners):
+    maxX = corners[1][0]
+    maxY = corners[3][1]
+    goal = [(maxX, maxY / 2)]
+    return goal
 
 
 def robot_corner_radius(front_pos, back_pos):
