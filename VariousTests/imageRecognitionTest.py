@@ -7,7 +7,7 @@ print("LiveVideoFeed has started")
 # Changing the resolution
 # video.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 # video.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-detectRobotAndBalls.imageRecognitionHD(None)
+detectRobot.imageRecognitionHD(None)
 
 # print(balls)
 # print(robot)
