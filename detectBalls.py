@@ -14,7 +14,7 @@ def detect_balls():
         back = []
         front = []
         ret, image = videoCapture.read()
-        # image = Calibration.cameraCalibrationv2.continuous_undistortion(image)
+        image = Calibration.cameraCalibrationv2.continuous_undistortion(image)
 
         if ret is None:
             print("No image found")

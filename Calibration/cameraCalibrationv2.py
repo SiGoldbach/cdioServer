@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import cv2 as cv
 import glob
@@ -37,7 +39,7 @@ for image in images:
         imgpoints.append(corners2)  # Use refined corners
 
 if len(objpoints) > 0 and len(imgpoints) > 0:
-    ret, _, _, _, _ = cv.calibrateCamera(
+    ret, cameraMatrix, distCoeffs, rvecs, tvecs = cv.calibrateCamera(
         objpoints, imgpoints, frameSize, None, None
     )
     print("Camera calibration successful!")
@@ -47,20 +49,24 @@ else:
 # Undistortion function
 def undistort_image(frame):
     h, w = frame.shape[:2]
-    resized_frame = cv.resize(frame, frameSize)  # Resize the frame to the desired size
 
-    newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(None, None, (w, h), 1, frameSize)
+    newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, (w, h), 1, frameSize)
 
     # Undistort
-    dst = cv.undistort(resized_frame, None, None, None, newCameraMatrix)
+    dst = cv.undistort(frame, cameraMatrix, distCoeffs, None, newCameraMatrix)
+
+    # Resize the frame to the original size
+    resized_frame = cv.resize(dst, (w, h))
 
     # Crop the image
     x, y, w, h = roi
-    dst = dst[y:y + h, x:x + w]
-
+    dst = resized_frame[y:y + h, x:x + w]
     return dst
+
 
 # Continuous undistortion function
 def continuous_undistortion(image):
     undistorted_image = undistort_image(image)
+    cv.imshow("distort", undistorted_image)
+
     return undistorted_image
