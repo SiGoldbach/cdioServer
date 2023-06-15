@@ -5,9 +5,10 @@ import cv2
 import MoveTypes
 import Moves
 import Pathfinder
+import detectBalls
 import detectField
 import Field
-import detectRobotAndBalls
+import detectRobot
 import robot_modes
 
 # Setting up the video feed
@@ -27,7 +28,8 @@ print("Video quality has been increased and the program have slept 5 seconds to 
 while not gotten_field:
     ret, field_image = video.read()
     smallGoal, bigGoal, obstacle, corners = detectField.imageRecognitionHD(video)
-    front, back, balls = detectRobotAndBalls.imageRecognitionHD(video)
+    front, back = detectRobot.imageRecognitionHD(video)
+    balls = detectBalls.imageRecognitionHD(video)
     field = Field.Field(smallGoal, bigGoal, obstacle, corners, balls, robot_modes.COLLECT)
     gotten_field = ret
 print(field.__str__())
@@ -39,7 +41,7 @@ def calculate_move():
     if field.mode == robot_modes.COLLECT:
         return Pathfinder.collect_balls(video)
     elif field.mode == robot_modes.DELIVER:
-        return Pathfinder.deliver_balls(video, field)
+        return Pathfinder.deliver_balls(video)
     else:
         return Moves.MoveClass(MoveTypes.TURN, 500, 5)
 

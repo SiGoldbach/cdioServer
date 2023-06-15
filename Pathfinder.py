@@ -1,8 +1,9 @@
 import math
 import Moves
 import MoveTypes
+import detectBalls
 import detectField
-import detectRobotAndBalls
+import detectRobot
 
 
 def get_robot_length(front_pos, back_pos):
@@ -170,10 +171,9 @@ def check_borders(corners, front_pos, back_pos):
 # It can move forward if is aligned
 # Change has been added to this function so it is now a collect balls method
 def collect_balls(video):
-    front_pos, back, balls = detectRobotAndBalls.imageRecognitionHD(video)
-    # Temporary if statement
-    while len(front_pos) != 2 or len(back) != 2:
-        front_pos, back, balls = detectRobotAndBalls.imageRecognitionHD(video)
+    front_pos, back = detectRobot.imageRecognitionHD(video)
+
+    balls = detectBalls.imageRecognitionHD(video)
 
     nearest_ball, distance = find_nearest_ball(front_pos, balls)
 
@@ -181,7 +181,8 @@ def collect_balls(video):
     print("Front: ", str(front_pos))
     print("Closest ball: ", str(nearest_ball))
 
-    angle_to_turn = calculate_turn(back_pos=robot_center_coordinates(front_pos, back), front_pos=front_pos, ball_pos=nearest_ball)
+    angle_to_turn = calculate_turn(back_pos=robot_center_coordinates(front_pos, back), front_pos=front_pos,
+                                   ball_pos=nearest_ball)
     print(angle_to_turn)
 
     if angle_to_turn > 5 or angle_to_turn < -5:
@@ -189,50 +190,55 @@ def collect_balls(video):
         print(str(angle_to_turn) + " degrees")
         return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
-        return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance * 1.2))
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance + 600))
 
 
 def move_to_goal(image, point):
-    front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
+    front_pos, back_pos = detectRobot.imageRecognitionHD(image)
     angle_to_turn = calculate_turn(back_pos, front_pos, point)
-
+    robot_center = robot_center_coordinates(front_pos, back_pos)
     if front_pos is None or back_pos is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 50)
 
-    if robot_center_coordinates(front_pos, back_pos)[1] > point[1] + 10 & robot_center_coordinates(front_pos, back_pos)[
-        1] < point[1] - 10:
+    if robot_center[1] > point[1] + 10 & \
+            int(robot_center[1]) < point[1] - 10:
         return "done"
     if angle_to_turn > 5 or angle_to_turn < -5:
         print("I should turn: " + str(angle_to_turn))
         print(str(angle_to_turn) + " degrees")
-        return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn[1])
+        return Moves.MoveClass(MoveTypes.TURN, 500, int(angle_to_turn[1]))
     if front_pos[0] > point[0]:
         return Moves.MoveClass(MoveTypes.BACKWARD, 500, 10)
     else:
         return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
 
-def deliver_balls(image, field):
-    front_pos, back_pos, ball_locations = detectRobotAndBalls.imageRecognitionHD(image)
+def deliver_balls(image):
+    smallGoal, bigGoal, obstacle, walls = detectField.imageRecognitionHD(image)
+    front_pos, back_pos = detectRobot.imageRecognitionHD(image)
+
+
     print("Front_pos: " + str(front_pos))
     print("Back_pos: " + str(back_pos))
 
     # As of right now I assume the first big goal i get is the correct one
-    print(len(field.small_goal))
+    print(smallGoal)
 
-    if len(field.large_goal) == 0:
-        print("big goal is none")
-        field.large_goal.append([1142, 375])
-    if len(field.small_goal) == 0:
-        field.small_goal.append([300, 375])
+    # if len(field.large_goal) == 0:
+    # print("big goal is none")
+    # field.large_goal.append([1142, 375])
+    # if len(field.small_goal) == 0:
+    # field.small_goal.append([300, 375])
 
-    print("big_goal: " + str(field.large_goal[0]))
+    print("big_goal: " + str(bigGoal[0]))
+
     # I make the same assumption with the small goal
-    print("small_goal`: " + str(field.small_goal[0]))
+    print("small_goal`: " + str(smallGoal[0]))
+
     robot_center = robot_center_coordinates(front_pos, back_pos)
-    horizontal_to_goal = [robot_center[0], field.small_goal[1]]
-    small_goal = field.small_goal
-    angle = calculate_turn(back_pos, front_pos, field.large_goal)
+    horizontal_to_goal = [robot_center[0], smallGoal[1]]
+    small_goal = smallGoal
+    angle = calculate_turn(back_pos, front_pos, small_goal)
 
     if angle < 5 & int(angle) > -5:
         if robot_center[1] > small_goal[1] + 10 & \
