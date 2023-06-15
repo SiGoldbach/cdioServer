@@ -16,7 +16,7 @@ balls = detectBalls.detect_balls()
 state = State.State(small_goal=smallGoal, large_goal=bigGoal, obstacle=obstacle, corners=corners, balls=balls,
                     mode=robot_modes.COLLECT,
                     need_new_detect_balls=False,
-                    goal_ball=None)
+                    goal_ball=None, ball_amount_guess=0)
 print(state.__str__())
 
 

@@ -22,8 +22,9 @@ objp *= size_of_chessboard_squares_mm
 objpoints = []  # 3D point in real-world space
 imgpoints = []  # 2D points in the image plane.
 
-images = glob.glob('../Calibration/calibration_images/*.jpg')
+images = glob.glob('C:/Users/siggo/PycharmProjects/cdioFlask/Calibration/calibration_images/*.jpg')
 print(images)  # Print the list of image filenames for verification
+print("Amount of images: ", len(images))
 
 for image in images:
     img = cv.imread(image)
@@ -46,6 +47,7 @@ if len(objpoints) > 0 and len(imgpoints) > 0:
 else:
     print("Camera calibration failed. Insufficient calibration images.")
 
+
 # Undistortion function
 def undistort_image(frame):
     h, w = frame.shape[:2]
@@ -67,6 +69,5 @@ def undistort_image(frame):
 # Continuous undistortion function
 def continuous_undistortion(image):
     undistorted_image = undistort_image(image)
-    cv.imshow("distort", undistorted_image)
 
     return undistorted_image

@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import time
+import Calibration.cameraCalibrationv2 as calibration
 
 
 def detect_field():
@@ -10,6 +11,7 @@ def detect_field():
     ret, image = videoCapture.read()
     if ret is None:
         print("No image found")
+    image = calibration.continuous_undistortion(image)
 
     height, width = image.shape[:2]
 
