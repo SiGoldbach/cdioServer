@@ -138,7 +138,7 @@ def imageRecognitionHD(frame):
 
         time_for_transform = end - start
         print("Amount of circles: " + str(circle))
-        print("Amount of balls: " + str(len(balls)))
+        print("Amount of balls: " + str(len(balls))) 
         #cv.imshow('Original', image)
         #cv.imshow('Obstacles and balls drawn: ', blank)
         print(len(front))
