@@ -1,13 +1,14 @@
 # I do not know how to make this immutable, do not change this objects state ever
 class State:
-    def __init__(self, small_goal, large_goal, obstacle, corners, balls, mode, robot_just_drove):
+    def __init__(self, small_goal, large_goal, obstacle, corners, balls, mode, need_new_detect_balls, goal_ball):
         self.small_goal = small_goal
         self.large_goal = large_goal
         self.obstacle = obstacle
         self.corners = corners
         self.balls = balls
         self.mode = mode
-        self.robot_just_drove = robot_just_drove
+        self.need_new_detect_balls = need_new_detect_balls
+        self.goal_ball = goal_ball
 
     def __str__(self):
         return "The small goal's coordinates: " + str(self.small_goal) + "\n" + "The large goal's coordinates: " + str(
