@@ -14,11 +14,15 @@ def collection_of_wall_balls(front_pos, back_pos, obstacles, ball_locations, cor
     return 0
 
 
-def wall_ball_align(front_pos, back_pos, ball_locations, corners):
-    robot_mid = Pathfinder.robot_center_coordinates(front_pos, back_pos)
-    isTrue, direction = is_ball_near_wall(front_pos, back_pos, ball_locations, corners)
+def wall_ball_align(front_pos, back_pos, ball_location, corners):
+    robot_center = Pathfinder.robot_center_coordinates(front_pos, back_pos)
+    isTrue, direction = is_ball_near_wall(front_pos, back_pos, ball_location, corners)
+    angle = Pathfinder.calculate_turn(back_pos, front_pos, ball_location)
+
     if isTrue:
         if direction == "left":
+            horizontal_to_wall = [robot_center[1], ball_location[1]]
+
 
             return 0
     else:
