@@ -3,7 +3,7 @@ import numpy as np
 import time
 
 
-def imageRecognitionHD(video):
+def detect_field():
     videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)

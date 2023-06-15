@@ -27,9 +27,9 @@ time.sleep(5)
 print("Video quality has been increased and the program have slept 5 seconds to focus")
 while not gotten_field:
     ret, field_image = video.read()
-    smallGoal, bigGoal, obstacle, corners = detectField.imageRecognitionHD(video)
-    front, back = detectRobot.imageRecognitionHD(video)
-    balls = detectBalls.imageRecognitionHD(video)
+    smallGoal, bigGoal, obstacle, corners = detectField.detect_field(video)
+    front, back = detectRobot.detect_robot(video)
+    balls = detectBalls.detect_balls(video)
     field = Field.Field(smallGoal, bigGoal, obstacle, corners, balls, robot_modes.COLLECT)
     gotten_field = ret
 print(field.__str__())

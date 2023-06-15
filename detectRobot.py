@@ -1,22 +1,19 @@
-import sys
 import cv2 as cv
 import numpy as np
 import time
-import Calibration.cameraCalibrationv2
-# Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until
-# the robot is found
-def imageRecognitionHD(frame):
+
+
+# Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until the
+# robot is found
+def detect_robot():
     videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
     while 1:
-        balls = []
         back = []
         front = []
         ret, image = videoCapture.read()
-        #image = Calibration.cameraCalibrationv2.continuous_undistortion(image)
-
-
+        # image = Calibration.cameraCalibrationv2.continuous_undistortion(image)
 
         if ret is None:
             print("No image found")
@@ -85,11 +82,9 @@ def imageRecognitionHD(frame):
                 if a < img_width and b < img_height:
                     hsv_pixel = hsv[b, a]
 
-
                 # Green color range in HSV
                 green_lower = np.array([30, 50, 50], dtype=np.uint8)
                 green_upper = np.array([120, 255, 255], dtype=np.uint8)
-
 
                 if np.all(cv.inRange(hsv_pixel, green_lower, green_upper)):
                     print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))
