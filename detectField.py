@@ -4,7 +4,10 @@ import time
 
 
 def imageRecognitionHD(video):
-    ret, image = video.read()
+    videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
+    videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
+    videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
+    ret, image = videoCapture.read()
     if ret is None:
         print("No image found")
 

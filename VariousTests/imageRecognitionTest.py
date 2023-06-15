@@ -1,6 +1,6 @@
 import cv2
 
-import detectRobotAndBalls
+import detectRobot
 
 # video = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 print("LiveVideoFeed has started")
