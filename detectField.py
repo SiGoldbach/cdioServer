@@ -105,11 +105,11 @@ def detect_field():
         end = time.time()
         time_for_transform = end - start
 
-        cv.imshow('Original', image)
-        cv.imshow('State.py', blank)
+        #cv.imshow('Original', image)
+        #cv.imshow('State.py', blank)
 
         print('Time for transform: ' + str(time_for_transform))
 
-        cv.waitKey(0)
+        #cv.waitKey(0)
         if(len(walls) == 4):
             return smallGoal, bigGoal, obstacle, walls
