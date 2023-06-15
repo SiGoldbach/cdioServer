@@ -4,7 +4,7 @@ import time
 
 
 def detect_field():
-    videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
+    videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
     ret, image = videoCapture.read()
@@ -95,7 +95,7 @@ def detect_field():
     time_for_transform = end - start
 
     # cv.imshow('Original', image)
-    # cv.imshow('Field.py ', blank)
+    # cv.imshow('State.py ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 

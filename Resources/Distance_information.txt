@@ -1,0 +1,47 @@
+place 1
+CENTER OF BLUE BALL SHOULD BE: 752 368
+CENTER OF GREEN BALL SHOULD BE: 864 372
+move 200, distance seems to be around 100 pixel
+place 2
+CENTER OF BLUE BALL SHOULD BE: 656 362
+CENTER OF GREEN BALL SHOULD BE: 764 366
+move 200, distance seems to be around 100 pixel
+place 3
+CENTER OF BLUE BALL SHOULD BE: 556 356
+CENTER OF GREEN BALL SHOULD BE: 666 358
+place 4
+move 200, distance seems to be around 100 pixel 
+CENTER OF BLUE BALL SHOULD BE: 454 346
+CENTER OF GREEN BALL SHOULD BE: 566 352
+move 200, distance seems to be around 100 pixel 
+CENTER OF BLUE BALL SHOULD BE: 356 342
+
+I will now try to move 400 instead of 200
+CENTER OF BLUE BALL SHOULD BE: 462 396
+CENTER OF GREEN BALL SHOULD BE: 350 392
+place 1
+CENTER OF BLUE BALL SHOULD BE: 660 406
+CENTER OF GREEN BALL SHOULD BE: 550 408
+Move is around 200 
+place 2CENTER OF BLUE BALL SHOULD BE: 856 422
+CENTER OF GREEN BALL SHOULD BE: 748 420
+Move is around 200
+
+I will now try to move 800 instead of 400
+
+Center of this circle should be: 900 354
+CENTER OF BLUE BALL SHOULD BE: 902 398
+place 1 
+move is around 400 
+CENTER OF BLUE BALL SHOULD BE: 506 380
+CENTER OF GREEN BALL SHOULD BE: 618 382
+
+New test 15/06 to see if the previously executed test still hold up
+The move was done with argument 800
+before
+The front of the robot was found as:  [876, 384]
+The back of the robot was found as:  [996, 386]
+
+We should move 400 pixel ca.
+The front of the robot was found as:  [476, 376]
+The back of the robot was found as:  [588, 374]
