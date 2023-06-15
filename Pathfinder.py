@@ -11,7 +11,7 @@ def get_robot_length(front_pos, back_pos):
 
 
 def distance_to_ball(front_pos, ball):
-    distance = math.sqrt((front_pos[0] - ball[0]) ** 2 + (front_pos[1] - ball[1]) ** 2)
+    distance = math.sqrt((int(front_pos[0]) - int(ball[0])) ** 2 + int((front_pos[1]) - int(ball[1])) ** 2)
     return distance
 
 
@@ -222,7 +222,7 @@ def move_to_goal(point):
         return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
 
-def deliver_balls(state):
+def deliver_balls():
     smallGoal, bigGoal, obstacle, walls = detectField.detect_field()
     front_pos, back_pos = detectRobot.detect_robot()
 
