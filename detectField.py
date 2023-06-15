@@ -76,7 +76,7 @@ def detect_field():
                 # Get goals
                 smallGoal.append(x)
                 smallGoal.append(cY)
-                bigGoal.append(x + w)
+                bigGoal.append(x - w)
                 bigGoal.append(cY)
 
     # detect obstacle
