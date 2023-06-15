@@ -2,7 +2,6 @@ import cv2 as cv
 import numpy as np
 import time
 
-
 # Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until the
 # robot is found
 def detect_robot():
