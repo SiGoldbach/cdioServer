@@ -3,8 +3,8 @@ import numpy as np
 import time
 
 
-def imageRecognitionHD(video):
-    videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
+def detect_field():
+    videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
     ret, image = videoCapture.read()
@@ -76,7 +76,7 @@ def imageRecognitionHD(video):
                 # Get goals
                 smallGoal.append(x)
                 smallGoal.append(cY)
-                bigGoal.append(x + w)
+                bigGoal.append(x - w)
                 bigGoal.append(cY)
 
     # detect obstacle
@@ -95,7 +95,7 @@ def imageRecognitionHD(video):
     time_for_transform = end - start
 
     # cv.imshow('Original', image)
-    # cv.imshow('Field.py ', blank)
+    # cv.imshow('State.py ', blank)
 
     print('Time for transform: ' + str(time_for_transform))
 

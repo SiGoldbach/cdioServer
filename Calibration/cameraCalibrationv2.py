@@ -3,7 +3,6 @@ import cv2 as cv
 import glob
 
 # Chessboard calibration, from size and number of squares
-
 chessboardSize = (12, 8)
 frameSize = (1280, 720)
 
@@ -21,7 +20,8 @@ objp *= size_of_chessboard_squares_mm
 objpoints = []  # 3D point in real-world space
 imgpoints = []  # 2D points in the image plane.
 
-images = glob.glob('calibration_images/*.jpg')
+images = glob.glob('../Calibration/calibration_images/*.jpg')
+print(images)  # Print the list of image filenames for verification
 
 for image in images:
     img = cv.imread(image)
@@ -36,31 +36,29 @@ for image in images:
         corners2 = cv.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
         imgpoints.append(corners2)  # Use refined corners
 
-ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(
-    objpoints, imgpoints, frameSize, None, None
-)
-
+if len(objpoints) > 0 and len(imgpoints) > 0:
+    ret, _, _, _, _ = cv.calibrateCamera(
+        objpoints, imgpoints, frameSize, None, None
+    )
+    print("Camera calibration successful!")
+else:
+    print("Camera calibration failed. Insufficient calibration images.")
 
 # Undistortion function
-
 def undistort_image(frame):
     h, w = frame.shape[:2]
-    newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 1, frameSize)
+    resized_frame = cv.resize(frame, frameSize)  # Resize the frame to the desired size
+
+    newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(None, None, (w, h), 1, frameSize)
 
     # Undistort
-    dst = cv.undistort(frame, cameraMatrix, dist, None, newCameraMatrix)
+    dst = cv.undistort(resized_frame, None, None, None, newCameraMatrix)
 
     # Crop the image
     x, y, w, h = roi
     dst = dst[y:y + h, x:x + w]
 
-    # Check if the resulting image is valid
-    if dst.shape[0] > 0 and dst.shape[1] > 0:
-        dst = cv.resize(dst, frameSize)
-        return dst
-    else:
-        return None
-
+    return dst
 
 # Continuous undistortion function
 def continuous_undistortion(image):
