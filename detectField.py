@@ -4,16 +4,19 @@ import time
 import Calibration.cameraCalibrationv2 as calibration
 
 import Pathfinder
-import Calibration.cameraCalibrationv2
+
 
 def detect_field():
     videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
-    ret, image = videoCapture.read()
-    if ret is None:
-        print("No image found")
-    image = calibration.continuous_undistortion(image)
+
+    while 1:
+        ret, image = videoCapture.read()
+        if ret is None:
+            print("No image found")
+
+        image = calibration.continuous_undistortion(image)
 
         height, width = image.shape[:2]
 
@@ -77,16 +80,15 @@ def detect_field():
                     cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
                     cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
 
-
                     corners = cv.goodFeaturesToTrack(gray, 4, 0.01, 400)
                     for corner in corners:
                         x, y = corner.ravel().astype(int)
                         walls.append([x, y])
-                        print(x,y)
+                        print(x, y)
                         cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
-                    if len(walls)==4:
-                        smallGoal.append(Pathfinder.small_goal_location(walls))
-                        bigGoal.append(Pathfinder.big_goal_location(walls))
+                    if len(walls) == 4:
+                        smallGoal = Pathfinder.small_goal_location(walls)
+                        bigGoal = Pathfinder.big_goal_location(walls)
                         print(smallGoal, bigGoal)
 
         # detect obstacle
@@ -104,11 +106,11 @@ def detect_field():
         end = time.time()
         time_for_transform = end - start
 
-        #cv.imshow('Original', image)
-        #cv.imshow('State.py', blank)
+        # cv.imshow('Original', image)
+        # cv.imshow('State.py', blank)
 
-        print('Time for transform: ' + str(time_for_transform))
+        print('Time for detect_field: ' + str(time_for_transform))
 
-        #cv.waitKey(0)
-        if(len(walls) == 4):
+        # cv.waitKey(0)
+        if len(walls) == 4:
             return smallGoal, bigGoal, obstacle, walls
