@@ -21,9 +21,35 @@ def robot_center_coordinates(front_pos, back_pos):
     return robot_center
 
 
+# Width of the robot
 def robot_width():
     width = 2
     return width
+
+
+# Center of the field
+def center_field(corners):
+    maxX = corners[0][0]
+    maxY = corners[0][1]
+    minX = corners[2][0]
+    minY = corners[2][1]
+    print("HELLO",maxX+minX,maxY+minY)
+    field_center = [((maxX+minX) / 2, (maxY+minY) / 2)]
+    return field_center
+
+
+# Location of a given goal
+def big_goal_location(corners):
+    maxX = corners[0][0]
+    maxY = corners[0][1]
+    goal = [(maxX, maxY / 2)]
+    return goal
+
+def small_goal_location(corners):
+    minX = corners[2][0]
+    maxY = corners[0][1]
+    goal = [(minX, maxY / 2)]
+    return goal
 
 
 def robot_corner_radius(front_pos, back_pos):
@@ -144,10 +170,10 @@ def find_obstacle_in_circle(obstacles, front_pos, back_pos):
 # we get the corners as a single location and not an array of multiple coordinates.
 def check_borders(corners, front_pos, back_pos):
     # here we can hard-code minimum distance "buffer" to the walls.
-    minX = corners[0][0]
-    maxX = corners[1][0]
+    maxX = corners[0][0]
+    maxY = corners[0][1]
+    minX = corners[2][0]
     minY = corners[2][1]
-    maxY = corners[3][1]
     # check if the robot back or front's x-coordinate is
     if front_pos[0] <= minX or back_pos[0] <= minX:
         # Robot is hitting the left border, take appropriate action here
