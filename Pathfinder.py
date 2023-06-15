@@ -1,7 +1,6 @@
 import math
 import Moves
 import MoveTypes
-import detectBalls
 import detectField
 import detectRobot
 
@@ -9,6 +8,11 @@ import detectRobot
 def get_robot_length(front_pos, back_pos):
     robot_length = math.sqrt((front_pos[0] - back_pos[0]) ** 2 + (front_pos[1] - back_pos[1]) ** 2)
     return robot_length
+
+
+def distance_to_ball(front_pos, ball):
+    distance = math.sqrt((front_pos[0] - ball[0]) ** 2 + (front_pos[1] - ball[1]) ** 2)
+    return distance
 
 
 def robot_center_coordinates(front_pos, back_pos):
@@ -170,19 +174,19 @@ def check_borders(corners, front_pos, back_pos):
 # The robot can turn and align itself to a ball
 # It can move forward if is aligned
 # Change has been added to this function so it is now a collect balls method
-def collect_balls():
+def collect_balls(state):
     front_pos, back = detectRobot.detect_robot()
-
-    balls = detectBalls.detect_balls()
-
-    nearest_ball, distance = find_nearest_ball(front_pos, balls)
+    if state.goal_ball is None:
+        nearest_ball, distance_to_nearest_ball = find_nearest_ball(front_pos, state.balls)
+        state.goal_ball = nearest_ball
+    distance_to_goal_ball = distance_to_ball(front_pos, state.goal_ball)
 
     print("Back: ", str(back))
     print("Front: ", str(front_pos))
-    print("Closest ball: ", str(nearest_ball))
+    print("Closest ball: ", str(state.goal_ball))
 
     angle_to_turn = calculate_turn(back_pos=robot_center_coordinates(front_pos, back), front_pos=front_pos,
-                                   ball_pos=nearest_ball)
+                                   ball_pos=state.goal_ball)
     print(angle_to_turn)
 
     if angle_to_turn > 5 or angle_to_turn < -5:
@@ -190,7 +194,12 @@ def collect_balls():
         print(str(angle_to_turn) + " degrees")
         return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
-        return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance + 600))
+        if distance_to_goal_ball > 300:
+            return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_goal_ball)
+        else:
+            state.goal_ball = None
+            state.need_new_detect_balls = True
+            return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance_to_goal_ball) + 30)
 
 
 def move_to_goal(point):
@@ -213,7 +222,7 @@ def move_to_goal(point):
         return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
 
 
-def deliver_balls():
+def deliver_balls(state):
     smallGoal, bigGoal, obstacle, walls = detectField.detect_field()
     front_pos, back_pos = detectRobot.detect_robot()
 
