@@ -30,7 +30,7 @@ def detect_field():
 
         # Define the lower and upper red color thresholds in HSV
         lower_red = np.array([0, 50, 50])
-        upper_red = np.array([12, 255, 255])
+        upper_red = np.array([10, 255, 255])
 
         # Create a mask for red color detection
         red_mask = cv.inRange(hsv, lower_red, upper_red)
