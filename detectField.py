@@ -2,7 +2,6 @@ import cv2 as cv
 import numpy as np
 import time
 import Calibration.cameraCalibrationv2 as calibration
-
 import Pathfinder
 
 
@@ -31,7 +30,7 @@ def detect_field():
 
         # Define the lower and upper red color thresholds in HSV
         lower_red = np.array([0, 50, 50])
-        upper_red = np.array([10, 255, 255])
+        upper_red = np.array([12, 255, 255])
 
         # Create a mask for red color detection
         red_mask = cv.inRange(hsv, lower_red, upper_red)
@@ -90,14 +89,17 @@ def detect_field():
                         if len(walls) == 4:
                             smallGoal = Pathfinder.small_goal_location(walls)
                             bigGoal = Pathfinder.big_goal_location(walls)
+                            cv.circle(image,(int(smallGoal[0]), int(smallGoal[1])),5,(255,255,0),-1)
+                            cv.circle(image, (int(bigGoal[0]), int(bigGoal[1])), 5, (255, 255, 0), -1)
+
                             print(smallGoal, bigGoal)
 
         # detect obstacle
         for contour in cnts:
-            epsilon = 0.05 * cv.arcLength(contour, True)
+            epsilon = 0.00001 * cv.arcLength(contour, True)
             approx = cv.approxPolyDP(contour, epsilon, True)
             x, y, w, h = cv.boundingRect(approx)
-            if np.logical_and.reduce((h > 80, h < 150, image[y, x][2] > 140, 170 >= image[y, x][0])):
+            if np.logical_and.reduce((h > 80, h < 140, image[y, x][2] > 140, 170 >= image[y, x][0])):
                 cv.drawContours(blank, [approx], -1, (255, 100, 150), 2)
 
                 for points in contour:
