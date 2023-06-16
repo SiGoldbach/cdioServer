@@ -99,12 +99,12 @@ def detect_robot():
 
         time_for_transform = end - start
         print("Amount of circles: " + str(circle))
-        cv.imshow('Original', image)
-        cv.imshow('Obstacles and balls drawn: ', blank)
+        # cv.imshow('Original', image)
+        # cv.imshow('Obstacles and balls drawn: ', blank)
         print(len(front))
         print(len(back))
         print('Time for transform: ' + str(time_for_transform))
 
-        cv.waitKey(0)
+        # cv.waitKey(0)
         if len(front) == 2 and len(back) == 2:
             return front, back
