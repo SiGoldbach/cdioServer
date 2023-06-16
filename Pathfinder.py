@@ -3,6 +3,7 @@ import Moves
 import MoveTypes
 import detectField
 import detectRobot
+import robot_modes
 
 
 def get_robot_length(front_pos, back_pos):
@@ -11,7 +12,7 @@ def get_robot_length(front_pos, back_pos):
 
 
 def distance_to_ball(front_pos, ball):
-    distance = math.sqrt((front_pos[0] - ball[0]) ** 2 + (front_pos[1] - ball[1]) ** 2)
+    distance = math.sqrt((int(front_pos[0]) - int(ball[0])) ** 2 + int((front_pos[1]) - int(ball[1])) ** 2)
     return distance
 
 
@@ -41,13 +42,13 @@ def center_field(corners):
 def big_goal_location(corners):
     maxX = corners[0][0]
     maxY = corners[0][1]
-    goal = [(maxX, maxY / 2)]
+    goal = [maxX, maxY / 2]
     return goal
 
 def small_goal_location(corners):
     minX = corners[2][0]
     maxY = corners[0][1]
-    goal = [(minX, maxY / 2)]
+    goal = [minX, maxY / 2]
     return goal
 
 
@@ -220,6 +221,9 @@ def collect_balls(state):
         else:
             state.goal_ball = None
             state.need_new_detect_balls = True
+            state.ball_amount_guess = state.ball_amount_guess + 1
+            if state.ball_amount_guess == 5:
+                state.mode = robot_modes.DELIVER
             return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance_to_goal_ball) + 30)
 
 
@@ -244,14 +248,13 @@ def move_to_goal(point):
 
 
 def deliver_balls(state):
-    smallGoal, bigGoal, obstacle, walls = detectField.detect_field()
     front_pos, back_pos = detectRobot.detect_robot()
 
     print("Front_pos: " + str(front_pos))
     print("Back_pos: " + str(back_pos))
 
     # As of right now I assume the first big goal i get is the correct one
-    print(smallGoal)
+    print(state.small_goal)
 
     # if len(field.large_goal) == 0:
     # print("big goal is none")
@@ -259,27 +262,31 @@ def deliver_balls(state):
     # if len(field.small_goal) == 0:
     # field.small_goal.append([300, 375])
 
-    print("big_goal: " + str(bigGoal[0]))
+    print("big_goal: " + str(state.large_goal[0]))
 
     # I make the same assumption with the small goal
-    print("small_goal`: " + str(smallGoal[0]))
+    print("small_goal`: " + str(state.small_goal[0]))
 
     robot_center = robot_center_coordinates(front_pos, back_pos)
-    horizontal_to_goal = [robot_center[0], smallGoal[1]]
-    small_goal = smallGoal
-    angle = calculate_turn(back_pos, front_pos, small_goal)
+    horizontal_to_goal = [robot_center[0], state.small_goal[1]]
+    angle = calculate_turn(back_pos, front_pos, state.small_goal)
+
+    # I will typecast the robot center to int
 
     if angle < 5 & int(angle) > -5:
-        if robot_center[1] > small_goal[1] + 10 & \
-                robot_center[1] < small_goal[1] - 10:
-            if robot_center[0] > small_goal[0] + 90 & \
-                    robot_center[0] < small_goal[0] + 110:
+        if robot_center[1] > state.small_goal[1] + 10 & \
+                int(robot_center[1]) < state.small_goal[1] - 10:
+            if robot_center[0] > state.small_goal[0] + 90 & \
+                    int(robot_center[0]) < state.small_goal[0] + 110:
                 if front_pos[0] > back_pos[0]:
+                    # I am here changing the state of the robot to be on collect balls again
+                    state.mode = robot_modes.COLLECT
+                    state.ball_amount_guess = 0
                     return Moves.MoveClass(MoveTypes.DELIVER, 0, 0)
                 else:
                     return Moves.MoveClass(MoveTypes.TURN, 350, 180)
             else:
-                return move_to_goal(small_goal)
+                return move_to_goal(state.small_goal)
 
     return move_to_goal(horizontal_to_goal)
 
