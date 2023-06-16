@@ -1,7 +1,8 @@
 # I do not know how to make this immutable, do not change this objects state ever
 class State:
     def __init__(self, small_goal, large_goal, obstacle, corners, balls, mode, need_new_detect_balls, goal_ball,
-                 ball_amount_guess, non_delivered_balls, robot_delivery_location_small):
+                 ball_amount_guess, non_delivered_balls, robot_delivery_location_small,
+                 robot_delivery_location_big, robot_has_been_near_delivery_location, big_or_small_goal):
         self.small_goal = small_goal
         self.large_goal = large_goal
         self.obstacle = obstacle
@@ -13,6 +14,9 @@ class State:
         self.ball_amount_guess = ball_amount_guess
         self.non_delivered_balls = non_delivered_balls
         self.robot_delivery_location_small = robot_delivery_location_small
+        self.robot_delivery_location_big = robot_delivery_location_big
+        self.robot_has_been_near_delivery_location = robot_has_been_near_delivery_location
+        self.big_or_small_goal = big_or_small_goal
 
     def __str__(self):
         return "The small goal's coordinates: " + str(self.small_goal) + "\n" + "The large goal's coordinates: " + str(
