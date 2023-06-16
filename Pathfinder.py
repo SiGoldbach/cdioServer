@@ -10,6 +10,11 @@ CALCULATE_LINE_WIDTH = 25
 DISTANCE_TO_GOAL = 40
 BALL_TO_WALL = 30
 
+DIRECTION_TOP = "top"
+DIRECTION_BOTTOM = "bottom"
+DIRECTION_LEFT = "left"
+DIRECTION_RIGHT = "right"
+DIRECTION_NOT_NEAR = "false"
 
 def get_robot_length(front_pos, back_pos):
     robot_length = math.sqrt((front_pos[0] - back_pos[0]) ** 2 + (front_pos[1] - back_pos[1]) ** 2)
@@ -414,11 +419,7 @@ def max_turn(front_pos, back_pos, obstacles, side):
         return max_right
 
 
-DIRECTION_TOP = "top"
-DIRECTION_BOTTOM = "bottom"
-DIRECTION_LEFT = "left"
-DIRECTION_RIGHT = "right"
-DIRECTION_NOT_NEAR = "false"
+
 
 
 # The method to pick up ball near wall

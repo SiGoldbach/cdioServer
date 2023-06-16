@@ -6,7 +6,7 @@ import Pathfinder
 
 
 def detect_field():
-    videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
+    videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 
@@ -67,7 +67,7 @@ def detect_field():
                 if M["m00"] != 0:
                     cX = int(M["m10"] / M["m00"])
                     cY = int(M["m01"] / M["m00"])
-                    if(len(approx)==4):
+                    if (len(approx) == 4):
                         # Draw field
                         cv.drawContours(blank, [approx], -1, (150, 100, 255), 2)
                         cv.drawContours(gray, [approx], 0, 255, thickness=cv.FILLED)
@@ -89,7 +89,7 @@ def detect_field():
                         if len(walls) == 4:
                             smallGoal = Pathfinder.small_goal_location(walls)
                             bigGoal = Pathfinder.big_goal_location(walls)
-                            cv.circle(image,(int(smallGoal[0]), int(smallGoal[1])),5,(255,255,0),-1)
+                            cv.circle(image, (int(smallGoal[0]), int(smallGoal[1])), 5, (255, 255, 0), -1)
                             cv.circle(image, (int(bigGoal[0]), int(bigGoal[1])), 5, (255, 255, 0), -1)
 
                             print(smallGoal, bigGoal)
@@ -109,11 +109,11 @@ def detect_field():
         end = time.time()
         time_for_transform = end - start
 
-        cv.imshow('Original', image)
-        cv.imshow('State.py', blank)
+        # cv.imshow('Original', image)
+        # cv.imshow('State.py', blank)
 
         print('Time for detect_field: ' + str(time_for_transform))
 
-        cv.waitKey(0)
+        # cv.waitKey(0)
         if len(walls) == 4:
             return smallGoal, bigGoal, obstacle, walls
