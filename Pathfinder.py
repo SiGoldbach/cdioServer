@@ -1,7 +1,6 @@
 import math
 import Moves
 import MoveTypes
-import detectField
 import detectRobot
 import robot_modes
 
@@ -171,10 +170,10 @@ def find_obstacle_in_circle(obstacles, front_pos, back_pos):
 # we get the corners as a single location and not an array of multiple coordinates.
 def check_borders(corners, front_pos, back_pos):
     # here we can hard-code minimum distance "buffer" to the walls.
-    minX = corners[0][0]
-    minY = corners[0][1]
-    maxX = corners[2][0]
-    maxY = corners[2][1]
+    minX = min(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+    maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+    minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
     # check if the robot back or front's x-coordinate is
     if front_pos[0] <= minX or back_pos[0] <= minX:
         # Robot is hitting the left border, take appropriate action here

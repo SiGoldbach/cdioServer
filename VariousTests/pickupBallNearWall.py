@@ -62,19 +62,19 @@ def wall_robot_align(front_pos, back_pos, ball_location, corners):
 def is_ball_near_wall(front_pos, back_pos, ball_location, corners):
     minX, maxX, minY, maxY = Pathfinder.check_borders(corners, front_pos, back_pos)
     # Hardcoded a pixel-difference. May need change
-    if ball_location[0] <= minX + 20 and ball_location[1] >= minY + 20 & ball_location[1] <= maxY - 20:
+    if ball_location[0] <= minX + 30 and ball_location[1] >= minY + 30 & ball_location[1] <= maxY - 30:
         direction = DIRECTION_LEFT
         print(direction)
         return direction
-    if ball_location[0] >= maxX - 20 and ball_location[1] >= minY + 20 & ball_location[1] <= maxY - 20:
+    if ball_location[0] >= maxX - 30 and ball_location[1] >= minY + 30 & ball_location[1] <= maxY - 30:
         direction = DIRECTION_RIGHT
         print(direction)
         return direction
-    if ball_location[1] <= minY + 20 and minX + 20 <= ball_location[0] <= maxX - 20:
+    if ball_location[1] <= minY + 30 and minX + 30 <= ball_location[0] <= maxX - 30:
         direction = DIRECTION_TOP
         print(direction)
         return direction
-    if ball_location[1] >= maxY - 20 and minX + 20 <= ball_location[0] <= maxX - 20:
+    if ball_location[1] >= maxY - 30 and minX + 30 <= ball_location[0] <= maxX - 30:
         direction = DIRECTION_BOTTOM
         print(direction)
         return direction
@@ -83,14 +83,14 @@ def is_ball_near_wall(front_pos, back_pos, ball_location, corners):
         return DIRECTION_NOT_NEAR
 
 
-front_pos = (200, 200)
-back_pos = (230, 230)
+front_pos = (906, 140)
+back_pos = (874, 246)
 obstacles = [(150, 150), (200, 200)]
 
-corners = [(0, 0), (100, 0), (1000, 1000), (0, 1000)]
+corners = [(1046, 609), (1035, 45), (279, 599), (272, 93)]
 minX, maxX, minY, maxY = Pathfinder.check_borders(corners, front_pos, back_pos)
 print("minX: ", minX, "maxX: ", maxX, "minY: ", minY, "maxY: ", maxY)
-ball_location = (300, maxY)
+ball_location = (1020, 242)
 print("ball location: ", ball_location)
 test123 = move_to_wall_ball(front_pos, back_pos, ball_location, corners)
-print(test123)
+print(test123.argument)
