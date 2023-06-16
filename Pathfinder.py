@@ -229,8 +229,7 @@ def collect_balls(state):
 
 def move_to_goal(point):
     front_pos, back_pos = detectRobot.detect_robot()
-    angle_to_turn = calculate_turn(back_pos, front_pos, point)
-    robot_center = robot_center_coordinates(front_pos, back_pos)
+    angle_to_turn = calculate_turn(front_pos, back_pos, point)
     if front_pos is None or back_pos is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 50)
     # First I am checking if the robot is very close to the point if it is I will turn the robot and align it ass
@@ -245,8 +244,8 @@ def move_to_goal(point):
         print(str(angle_to_turn) + " degrees")
         return Moves.MoveClass(MoveTypes.TURN, 500, int(angle_to_turn))
     else:
-        distance = distance_to_point(front_pos, point)
-        return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance))
+        distance = distance_to_point(back_pos, point)
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, -calculate_drive_distance(distance))
 
 
 def align_to_goal(front_pos, back_pos, point):

@@ -45,3 +45,13 @@ The back of the robot was found as:  [996, 386]
 We should move 400 pixel ca.
 The front of the robot was found as:  [476, 376]
 The back of the robot was found as:  [588, 374]
+
+Now I will try to back -800
+
+The front of the robot was found as:  [1006, 272]
+The back of the robot was found as:  [892, 274]
+
+The front of the robot was found as:  [612, 266]
+The back of the robot was found as:  [506, 262]
+
+Approximately the same
