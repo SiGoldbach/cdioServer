@@ -7,7 +7,7 @@ import Calibration.cameraCalibrationv2 as calibration
 # Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until the
 # robot is found
 def detect_robot():
-    videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
+    videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
     while 1:
@@ -38,9 +38,9 @@ def detect_robot():
             cv.HOUGH_GRADIENT,
             1,
             20,
-            param1=30,
+            param1=25,
             param2=20,
-            minRadius=21,
+            minRadius=16,
             maxRadius=24
         )
 
@@ -49,10 +49,10 @@ def detect_robot():
             cv.HOUGH_GRADIENT,
             1,
             20,
-            param1=30,
+            param1=25,
             param2=20,
-            minRadius=14,
-            maxRadius=18
+            minRadius=13,
+            maxRadius=16
         )
 
         circle = 0
@@ -65,8 +65,8 @@ def detect_robot():
                     hsv_pixel = hsv[b, a]
 
                 # Blue color range in HSV
-                blue_lower = np.array([100, 100, 100], dtype=np.uint8)
-                blue_upper = np.array([120, 255, 255], dtype=np.uint8)
+                blue_lower = np.array([100, 50, 50], dtype=np.uint8)
+                blue_upper = np.array([130, 255, 255], dtype=np.uint8)
 
                 if np.all(cv.inRange(hsv_pixel, blue_lower, blue_upper)):
                     print("CENTER OF BLUE BALL SHOULD BE: " + str(a) + " " + str(b))
@@ -99,12 +99,12 @@ def detect_robot():
 
         time_for_transform = end - start
         print("Amount of circles: " + str(circle))
-        # cv.imshow('Original', image)
-        # cv.imshow('Obstacles and balls drawn: ', blank)
+        cv.imshow('Original', image)
+        cv.imshow('Obstacles and balls drawn: ', blank)
         print(len(front))
         print(len(back))
         print('Time for transform: ' + str(time_for_transform))
 
-        # cv.waitKey(0)
+        cv.waitKey(0)
         if len(front) == 2 and len(back) == 2:
             return front, back
