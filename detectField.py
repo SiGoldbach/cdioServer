@@ -2,12 +2,11 @@ import cv2 as cv
 import numpy as np
 import time
 import Calibration.cameraCalibrationv2 as calibration
-
 import Pathfinder
 
 
 def detect_field():
-    videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
+    videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
 
@@ -30,8 +29,8 @@ def detect_field():
         hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 
         # Define the lower and upper red color thresholds in HSV
-        lower_red = np.array([0, 110, 150])
-        upper_red = np.array([25, 255, 255])
+        lower_red = np.array([0, 50, 50])
+        upper_red = np.array([12, 255, 255])
 
         # Create a mask for red color detection
         red_mask = cv.inRange(hsv, lower_red, upper_red)
@@ -60,7 +59,7 @@ def detect_field():
             x, y, w, h = cv.boundingRect(contour)
 
             if np.logical_and.reduce((image[y, x][2] > 140, 170 >= image[y, x][0], done == 0, w > 600)):
-                epsilon = 0.1 * cv.arcLength(contour, True)
+                epsilon = 0.05 * cv.arcLength(contour, True)
                 approx = cv.approxPolyDP(contour, epsilon, True)
                 done = 1
                 M = cv.moments(contour)
@@ -68,35 +67,39 @@ def detect_field():
                 if M["m00"] != 0:
                     cX = int(M["m10"] / M["m00"])
                     cY = int(M["m01"] / M["m00"])
+                    if(len(approx)==4):
+                        # Draw field
+                        cv.drawContours(blank, [approx], -1, (150, 100, 255), 2)
+                        cv.drawContours(gray, [approx], 0, 255, thickness=cv.FILLED)
+                        x, y, w, h = cv.boundingRect(approx)
 
-                    # Draw field
-                    cv.drawContours(blank, [approx], -1, (150, 100, 255), 2)
-                    cv.drawContours(gray, [approx], 0, 255, thickness=cv.FILLED)
-                    x, y, w, h = cv.boundingRect(approx)
+                        # Draw path go goal from the center
+                        cv.line(blank, (x, cY), (cX, cY), (0, 255, 0), 2)
+                        cv.line(blank, (x + w, cY), (cX, cY), (255, 0, 0), 2)
+                        cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
+                        cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
 
-                    # Draw path go goal from the center
-                    cv.line(blank, (x, cY), (cX, cY), (0, 255, 0), 2)
-                    cv.line(blank, (x + w, cY), (cX, cY), (255, 0, 0), 2)
-                    cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
-                    cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
+                        corners = cv.goodFeaturesToTrack(gray, 4, 0.1, 500)
+                        for corner in corners:
+                            x, y = corner.ravel().astype(int)
+                            walls.append([x, y])
+                            print(x, y)
+                            cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
 
-                    corners = cv.goodFeaturesToTrack(gray, 4, 0.01, 400)
-                    for corner in corners:
-                        x, y = corner.ravel().astype(int)
-                        walls.append([x, y])
-                        print(x, y)
-                        cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
-                    if len(walls) == 4:
-                        smallGoal = Pathfinder.small_goal_location(walls)
-                        bigGoal = Pathfinder.big_goal_location(walls)
-                        print(smallGoal, bigGoal)
+                        if len(walls) == 4:
+                            smallGoal = Pathfinder.small_goal_location(walls)
+                            bigGoal = Pathfinder.big_goal_location(walls)
+                            cv.circle(image,(int(smallGoal[0]), int(smallGoal[1])),5,(255,255,0),-1)
+                            cv.circle(image, (int(bigGoal[0]), int(bigGoal[1])), 5, (255, 255, 0), -1)
+
+                            print(smallGoal, bigGoal)
 
         # detect obstacle
         for contour in cnts:
-            epsilon = 0.05 * cv.arcLength(contour, True)
+            epsilon = 0.00001 * cv.arcLength(contour, True)
             approx = cv.approxPolyDP(contour, epsilon, True)
             x, y, w, h = cv.boundingRect(approx)
-            if np.logical_and(h > 80, h < 200):
+            if np.logical_and.reduce((h > 80, h < 140, image[y, x][2] > 140, 170 >= image[y, x][0])):
                 cv.drawContours(blank, [approx], -1, (255, 100, 150), 2)
 
                 for points in contour:
@@ -106,11 +109,11 @@ def detect_field():
         end = time.time()
         time_for_transform = end - start
 
-        # cv.imshow('Original', image)
-        # cv.imshow('State.py', blank)
+        cv.imshow('Original', image)
+        cv.imshow('State.py', blank)
 
         print('Time for detect_field: ' + str(time_for_transform))
 
-        # cv.waitKey(0)
+        cv.waitKey(0)
         if len(walls) == 4:
             return smallGoal, bigGoal, obstacle, walls
