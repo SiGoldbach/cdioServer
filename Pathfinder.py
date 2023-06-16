@@ -4,7 +4,6 @@ import MoveTypes
 import detectRobot
 import robot_modes
 
-
 ROBOT_WIDTH = 2
 DISTANCE_FROM_WALL = 30
 CALCULATE_LINE_WIDTH = 25
@@ -12,14 +11,14 @@ DISTANCE_TO_GOAL = 40
 BALL_TO_WALL = 30
 
 
-
 def get_robot_length(front_pos, back_pos):
     robot_length = math.sqrt((front_pos[0] - back_pos[0]) ** 2 + (front_pos[1] - back_pos[1]) ** 2)
     return robot_length
 
 
-def distance_to_point(front_pos, ball):
-    distance = math.sqrt((int(front_pos[0]) - int(ball[0])) ** 2 + int((front_pos[1]) - int(ball[1])) ** 2)
+def distance_to_point(current_location, goal_location):
+    distance = math.sqrt((int(current_location[0]) - int(goal_location[0])) ** 2 + int(
+        (current_location[1]) - int(goal_location[1])) ** 2)
     return distance
 
 
@@ -50,7 +49,7 @@ def big_goal_location(corners):
     maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
     maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
     minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
-    goal = [maxX, (maxY+minY) / 2]
+    goal = [maxX, (maxY + minY) / 2]
     return goal
 
 
@@ -59,7 +58,7 @@ def small_goal_location(corners):
     maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
     minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
 
-    goal = [minX, (maxY+minY) / 2]
+    goal = [minX, (maxY + minY) / 2]
     return goal
 
 
@@ -235,6 +234,7 @@ def collect_balls(state):
             state.ball_amount_guess = state.ball_amount_guess + 1
             if state.ball_amount_guess == 5:
                 state.mode = robot_modes.DELIVER
+                state.ball_amount_guess = 0
             return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance_to_goal_ball) + 30)
 
 
@@ -248,7 +248,7 @@ def move_to_goal(state, goal, offset):
 
     robot_middle = robot_center_coordinates(front_pos, back_pos)
     distance_from_offset_to_middle = distance_to_point(robot_middle, offset)
-    if distance_from_offset_to_middle < 40 or state.AT_CHECKPOINT == robot_modes.AT_CHECKPOINT:
+    if distance_from_offset_to_middle < 40 or state.delivery_mode == robot_modes.AT_CHECKPOINT:
         state.delivery_mode = robot_modes.AT_CHECKPOINT
         return drive_back_to_goal(front_pos, back_pos, state, goal)
     # The robot is not at the offset and has never been meaning it should drive there
@@ -269,11 +269,10 @@ def drive_back_to_goal(front_pos, back_pos, state, goal):
         print("I am aligned to the goal")
         drive_distance = distance_to_point(back_pos, goal)
         state.delivery_mode = robot_modes.AT_GOAL
-        return Moves.MoveClass(MoveTypes.BACKWARD, 500, calculate_drive_distance(drive_distance) - 20)
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, -(calculate_drive_distance(drive_distance) - 80))
     else:
         return Moves.MoveClass(MoveTypes.TURN, 500, front_angle_to_goal)
 
-    print(state.small_goal)
 
 def deliver(front_pos, back_pos, state, goal):
     # Here I am calculating the angle reverse of usual because the back needs to line up instead of the front
@@ -290,10 +289,11 @@ def deliver(front_pos, back_pos, state, goal):
 def deliver_balls(state):
     # From the state I am now making 2 points the goal and the offset point the robot should drive to
     goal, offset = None, None
-    if state.goal_ball == robot_modes.BIG_GOAL:
+    if state.big_or_small_goal == robot_modes.BIG_GOAL:
+        print("I will deliver in the large goal")
         goal = state.large_goal
         offset = state.robot_delivery_location_big
-    if state.goal_ball == robot_modes.SMALL_GOAL:
+    if state.big_or_small_goal == robot_modes.SMALL_GOAL:
         goal = state.small_goal
         offset = state.robot_delivery_location_small
 
