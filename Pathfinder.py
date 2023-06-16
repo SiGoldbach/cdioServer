@@ -227,17 +227,19 @@ def collect_balls(state):
             return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance_to_goal_ball) + 30)
 
 
-def move_to_goal(point, state, goal, offset):
+def move_to_goal(state, goal, offset):
+    # I am getting the robots location from image recognition
     front_pos, back_pos = detectRobot.detect_robot()
-    if front_pos is None or back_pos is None:
-        return Moves.MoveClass(MoveTypes.TURN, 500, 50)
-    # First I am checking if the robot is very close to the point if it is I will turn the robot and align it ass
-    # to the goal
+
+    # First i am checking if the robot is at the goal already
+    if state.delivery_mode == robot_modes.AT_GOAL:
+        return deliver(front_pos, back_pos, state, goal)
+
     robot_middle = robot_center_coordinates(front_pos, back_pos)
-    distance_from_point_to_middle = distance_to_point(robot_middle, point)
-    if distance_from_point_to_middle < 40 or state.robot_has_been_near_delivery_location:
-        state.robot_has_been_near_delivery_location = True
-        return align_to_goal(front_pos, back_pos, state)
+    distance_from_offset_to_middle = distance_to_point(robot_middle, offset)
+    if distance_from_offset_to_middle < 40 or state.AT_CHECKPOINT == robot_modes.AT_CHECKPOINT:
+        state.delivery_mode = robot_modes.AT_CHECKPOINT
+        return drive_back_to_goal(front_pos, back_pos, state, goal)
     # The robot is not at the offset and has never been meaning it should drive there
     angle_to_turn = calculate_turn(front_pos, back_pos, offset)
     if angle_to_turn > 5 or angle_to_turn < -5:
@@ -249,16 +251,28 @@ def move_to_goal(point, state, goal, offset):
         return Moves.MoveClass(MoveTypes.FORWARD, 500, -calculate_drive_distance(distance))
 
 
-def align_to_goal(front_pos, back_pos, state, goal):
+def drive_back_to_goal(front_pos, back_pos, state, goal):
     print("I will align my butt to the goal")
     front_angle_to_goal = calculate_turn(front_pos, back_pos, goal)
     if 3 > front_angle_to_goal > -3:
         print("I am aligned to the goal")
-        state.mode = robot_modes.COLLECT
-        state.robot_has_been_near_delivery_location = False
-        return Moves.MoveClass(MoveTypes.DELIVER, 0, 0)
+        drive_distance = distance_to_point(back_pos, goal)
+        state.delivery_mode = robot_modes.AT_GOAL
+        return Moves.MoveClass(MoveTypes.BACKWARD, 500, calculate_drive_distance(drive_distance) - 20)
     else:
         return Moves.MoveClass(MoveTypes.TURN, 500, front_angle_to_goal)
+
+
+def deliver(front_pos, back_pos, state, goal):
+    # Here I am calculating the angle reverse of usual because the back needs to line up instead of the front
+    angle_to_goal = calculate_turn(front_pos, back_pos, goal)
+    if 3 > angle_to_goal > -3:
+        # Now the robot will deliver the balls and go back to collect mode and reset is delivery_mode
+        state.mode = robot_modes.COLLECT
+        state.delivery_mode = robot_modes.AT_RANDOM_PLACE
+        return Moves.MoveClass(MoveTypes.DELIVER, 0, 0)
+    else:
+        return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_goal)
 
 
 def deliver_balls(state):
@@ -271,21 +285,9 @@ def deliver_balls(state):
         goal = state.small_goal
         offset = state.robot_delivery_location_small
 
-    front_pos, back_pos = detectRobot.detect_robot()
+    # This method is figuring out what the robot should do with a given goal and offset
 
-    print("Front_pos: " + str(front_pos))
-    print("Back_pos: " + str(back_pos))
-
-    print(state.small_goal)
-
-    print("big_goal: " + str(state.large_goal[0]))
-
-    # I make the same assumption with the small goal
-    print("small_goal`: " + str(state.small_goal[0]))
-
-    robot_center = robot_center_coordinates(front_pos, back_pos)
-
-    return move_to_goal(state.robot_delivery_location_small, state)
+    return move_to_goal(state, goal, offset)
 
 
 def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
