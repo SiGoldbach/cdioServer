@@ -5,6 +5,14 @@ import detectRobot
 import robot_modes
 
 
+ROBOT_WIDTH = 2
+DISTANCE_FROM_WALL = 30
+CALCULATE_LINE_WIDTH = 25
+DISTANCE_TO_GOAL = 40
+BALL_TO_WALL = 30
+
+
+
 def get_robot_length(front_pos, back_pos):
     robot_length = math.sqrt((front_pos[0] - back_pos[0]) ** 2 + (front_pos[1] - back_pos[1]) ** 2)
     return robot_length
@@ -28,10 +36,10 @@ def robot_width():
 
 # Center of the field
 def center_field(corners):
-    maxX = corners[0][0]
-    maxY = corners[0][1]
-    minX = corners[2][0]
-    minY = corners[2][1]
+    minX = min(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+    maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+    minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
     print("HELLO", maxX + minX, maxY + minY)
     field_center = [((maxX + minX) / 2, (maxY + minY) / 2)]
     return field_center
@@ -39,16 +47,19 @@ def center_field(corners):
 
 # Location of a given goal
 def big_goal_location(corners):
-    maxX = corners[0][0]
-    maxY = corners[0][1]
-    goal = [maxX, maxY / 2]
+    maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+    maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    goal = [maxX, (maxY+minY) / 2]
     return goal
 
 
 def small_goal_location(corners):
-    minX = corners[2][0]
-    maxY = corners[0][1]
-    goal = [minX, maxY / 2]
+    minX = min(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+    maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+
+    goal = [minX, (maxY+minY) / 2]
     return goal
 
 
@@ -110,8 +121,8 @@ def calculate_line(target_x, target_y, robot_x, robot_y):
     b = robot_y - m * robot_x
     # y = m * x + b
     # vi skal parallelforskyde linjen med 25pixel hver vej. ergo b+25 | b-25
-    line1 = [m, b + 25]
-    line2 = [m, b - 25]
+    line1 = [m, b + CALCULATE_LINE_WIDTH]
+    line2 = [m, b - CALCULATE_LINE_WIDTH]
     print(line1)
     print(line2)
     return line1, line2
@@ -262,6 +273,7 @@ def drive_back_to_goal(front_pos, back_pos, state, goal):
     else:
         return Moves.MoveClass(MoveTypes.TURN, 500, front_angle_to_goal)
 
+    print(state.small_goal)
 
 def deliver(front_pos, back_pos, state, goal):
     # Here I am calculating the angle reverse of usual because the back needs to line up instead of the front
