@@ -11,7 +11,7 @@ def get_robot_length(front_pos, back_pos):
     return robot_length
 
 
-def distance_to_ball(front_pos, ball):
+def distance_to_point(front_pos, ball):
     distance = math.sqrt((int(front_pos[0]) - int(ball[0])) ** 2 + int((front_pos[1]) - int(ball[1])) ** 2)
     return distance
 
@@ -33,8 +33,8 @@ def center_field(corners):
     maxY = corners[0][1]
     minX = corners[2][0]
     minY = corners[2][1]
-    print("HELLO",maxX+minX,maxY+minY)
-    field_center = [((maxX+minX) / 2, (maxY+minY) / 2)]
+    print("HELLO", maxX + minX, maxY + minY)
+    field_center = [((maxX + minX) / 2, (maxY + minY) / 2)]
     return field_center
 
 
@@ -44,6 +44,7 @@ def big_goal_location(corners):
     maxY = corners[0][1]
     goal = [maxX, maxY / 2]
     return goal
+
 
 def small_goal_location(corners):
     minX = corners[2][0]
@@ -201,7 +202,7 @@ def collect_balls(state):
     if state.goal_ball is None:
         nearest_ball, distance_to_nearest_ball = find_nearest_ball(front_pos, state.balls)
         state.goal_ball = nearest_ball
-    distance_to_goal_ball = distance_to_ball(front_pos, state.goal_ball)
+    distance_to_goal_ball = distance_to_point(front_pos, state.goal_ball)
 
     print("Back: ", str(back))
     print("Front: ", str(front_pos))
@@ -233,18 +234,30 @@ def move_to_goal(point):
     robot_center = robot_center_coordinates(front_pos, back_pos)
     if front_pos is None or back_pos is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 50)
+    # First I am checking if the robot is very close to the point if it is I will turn the robot and align it ass
+    # to the goal
+    distance_from_point_to_front = distance_to_point(front_pos, point)
+    distance_from_point_to_back = distance_to_point(back_pos, point)
+    if distance_from_point_to_front < 40 or distance_from_point_to_back < 40:
+        return align_to_goal(front_pos, back_pos, point)
 
-    if robot_center[1] > point[1] + 10 & \
-            int(robot_center[1]) < point[1] - 10:
-        return "done"
     if angle_to_turn > 5 or angle_to_turn < -5:
         print("I should turn: " + str(angle_to_turn))
         print(str(angle_to_turn) + " degrees")
-        return Moves.MoveClass(MoveTypes.TURN, 500, int(angle_to_turn[1]))
-    if front_pos[0] > point[0]:
-        return Moves.MoveClass(MoveTypes.BACKWARD, 500, 10)
+        return Moves.MoveClass(MoveTypes.TURN, 500, int(angle_to_turn))
     else:
-        return Moves.MoveClass(MoveTypes.FORWARD, 500, 1000)
+        distance = distance_to_point(front_pos, point)
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance))
+
+
+def align_to_goal(front_pos, back_pos, point):
+    print("I will align my butt to the goal")
+    front_angle_to_goal = calculate_turn(front_pos, back_pos, point)
+    if 4 > front_angle_to_goal > -4:
+        print("I am aligned to the goal")
+        return Moves.MoveClass(MoveTypes.DELIVER, 0, 0)
+    else:
+        return Moves.MoveClass(MoveTypes.TURN, 500, -front_angle_to_goal)
 
 
 def deliver_balls(state):
@@ -253,14 +266,7 @@ def deliver_balls(state):
     print("Front_pos: " + str(front_pos))
     print("Back_pos: " + str(back_pos))
 
-    # As of right now I assume the first big goal i get is the correct one
     print(state.small_goal)
-
-    # if len(field.large_goal) == 0:
-    # print("big goal is none")
-    # field.large_goal.append([1142, 375])
-    # if len(field.small_goal) == 0:
-    # field.small_goal.append([300, 375])
 
     print("big_goal: " + str(state.large_goal[0]))
 
@@ -271,7 +277,7 @@ def deliver_balls(state):
     horizontal_to_goal = [robot_center[0], state.small_goal[1]]
     angle = calculate_turn(back_pos, front_pos, state.small_goal)
 
-    # I will typecast the robot center to int
+    return move_to_goal(state.robot_delivery_location_small)
 
     if angle < 5 & int(angle) > -5:
         if robot_center[1] > state.small_goal[1] + 10 & \

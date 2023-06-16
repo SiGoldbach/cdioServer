@@ -1,0 +1,14 @@
+The big goal was found as:  [1039, 304.5]
+The small goal was found as:  [271, 304.5]'
+
+/ Robot turning its back to the goal ready to deliver in this case the robot scored with all 5 balls
+The front of the robot was found as:  [388, 318]
+The back of the robot was found as:  [284, 324]
+
+/Robot turning its front towards the goal
+The front of the robot was found as:  [300, 318]
+The back of the robot was found as:  [406, 314]
+
+/Robot after turn of 180 degrees
+The front of the robot was found as:  [450, 324]
+The back of the robot was found as:  [346, 334]

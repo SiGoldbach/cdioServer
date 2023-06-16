@@ -2,7 +2,7 @@ from flask import Flask
 # LiveVideoFeed is being initialized here so the rather long start up process start as early as possible
 # The app then calls the live video feeds method calculate move since it has the video-feed,
 # and therefore can give the video feed to the pathfinder as a middle man
-import LiveVideoFeed
+import ServerInitializer
 import json
 
 import MoveTypes
@@ -23,7 +23,7 @@ def hello_world():  # put application's code here
 @app.route('/test')
 def fun():
     # Image.calculate_move()
-    move1 = LiveVideoFeed.calculate_move()
+    move1 = ServerInitializer.calculate_move()
     if move1 is None:
         print("Move to return is none")
 
@@ -36,7 +36,7 @@ def fun():
 
 @app.route('/get_command')
 def command():
-    return LiveVideoFeed.calculate_move()
+    return ServerInitializer.calculate_move()
 
 
 if __name__ == '__main__':
