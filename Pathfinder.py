@@ -41,14 +41,16 @@ def center_field(corners):
 def big_goal_location(corners):
     maxX = corners[0][0]
     maxY = corners[0][1]
-    goal = [maxX, maxY / 2]
+    minY = corners[3][1]
+    goal = [maxX, (maxY+minY) / 2]
     return goal
 
 
 def small_goal_location(corners):
-    minX = corners[2][0]
+    minX = corners[1][0]
     maxY = corners[0][1]
-    goal = [minX, maxY / 2]
+    minY = corners[3][1]
+    goal = [minX, (maxY+minY) / 2]
     return goal
 
 
