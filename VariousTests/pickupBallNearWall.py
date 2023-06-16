@@ -48,7 +48,7 @@ def wall_robot_align(front_pos, back_pos, ball_location, corners):
             if turn_align_pos <= 5 or turn_align_pos >= -5:
                 print("i have to turn: ", turn_align_pos)
                 return Moves.MoveClass(MoveTypes.TURN, 500, turn_align_pos)
-            if turn_align_pos < 5 and turn_align_pos > -5:
+            if 5 > turn_align_pos > -5:
                 print("i have to move: ", dist_pos_align)
                 return Moves.MoveClass(MoveTypes.FORWARD, 500, dist_pos_align)
             if turn_align_ball <= 5 or turn_align_ball >= -5:
