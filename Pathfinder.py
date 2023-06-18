@@ -494,3 +494,11 @@ def is_ball_near_wall(front_pos, back_pos, ball_location, corners):
     else:
         print("Ball is not near wall")
         return DIRECTION_NOT_NEAR
+
+def is_ball_near_corner(balls, corners):
+    for ball in balls:
+        for corner in corners:
+            if distance_to_point(ball, corner) < 30:
+                return True, ball, corner
+    
+    return False
