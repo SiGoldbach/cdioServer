@@ -53,6 +53,7 @@ def center_field(corners):
 # Location of a given goal
 import numpy as np
 
+
 # Remade with numpy array
 def big_goal_location(corners):
     corners = np.array(corners)
@@ -71,6 +72,22 @@ def small_goal_location(corners):
     minY = np.min(corners[:, 1])
     goal = [minX, (maxY + minY) / 2]
     return goal
+
+
+# def big_goal_location(corners):
+#     maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+#     maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+#     minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+#     goal = [maxX, (maxY + minY) / 2]
+#     return goal
+#
+#
+# def small_goal_location(corners):
+#     minX = min(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+#     maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+#     minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+#     goal = [minX, (maxY + minY) / 2]
+#     return goal
 
 
 def robot_corner_radius(front_pos, back_pos):
