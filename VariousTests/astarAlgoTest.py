@@ -1,93 +1,128 @@
 import heapq
-import math
-import numpy as np
 import matplotlib.pyplot as plt
 
-grid_size = (10, 10)  # Adjust the size according to your requirements
-start = (4, 0)  # Starting position
-goal = (4, 8)  # Goal position
-obstacle = (4, 4)  # Obstacle position
+
+# Define the heuristic function (Manhattan distance)
+def heuristic(node, goal):
+    return abs(node[0] - goal[0]) + abs(node[1] - goal[1])
 
 
-def euclidean_distance(point1, point2):
-    x1, y1 = point1
-    x2, y2 = point2
-    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-
-
-def astar(start, goal, obstacle):
-    # Define possible movements (up, down, left, right, diagonal)
-    movements = [(1, 0), (0, 1), (-1, 0), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]
-
-    # Initialize data structures
-    open_list = []
-    heapq.heappush(open_list, (0, start))
+# Define the A* algorithm function
+def astar(start, goal, obstacles, obstacle_threshold):
+    open_set = []
+    closed_set = set()
     came_from = {}
-    cost_so_far = {}
-    came_from[start] = None
-    cost_so_far[start] = 0
 
-    while open_list:
-        current_cost, current = heapq.heappop(open_list)
+    # Initialize the start node
+    g_score = {start: 0}
+    f_score = {start: heuristic(start, goal)}
+    heapq.heappush(open_set, (f_score[start], start))
 
+    # A* algorithm loop
+    while open_set:
+        current = heapq.heappop(open_set)[1]
+
+        # Check if the goal is reached
         if current == goal:
-            break
+            path = []
+            while current in came_from:
+                path.append(current)
+                current = came_from[current]
+            path.append(start)
+            path.reverse()
+            return path
 
-        for movement in movements:
-            dx, dy = movement
-            next_pos = (current[0] + dx, current[1] + dy)
+        closed_set.add(current)
 
-            if (
-                    next_pos[0] < 0
-                    or next_pos[0] >= grid_size[0]
-                    or next_pos[1] < 0
-                    or next_pos[1] >= grid_size[1]
-            ):
+        # Generate the neighboring nodes
+        neighbors = []
+        x, y = current
+        possible_moves = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1),
+                          (x - 1, y - 1), (x - 1, y + 1), (x + 1, y - 1), (x + 1, y + 1)]
+        for neighbor in possible_moves:
+            valid_neighbor = True
+
+            # Check if the neighbor is within bounds
+            if not (0 <= neighbor[0] < GRID_WIDTH and 0 <= neighbor[1] < GRID_HEIGHT):
+                valid_neighbor = False
+
+            # Check if the neighbor is too close to any obstacle
+            for obstacle in obstacles:
+                if abs(neighbor[0] - obstacle[0]) <= obstacle_threshold and abs(
+                        neighbor[1] - obstacle[1]) <= obstacle_threshold:
+                    valid_neighbor = False
+                    break
+
+            if valid_neighbor:
+                neighbors.append(neighbor)
+
+        for neighbor in neighbors:
+            # Calculate the tentative g_score
+            tentative_g_score = g_score[current] + 1
+
+            if neighbor in closed_set and tentative_g_score >= g_score.get(neighbor, float('inf')):
                 continue
 
-            new_cost = cost_so_far[current] + euclidean_distance(current, next_pos)
+            if tentative_g_score < g_score.get(neighbor, float('inf')) or neighbor not in [i[1] for i in open_set]:
+                came_from[neighbor] = current
+                g_score[neighbor] = tentative_g_score
+                f_score[neighbor] = tentative_g_score + heuristic(neighbor, goal)
+                heapq.heappush(open_set, (f_score[neighbor], neighbor))
 
-            if next_pos == obstacle:
-                new_cost += float('inf')  # Make the cost infinitely high for the obstacle
-
-            if (
-                    next_pos not in cost_so_far
-                    or new_cost < cost_so_far[next_pos]
-            ):
-                cost_so_far[next_pos] = new_cost
-                priority = new_cost + euclidean_distance(goal, next_pos)
-                heapq.heappush(open_list, (priority, next_pos))
-                came_from[next_pos] = current
-
-    # Retrieve the path
-    path = []
-    current = goal
-    while current != start:
-        path.append(current)
-        current = came_from[current]
-    path.append(start)
-    path.reverse()
-
-    return path
+    # If no path is found
+    return None
 
 
-path = astar(start, goal, obstacle)
+# Define the dimensions of the grid
+GRID_WIDTH = 100
+GRID_HEIGHT = 100
 
-# Plotting the grid
-grid = np.zeros(grid_size)
-grid[obstacle] = 1
-plt.imshow(grid, cmap='binary')
+# Define the start and goal coordinates
+start = (1, 1)
+goal = (90, 90)
 
-# Plotting the obstacle
-plt.scatter(obstacle[1], obstacle[0], color='red', marker='s')
+# Define the coordinates of the obstacles
+obstacles = [
+    (30, 40),
+    (40, 30),
+    (50, 60),
+    (60, 50),
+    (70, 20),
+    (20, 70),
+    (20, 55),
+    (55, 20),
+    (39, 39)
+]
 
-# Plotting the path
-path_x, path_y = zip(*path)
-plt.plot(path_y, path_x, marker='o')
+# Define the distance threshold to avoid obstacles
+obstacle_threshold = 5
 
-# Plotting the start and goal positions
-plt.scatter(start[1], start[0], color='green', marker='o')
-plt.scatter(goal[1], goal[0], color='blue', marker='o')
+# Find the path using A* algorithm
+path = astar(start, goal, obstacles, obstacle_threshold)
 
-# Display the plot
+# Visualize the grid, obstacles, and path
+plt.figure(figsize=(8, 8))
+plt.xlim(0, GRID_WIDTH)
+plt.ylim(0, GRID_HEIGHT)
+plt.title('A* Algorithm - Path Planning')
+plt.xlabel('X')
+plt.ylabel('Y')
+
+# Plot the obstacles
+for obstacle in obstacles:
+    plt.scatter(obstacle[0], obstacle[1], color='red', marker='s', s=80)
+
+# Plot the path if it exists
+if path is not None:
+    x_path, y_path = zip(*path)
+    plt.plot(x_path, y_path, color='blue', linewidth=2, label='Path')
+else:
+    print("No path found.")
+
+# Plot the start and goal positions
+plt.scatter(start[0], start[1], color='green', marker='o', s=80, label='Start')
+plt.scatter(goal[0], goal[1], color='orange', marker='o', s=80, label='Goal')
+
+plt.legend()
+plt.grid(True)
 plt.show()
