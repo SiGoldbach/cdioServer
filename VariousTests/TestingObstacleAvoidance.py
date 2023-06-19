@@ -3,7 +3,7 @@ import time
 from matplotlib import pyplot as plt
 
 import astarAlgoTest
-import astarAlgoTest2
+import astarAlgoTest3
 
 # Define the dimensions of the grid
 GRID_WIDTH = 1280
@@ -93,7 +93,7 @@ obstacles = [[583, 309], [584, 308], [585, 308], [586, 308], [587, 308], [588, 3
 obstacle_threshold = 10
 start_time = time.time()
 # Find the path using A* algorithm
-path = astarAlgoTest2.astar(start, goal, obstacles, obstacle_threshold)
+path = astarAlgoTest3.astar(start, goal, obstacles, obstacle_threshold)
 end_time = time.time()
 print("Time for doing A* algorithm is: ", end_time - start_time)
 # Visualize the grid, obstacles, and path
