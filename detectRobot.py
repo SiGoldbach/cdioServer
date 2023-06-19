@@ -52,7 +52,7 @@ def detect_robot():
             param1=25,
             param2=20,
             minRadius=13,
-            maxRadius=16
+            maxRadius=18
         )
 
         circle = 0
@@ -84,8 +84,9 @@ def detect_robot():
                     hsv_pixel = hsv[b, a]
 
                 # Green color range in HSV
+                # (H: 0-179, S: 0-255, V: 0-255)
                 green_lower = np.array([30, 50, 50], dtype=np.uint8)
-                green_upper = np.array([120, 255, 255], dtype=np.uint8)
+                green_upper = np.array([179, 255, 255], dtype=np.uint8)
 
                 if np.all(cv.inRange(hsv_pixel, green_lower, green_upper)):
                     print("CENTER OF GREEN BALL SHOULD BE: " + str(a) + " " + str(b))

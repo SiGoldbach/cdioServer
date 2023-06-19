@@ -51,21 +51,43 @@ def center_field(corners):
 
 
 # Location of a given goal
+import numpy as np
+
+
+# Remade with numpy array
 def big_goal_location(corners):
-    maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
-    maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
-    minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    corners = np.array(corners)
+    maxX = np.max(corners[:, 0])
+    maxY = np.max(corners[:, 1])
+    minY = np.min(corners[:, 1])
     goal = [maxX, (maxY + minY) / 2]
     return goal
 
 
+# Remade with numpy array
 def small_goal_location(corners):
-    minX = min(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
-    maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
-    minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
-
+    corners = np.array(corners)
+    minX = np.min(corners[:, 0])
+    maxY = np.max(corners[:, 1])
+    minY = np.min(corners[:, 1])
     goal = [minX, (maxY + minY) / 2]
     return goal
+
+
+# def big_goal_location(corners):
+#     maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+#     maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+#     minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+#     goal = [maxX, (maxY + minY) / 2]
+#     return goal
+#
+#
+# def small_goal_location(corners):
+#     minX = min(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+#     maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+#     minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+#     goal = [minX, (maxY + minY) / 2]
+#     return goal
 
 
 def robot_corner_radius(front_pos, back_pos):
@@ -233,7 +255,7 @@ def collect_balls(state):
         return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
         if distance_to_goal_ball > 300:
-            return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_goal_ball)
+            return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_goal_ball / 2)
         else:
             state.goal_ball = None
             state.need_new_detect_balls = True

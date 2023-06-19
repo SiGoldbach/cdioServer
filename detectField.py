@@ -80,7 +80,7 @@ def detect_field():
                         cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
 
                         #  Find corners
-                        corners = cv.goodFeaturesToTrack(gray, 4, 0.1, 500)
+                        corners = cv.goodFeaturesToTrack(gray, 4, 0.2, 500)
                         walls = [[x, y] for corner in corners for x, y in [corner.ravel().astype(int)]]
                         for x, y in walls:
                             cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
@@ -108,11 +108,11 @@ def detect_field():
         end = time.time()
         time_for_transform = end - start
 
-        # cv.imshow('Original', image)
-        # cv.imshow('State.py', blank)
+        cv.imshow('Original', image)
+        cv.imshow('State.py', blank)
 
         print('Time for detect_field: ' + str(time_for_transform))
 
-        # cv.waitKey(0)
+        cv.waitKey(0)
         if len(walls) == 4:
             return smallGoal, bigGoal, obstacle, walls
