@@ -19,7 +19,7 @@ state = State.State(small_goal=smallGoal, large_goal=bigGoal, obstacle=obstacle,
                     goal_ball=None, ball_amount_guess=0, non_delivered_balls=len(balls),
                     robot_delivery_location_small=(smallGoal[0] + 200, smallGoal[1]),
                     robot_delivery_location_big=(bigGoal[0] - 200, bigGoal[1]),
-                    delivery_mode=robot_modes.AT_RANDOM_PLACE, big_or_small_goal=robot_modes.BIG_GOAL)
+                    delivery_mode=robot_modes.AT_RANDOM_PLACE, big_or_small_goal=robot_modes.SMALL_GOAL)
 print(state.__str__())
 
 
@@ -28,6 +28,8 @@ print(state.__str__())
 def calculate_move():
     if state.need_new_detect_balls:
         updated_ball_state = detectBalls.detect_balls()
+        if updated_ball_state is None:
+            state.mode = robot_modes.DELIVER
         state.balls = updated_ball_state
     if state.mode == robot_modes.COLLECT:
         return Pathfinder.collect_balls(state)

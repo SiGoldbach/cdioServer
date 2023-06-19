@@ -235,21 +235,23 @@ def check_borders(corners, front_pos, back_pos):
 # It can move forward if is aligned
 # Change has been added to this function so it is now a collect balls method
 def collect_balls(state):
-    front_pos, back = detectRobot.detect_robot()
+    front_pos, back_pos = detectRobot.detect_robot()
+    if front_pos is None and back_pos is None:
+        return Moves.MoveClass(MoveTypes.TURN, 500, 30)
     if state.goal_ball is None:
         nearest_ball, distance_to_nearest_ball = find_nearest_ball(front_pos, state.balls)
         state.goal_ball = nearest_ball
     distance_to_goal_ball = distance_to_point(front_pos, state.goal_ball)
 
-    print("Back: ", str(back))
+    print("Back: ", str(back_pos))
     print("Front: ", str(front_pos))
     print("Closest ball: ", str(state.goal_ball))
 
-    angle_to_turn = calculate_turn(back_pos=robot_center_coordinates(front_pos, back), front_pos=front_pos,
+    angle_to_turn = calculate_turn(back_pos=robot_center_coordinates(front_pos, back_pos), front_pos=front_pos,
                                    ball_pos=state.goal_ball)
     print(angle_to_turn)
 
-    if angle_to_turn > 5 or angle_to_turn < -5:
+    if angle_to_turn > 1 or angle_to_turn < -5:
         print("I should turn: " + str(angle_to_turn))
         print(str(angle_to_turn) + " degrees")
         return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
@@ -269,6 +271,8 @@ def collect_balls(state):
 def move_to_goal(state, goal, offset):
     # I am getting the robots location from image recognition
     front_pos, back_pos = detectRobot.detect_robot()
+    if front_pos is None and back_pos is None:
+        return Moves.MoveClass(MoveTypes.TURN, 500, 30)
 
     # First i am checking if the robot is at the goal already
     if state.delivery_mode == robot_modes.AT_GOAL:
@@ -281,7 +285,7 @@ def move_to_goal(state, goal, offset):
         return drive_back_to_goal(front_pos, back_pos, state, goal)
     # The robot is not at the offset and has never been meaning it should drive there
     angle_to_turn = calculate_turn(front_pos, back_pos, offset)
-    if angle_to_turn > 5 or angle_to_turn < -5:
+    if angle_to_turn > 4 or angle_to_turn < -4:
         print("I should turn: " + str(angle_to_turn))
         print(str(angle_to_turn) + " degrees")
         return Moves.MoveClass(MoveTypes.TURN, 500, int(angle_to_turn))

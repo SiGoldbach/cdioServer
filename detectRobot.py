@@ -10,7 +10,8 @@ def detect_robot():
     videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
-    while 1:
+    # The loop for finding the robot now only tries 50 times instead of going forever if the robot can't be found
+    for i in range(50):
         back = []
         front = []
         ret, image = videoCapture.read()
@@ -109,3 +110,4 @@ def detect_robot():
         # cv.waitKey(0)
         if len(front) == 2 and len(back) == 2:
             return front, back
+    return None, None
