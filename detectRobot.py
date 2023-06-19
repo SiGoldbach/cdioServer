@@ -52,7 +52,7 @@ def detect_robot():
             param1=25,
             param2=20,
             minRadius=13,
-            maxRadius=16
+            maxRadius=18
         )
 
         circle = 0

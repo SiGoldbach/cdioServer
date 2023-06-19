@@ -233,7 +233,7 @@ def collect_balls(state):
         return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
         if distance_to_goal_ball > 300:
-            return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_goal_ball)
+            return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_goal_ball / 2)
         else:
             state.goal_ball = None
             state.need_new_detect_balls = True
