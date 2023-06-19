@@ -16,6 +16,7 @@ DIRECTION_LEFT = "left"
 DIRECTION_RIGHT = "right"
 DIRECTION_NOT_NEAR = "false"
 
+
 def get_robot_length(front_pos, back_pos):
     robot_length = math.sqrt((front_pos[0] - back_pos[0]) ** 2 + (front_pos[1] - back_pos[1]) ** 2)
     return robot_length
@@ -419,9 +420,6 @@ def max_turn(front_pos, back_pos, obstacles, side):
         return max_right
 
 
-
-
-
 # The method to pick up ball near wall
 def move_to_wall_ball(front_pos, back_pos, ball_location, corners):
     front_pos1 = robot_center_coordinates(front_pos, back_pos)
@@ -475,19 +473,23 @@ def wall_robot_align(front_pos, back_pos, ball_location, corners):
 def is_ball_near_wall(front_pos, back_pos, ball_location, corners):
     minX, maxX, minY, maxY = check_borders(corners, front_pos, back_pos)
     # Hardcoded a pixel-difference. May need change
-    if ball_location[0] <= minX + DISTANCE_FROM_WALL and ball_location[1] >= minY + DISTANCE_FROM_WALL & ball_location[1] <= maxY - DISTANCE_FROM_WALL:
+    if ball_location[0] <= minX + DISTANCE_FROM_WALL and ball_location[1] >= minY + DISTANCE_FROM_WALL & ball_location[
+        1] <= maxY - DISTANCE_FROM_WALL:
         direction = DIRECTION_LEFT
         print(direction)
         return direction
-    if ball_location[0] >= maxX - DISTANCE_FROM_WALL and ball_location[1] >= minY + DISTANCE_FROM_WALL & ball_location[1] <= maxY - DISTANCE_FROM_WALL:
+    if ball_location[0] >= maxX - DISTANCE_FROM_WALL and ball_location[1] >= minY + DISTANCE_FROM_WALL & ball_location[
+        1] <= maxY - DISTANCE_FROM_WALL:
         direction = DIRECTION_RIGHT
         print(direction)
         return direction
-    if ball_location[1] <= minY + DISTANCE_FROM_WALL and minX + DISTANCE_FROM_WALL <= ball_location[0] <= maxX - DISTANCE_FROM_WALL:
+    if ball_location[1] <= minY + DISTANCE_FROM_WALL and minX + DISTANCE_FROM_WALL <= ball_location[
+        0] <= maxX - DISTANCE_FROM_WALL:
         direction = DIRECTION_TOP
         print(direction)
         return direction
-    if ball_location[1] >= maxY - DISTANCE_FROM_WALL and minX + DISTANCE_FROM_WALL <= ball_location[0] <= maxX - DISTANCE_FROM_WALL:
+    if ball_location[1] >= maxY - DISTANCE_FROM_WALL and minX + DISTANCE_FROM_WALL <= ball_location[
+        0] <= maxX - DISTANCE_FROM_WALL:
         direction = DIRECTION_BOTTOM
         print(direction)
         return direction
@@ -495,10 +497,11 @@ def is_ball_near_wall(front_pos, back_pos, ball_location, corners):
         print("Ball is not near wall")
         return DIRECTION_NOT_NEAR
 
+
 def is_ball_near_corner(balls, corners):
     for ball in balls:
         for corner in corners:
             if distance_to_point(ball, corner) < 30:
                 return True, ball, corner
-    
+
     return False
