@@ -79,14 +79,13 @@ def detect_field():
                         cv.circle(blank, (cX, cY), 5, (150, 150, 150), -1)
                         cv.circle(blank, (x, cY), 5, (150, 150, 150), -1)
 
+                        #  Find corners
                         corners = cv.goodFeaturesToTrack(gray, 4, 0.1, 500)
-                        for corner in corners:
-                            x, y = corner.ravel().astype(int)
-                            walls.append([x, y])
-                            print(x, y)
+                        walls = [[x, y] for corner in corners for x, y in [corner.ravel().astype(int)]]
+                        for x, y in walls:
                             cv.circle(blank, (x, y), 5, (0, 255, 0), -1)
 
-                        if len(walls) == 4:
+                        if len(walls) >= 4:
                             smallGoal = Pathfinder.small_goal_location(walls)
                             bigGoal = Pathfinder.big_goal_location(walls)
                             cv.circle(image, (int(smallGoal[0]), int(smallGoal[1])), 5, (255, 255, 0), -1)
