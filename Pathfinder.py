@@ -16,6 +16,7 @@ DIRECTION_LEFT = "left"
 DIRECTION_RIGHT = "right"
 DIRECTION_NOT_NEAR = "false"
 
+
 def get_robot_length(front_pos, back_pos):
     robot_length = math.sqrt((front_pos[0] - back_pos[0]) ** 2 + (front_pos[1] - back_pos[1]) ** 2)
     return robot_length
@@ -50,19 +51,24 @@ def center_field(corners):
 
 
 # Location of a given goal
+import numpy as np
+
+# Remade with numpy array
 def big_goal_location(corners):
-    maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
-    maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
-    minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    corners = np.array(corners)
+    maxX = np.max(corners[:, 0])
+    maxY = np.max(corners[:, 1])
+    minY = np.min(corners[:, 1])
     goal = [maxX, (maxY + minY) / 2]
     return goal
 
 
+# Remade with numpy array
 def small_goal_location(corners):
-    minX = min(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
-    maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
-    minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
-
+    corners = np.array(corners)
+    minX = np.min(corners[:, 0])
+    maxY = np.max(corners[:, 1])
+    minY = np.min(corners[:, 1])
     goal = [minX, (maxY + minY) / 2]
     return goal
 
@@ -419,9 +425,6 @@ def max_turn(front_pos, back_pos, obstacles, side):
         return max_right
 
 
-
-
-
 # The method to pick up ball near wall
 def move_to_wall_ball(front_pos, back_pos, ball_location, corners):
     front_pos1 = robot_center_coordinates(front_pos, back_pos)
@@ -495,10 +498,11 @@ def is_ball_near_wall(front_pos, back_pos, ball_location, corners):
         print("Ball is not near wall")
         return DIRECTION_NOT_NEAR
 
+
 def is_ball_near_corner(balls, corners):
     for ball in balls:
         for corner in corners:
             if distance_to_point(ball, corner) < 30:
                 return True, ball, corner
-    
+
     return False
