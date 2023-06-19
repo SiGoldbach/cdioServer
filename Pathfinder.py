@@ -476,19 +476,19 @@ def wall_robot_align(front_pos, back_pos, ball_location, corners):
 def is_ball_near_wall(front_pos, back_pos, ball_location, corners):
     minX, maxX, minY, maxY = check_borders(corners, front_pos, back_pos)
     # Hardcoded a pixel-difference. May need change
-    if ball_location[0] <= minX + 30 and ball_location[1] >= minY + 30 & ball_location[1] <= maxY - 30:
+    if ball_location[0] <= minX + DISTANCE_FROM_WALL and ball_location[1] >= minY + DISTANCE_FROM_WALL & ball_location[1] <= maxY - DISTANCE_FROM_WALL:
         direction = DIRECTION_LEFT
         print(direction)
         return direction
-    if ball_location[0] >= maxX - 30 and ball_location[1] >= minY + 30 & ball_location[1] <= maxY - 30:
+    if ball_location[0] >= maxX - DISTANCE_FROM_WALL and ball_location[1] >= minY + DISTANCE_FROM_WALL & ball_location[1] <= maxY - DISTANCE_FROM_WALL:
         direction = DIRECTION_RIGHT
         print(direction)
         return direction
-    if ball_location[1] <= minY + 30 and minX + 30 <= ball_location[0] <= maxX - 30:
+    if ball_location[1] <= minY + DISTANCE_FROM_WALL and minX + DISTANCE_FROM_WALL <= ball_location[0] <= maxX - DISTANCE_FROM_WALL:
         direction = DIRECTION_TOP
         print(direction)
         return direction
-    if ball_location[1] >= maxY - 30 and minX + 30 <= ball_location[0] <= maxX - 30:
+    if ball_location[1] >= maxY - DISTANCE_FROM_WALL and minX + DISTANCE_FROM_WALL <= ball_location[0] <= maxX - DISTANCE_FROM_WALL:
         direction = DIRECTION_BOTTOM
         print(direction)
         return direction
