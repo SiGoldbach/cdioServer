@@ -17,7 +17,9 @@ state = State.State(small_goal=smallGoal, large_goal=bigGoal, obstacle=obstacle,
                     mode=robot_modes.DELIVER,
                     need_new_detect_balls=False,
                     goal_ball=None, ball_amount_guess=0, non_delivered_balls=len(balls),
-                    robot_delivery_location_small=(smallGoal[0] + 20, smallGoal[1]))
+                    robot_delivery_location_small=(smallGoal[0] + 200, smallGoal[1]),
+                    robot_delivery_location_big=(bigGoal[0] - 200, bigGoal[1]),
+                    delivery_mode=robot_modes.AT_RANDOM_PLACE, big_or_small_goal=robot_modes.BIG_GOAL)
 print(state.__str__())
 
 

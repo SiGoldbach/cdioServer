@@ -12,8 +12,6 @@ def detect_balls():
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
     while 1:
         balls = []
-        back = []
-        front = []
         ret, image = videoCapture.read()
         image = calibration.continuous_undistortion(image)
 
@@ -56,8 +54,8 @@ def detect_balls():
                     hsv_pixel = hsv[b, a]
 
                 # Orange color range in HSV
-                orange_lower = np.array([10, 70, 50], dtype=np.uint8)
-                orange_upper = np.array([35, 255, 255], dtype=np.uint8)
+                orange_lower = np.array([0, 50, 50], dtype=np.uint8)
+                orange_upper = np.array([20, 255, 255], dtype=np.uint8)
 
                 if np.all(cv.inRange(hsv_pixel, orange_lower, orange_upper)):
                     print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
