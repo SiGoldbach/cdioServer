@@ -24,6 +24,9 @@ def create_smallest_rectangle(front_pos, back_pos, obstacles, corners):
     return box
 
 
+def is_ball_in_center_obstacle():
+    return 0
+
 front_pos = (2, 2)
 back_pos = (1, 1)
 obstacles = [(20, 30), (30, 20), (40, 30), (30, 40), (10, 10), (20, 10), (20, 20), (10, 20)]
