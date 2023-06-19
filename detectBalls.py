@@ -7,30 +7,30 @@ import Calibration.cameraCalibrationv2 as calibration
 # Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until
 # the robot is found
 def detect_balls():
-    videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)
-    videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)
+    videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)  # 0 is the default camera
+    videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)  # 1280x720 is the default resolution
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
-    while 1:
+    while 1:  # Loop until the robot is found
         balls = []
-        ret, image = videoCapture.read()
-        image = calibration.continuous_undistortion(image)
+        ret, image = videoCapture.read()  # Read the image from the camera
+        image = calibration.continuous_undistortion(image)  # Undistort the image using the calibration data
 
         if ret is None:
-            print("No image found")
+            print("No image was found")
 
-        height, width = image.shape[:2]
+        height, width = image.shape[:2]  # Get the height and width of the image
 
-        blank = np.zeros((height, width, 3), dtype=np.uint8)
+        blank = np.zeros((height, width, 3), dtype=np.uint8)  # Create a blank image to draw on
+
+        img_height, img_width, _ = image.shape  # Get the height and width of the image
 
         start = time.time()
 
-        img_height, img_width, _ = image.shape
-
         # Circle detection
-        hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+        hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)  # Convert the image to HSV
 
-        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-        gray_blurred = cv.blur(gray, (3, 3))
+        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)  # Convert the image to grayscale
+        gray_blurred = cv.blur(gray, (3, 3))  # Blur the image to reduce noise
 
         detected_Balls = cv.HoughCircles(
             gray_blurred,
@@ -46,21 +46,21 @@ def detect_balls():
         circle = 0
 
         if detected_Balls is not None:
-            detected_circles = np.uint16(np.around(detected_Balls))
+            detected_circles = np.uint16(np.around(detected_Balls))  # Get the detected circles
 
-            for pt in detected_circles[0, :]:
-                a, b, r = pt[0], pt[1], pt[2]
-                if a < img_width and b < img_height:
-                    hsv_pixel = hsv[b, a]
+            for pt in detected_circles[0, :]:  # For each circle
+                a, b, r = pt[0], pt[1], pt[2]  # Get the center and radius of the circle
+                if a < img_width and b < img_height:  # If the circle is within the image
+                    hsv_pixel = hsv[b, a]  # Get the HSV value of the pixel
 
                 # Orange color range in HSV
                 orange_lower = np.array([0, 50, 50], dtype=np.uint8)
                 orange_upper = np.array([20, 255, 255], dtype=np.uint8)
 
-                if np.all(cv.inRange(hsv_pixel, orange_lower, orange_upper)):
+                if np.all(cv.inRange(hsv_pixel, orange_lower, orange_upper)):  # If the pixel is orange
                     print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
-                    cv.circle(blank, (a, b), r, (0, 150, 255), -1)
-                    balls.append([a, b])
+                    cv.circle(blank, (a, b), r, (0, 150, 255), -1)  # Draw a circle on the blank image
+                    balls.append([a, b]) # Add the center of the circle to the list of balls
                     circle += 1
                     continue
 
@@ -68,10 +68,10 @@ def detect_balls():
                 white_lower = np.array([0, 0, 200], dtype=np.uint8)
                 white_upper = np.array([179, 30, 255], dtype=np.uint8)
 
-                if np.all(cv.inRange(hsv_pixel, white_lower, white_upper)):
-                    cv.circle(blank, (a, b), r, (255, 255, 255), -1)
-                    print("Center of this circle should be: " + str(a) + " " + str(b))
-                    balls.append([a, b])
+                if np.all(cv.inRange(hsv_pixel, white_lower, white_upper)):  # If the pixel is white
+                    cv.circle(blank, (a, b), r, (255, 255, 255), -1)  # Draw a circle on the blank image
+                    print("CENTER OF WHITE BALL SHOULD BE: " + str(a) + " " + str(b))
+                    balls.append([a, b])  # Add the center of the circle to the list of balls
                     circle += 1
 
         end = time.time()
@@ -82,5 +82,5 @@ def detect_balls():
         print('Time for transform: ' + str(time_for_transform))
 
         # cv.waitKey(0)
-        if len(balls) > 0:
+        if len(balls) > 0:  # If the robot is found
             return balls
