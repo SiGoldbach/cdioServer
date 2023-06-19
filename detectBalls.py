@@ -10,7 +10,7 @@ def detect_balls():
     videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)  # 0 is the default camera
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)  # 1280x720 is the default resolution
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
-    while 1:  # Loop until the robot is found
+    for i in range(40):  # Loop until the robot is found
         balls = []
         ret, image = videoCapture.read()  # Read the image from the camera
         image = calibration.continuous_undistortion(image)  # Undistort the image using the calibration data
@@ -60,7 +60,7 @@ def detect_balls():
                 if np.all(cv.inRange(hsv_pixel, orange_lower, orange_upper)):  # If the pixel is orange
                     print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
                     cv.circle(blank, (a, b), r, (0, 150, 255), -1)  # Draw a circle on the blank image
-                    balls.append([a, b]) # Add the center of the circle to the list of balls
+                    balls.append([a, b])  # Add the center of the circle to the list of balls
                     circle += 1
                     continue
 
@@ -82,5 +82,6 @@ def detect_balls():
         print('Time for transform: ' + str(time_for_transform))
 
         # cv.waitKey(0)
-        if len(balls) > 0:  # If the robot is found
+        if len(balls) > 0:  # If a ball is found
             return balls
+    return None
