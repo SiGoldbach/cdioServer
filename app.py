@@ -26,6 +26,8 @@ def fun():
     move1 = ServerInitializer.calculate_move()
     if move1 is None:
         print("Move to return is none")
+        #Now if the move is none something will get returned to the function
+        return json.dumps(Moves.MoveClass(MoveTypes.TURN, 500, 10).__dict__)
 
     move_as_json = json.dumps(move1.__dict__)
     return move_as_json
