@@ -50,7 +50,7 @@ else:
 
 # Undistortion function
 def undistort_image(frame):
-    h, w = frame.shape[:2]
+    h, w = frame.shape[:2]  # Get the height and width of the image
 
     newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, (w, h), 1, frameSize)
 
