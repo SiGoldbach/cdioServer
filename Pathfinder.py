@@ -1,12 +1,11 @@
 import math
 import Moves
 import MoveTypes
-import detectBalls
 import detectRobot
 import robot_modes
 
 ROBOT_WIDTH = 2
-DISTANCE_FROM_WALL = 40
+DISTANCE_FROM_WALL = 30
 CALCULATE_LINE_WIDTH = 25
 DISTANCE_TO_GOAL = 40
 BALL_TO_WALL = 30
@@ -264,8 +263,7 @@ def collect_balls(state):
             state.goal_ball = None
             state.need_new_detect_balls = True
             state.ball_amount_guess = state.ball_amount_guess + 1
-            state.has_wall_alignment_been_done = False
-            if should_the_robot_deliver(state):
+            if state.ball_amount_guess == 5:
                 state.mode = robot_modes.DELIVER
                 state.ball_amount_guess = 0
             return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance_to_goal_ball) * 1.5)
@@ -519,22 +517,22 @@ def is_ball_near_wall(front_pos, back_pos, ball_location, corners):
     minX, maxX, minY, maxY = check_borders(corners, front_pos, back_pos)
     # Hardcoded a pixel-difference. May need change
     if ball_location[0] <= minX + DISTANCE_FROM_WALL and ball_location[1] >= minY + DISTANCE_FROM_WALL & ball_location[
-        1] <= maxY - DISTANCE_FROM_WALL:
+            1] <= maxY - DISTANCE_FROM_WALL:
         direction = DIRECTION_LEFT
         print(direction)
         return direction
     if ball_location[0] >= maxX - DISTANCE_FROM_WALL and ball_location[1] >= minY + DISTANCE_FROM_WALL & ball_location[
-        1] <= maxY - DISTANCE_FROM_WALL:
+            1] <= maxY - DISTANCE_FROM_WALL:
         direction = DIRECTION_RIGHT
         print(direction)
         return direction
     if ball_location[1] <= minY + DISTANCE_FROM_WALL and minX + DISTANCE_FROM_WALL <= ball_location[
-        0] <= maxX - DISTANCE_FROM_WALL:
+            0] <= maxX - DISTANCE_FROM_WALL:
         direction = DIRECTION_TOP
         print(direction)
         return direction
     if ball_location[1] >= maxY - DISTANCE_FROM_WALL and minX + DISTANCE_FROM_WALL <= ball_location[
-        0] <= maxX - DISTANCE_FROM_WALL:
+            0] <= maxX - DISTANCE_FROM_WALL:
         direction = DIRECTION_BOTTOM
         print(direction)
         return direction
