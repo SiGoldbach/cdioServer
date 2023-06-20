@@ -1,26 +1,23 @@
-import numpy as np
 import heapq
-import matplotlib.pyplot as plt
+import numpy as np
+
+GRID_WIDTH = 1280
+GRID_HEIGHT = 720
+
 
 # Define the heuristic function (Manhattan distance)
 def heuristic(node, goal):
     return np.abs(node[0] - goal[0]) + np.abs(node[1] - goal[1])
 
+
 # Define the A* algorithm function
 def astar(start, goal, obstacles, obstacle_threshold):
-    GRID_WIDTH = 100
-    GRID_HEIGHT = 100
-
     open_set = []
     closed_set = set()
     came_from = {}
 
     # Initialize the start node
-    g_score = {}
-    f_score = {}
-    g_score[tuple(start)] = 0
-    f_score[tuple(start)] = heuristic(start, goal)
-    heapq.heappush(open_set, (f_score[tuple(start)], tuple(start)))
+    heapq.heappush(open_set, (heuristic(start, goal), start))
 
     # A* algorithm loop
     while open_set:
@@ -34,42 +31,38 @@ def astar(start, goal, obstacles, obstacle_threshold):
                 current = came_from[current]
             path.append(start)
             path.reverse()
-            return path[::5]  # Return every 5th coordinate in the path
+            return path
 
-        closed_set.add(tuple(current))  # Convert to tuple
+        closed_set.add(tuple(current))  # Convert tuple to tuple
 
         # Generate the neighboring nodes
         x, y = current
-        moves = np.array([(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)])
-        neighbors = np.add(current, moves)
+        possible_moves = np.array([(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1),
+                                  (x - 1, y - 1), (x - 1, y + 1), (x + 1, y - 1), (x + 1, y + 1)])
+        valid_moves = np.logical_and.reduce((0 <= possible_moves[:, 0], possible_moves[:, 0] < GRID_WIDTH,
+                                             0 <= possible_moves[:, 1], possible_moves[:, 1] < GRID_HEIGHT))
 
-        valid_neighbors = np.logical_and.reduce((
-            neighbors[:, 0] >= 0,
-            neighbors[:, 0] < GRID_WIDTH,
-            neighbors[:, 1] >= 0,
-            neighbors[:, 1] < GRID_HEIGHT,
-        ))
-
-        for neighbor in neighbors[valid_neighbors]:
+        # Check if the neighbor is too close to any obstacle
+        valid_neighbors = []
+        for move in possible_moves[valid_moves]:
             valid_neighbor = True
-
-            # Check if the neighbor is too close to any obstacle
             for obstacle in obstacles:
-                if np.abs(neighbor[0] - obstacle[0]) <= obstacle_threshold and np.abs(neighbor[1] - obstacle[1]) <= obstacle_threshold:
+                if np.abs(move[0] - obstacle[0]) <= obstacle_threshold and np.abs(move[1] - obstacle[1]) <= obstacle_threshold:
                     valid_neighbor = False
                     break
-
             if valid_neighbor:
-                if tuple(neighbor) in closed_set and g_score[tuple(current)] + 1 >= g_score.get(tuple(neighbor), np.inf):
-                    continue
+                valid_neighbors.append(move)
 
-                if g_score[tuple(current)] + 1 < g_score.get(tuple(neighbor), np.inf) or not any(
-                        (neighbor == i[1]).all() for i in open_set):
-                    came_from[tuple(neighbor)] = current  # Convert to tuple
-                    g_score[tuple(neighbor)] = g_score[tuple(current)] + 1
-                    f_score[tuple(neighbor)] = g_score[tuple(neighbor)] + heuristic(neighbor, goal)
-                    heapq.heappush(open_set, (f_score[tuple(neighbor)], tuple(neighbor)))
+        for neighbor in valid_neighbors:
+            # Calculate the tentative g_score
+            tentative_g_score = came_from.get(current, (float('inf'),)) + (1,)  # Calculate as a tuple
+
+            if neighbor in closed_set and tentative_g_score >= came_from.get(neighbor, (float('inf'),)):
+                continue
+
+            if tentative_g_score < came_from.get(neighbor, (float('inf'),)) or neighbor not in [i[1] for i in open_set]:
+                came_from[neighbor] = current
+                heapq.heappush(open_set, (tentative_g_score + heuristic(neighbor, goal), neighbor))
 
     # If no path is found
     return None
-
