@@ -4,8 +4,12 @@ from scipy.spatial import cKDTree
 
 
 # Define the heuristic function (Manhattan distance)
-def heuristic(node, goal):
-    return abs(node[0] - goal[0]) + abs(node[1] - goal[1])
+def heuristic(node, end):
+    dx = abs(node[0] - end[0])
+    dy = abs(node[1] - end[1])
+    diagonal_moves = min(dx, dy)
+    straight_moves = abs(dx - dy)
+    return diagonal_moves * 1.4 + straight_moves
 
 
 # Define a QuadTree data structure to efficiently store and query obstacles
@@ -89,13 +93,16 @@ class Boundary:
         return not (self.x - self.w > other.x + other.w or self.x + self.w < other.x - other.w or
                     self.y - self.h > other.y + other.h or self.y + self.h < other.y - other.h)
 
+
 # Define the A* algorithm function
-def astar(start, goal, obstacles, obstacle_threshold):
+def astar(start, goal, obstacles, obstacle_threshold, max_turning_points):
     open_set = []
     closed_set = set()
     came_from = {}
     g_score = {start: 0}
     f_score = {start: heuristic(start, goal)}
+    turning_points = {start: 0}  # Track the number of turning points for each node
+
     heapq.heappush(open_set, (f_score[start], start))
 
     while open_set:
@@ -108,20 +115,26 @@ def astar(start, goal, obstacles, obstacle_threshold):
                 current = came_from[current]
             path.append(start)
             path.reverse()
-            return path
+            return path, turning_points
 
         closed_set.add(current)
 
         neighbors = []
         x, y = current
-        possible_moves = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1),
-                          (x - 1, y - 1), (x - 1, y + 1), (x + 1, y - 1), (x + 1, y + 1)]
+        possible_moves = [
+            (x - 1, y), (x + 1, y),  # horizontal moves
+            (x, y - 1), (x, y + 1),  # vertical moves
+            (x - 1, y - 1), (x + 1, y - 1),  # diagonal moves
+            (x - 1, y + 1), (x + 1, y + 1)  # diagonal moves
+        ]
+
         for neighbor in possible_moves:
             valid_neighbor = True
             if not (0 <= neighbor[0] < GRID_WIDTH and 0 <= neighbor[1] < GRID_HEIGHT):
                 valid_neighbor = False
 
-            nearby_obstacles = obstacle_kdtree.query_ball_point(neighbor, obstacle_threshold)
+            neighbor_boundary = Boundary(neighbor[0], neighbor[1], obstacle_threshold, obstacle_threshold)
+            nearby_obstacles = obstacle_quadtree.query_range(neighbor_boundary)
             if nearby_obstacles:
                 valid_neighbor = False
 
@@ -138,17 +151,20 @@ def astar(start, goal, obstacles, obstacle_threshold):
                 came_from[neighbor] = current
                 g_score[neighbor] = tentative_g_score
                 f_score[neighbor] = tentative_g_score + heuristic(neighbor, goal)
+                turning_points[neighbor] = turning_points[current] + 1  # Increase the turning point count
                 heapq.heappush(open_set, (f_score[neighbor], neighbor))
 
-    return None
+    return None, None
 
 
+# Define the dimensions of the grid
 GRID_WIDTH = 1280
 GRID_HEIGHT = 720
 
 # Define the start and goal coordinates
-start = (742, 370)
-goal = (464, 334)
+start = (600, 0)
+goal = (450, 450)
+
 
 # Define the coordinates of the obstacles
 obstacles = [[583, 309], [584, 308], [585, 308], [586, 308], [587, 308], [588, 308], [589, 308], [590, 308], [591, 308],
@@ -227,13 +243,101 @@ obstacles = [[583, 309], [584, 308], [585, 308], [586, 308], [587, 308], [588, 3
              [587, 308], [586, 308], [585, 308]]
 
 # Define the distance threshold to avoid obstacles
-obstacle_threshold = 10
+obstacle_threshold = 40
+
+
+# Define a function to create a buffer zone around the obstacles
+def create_buffer_zone(obstacles, buffer_distance):
+    buffered_obstacles = []
+    for obstacle in obstacles:
+        x, y = obstacle
+        buffered_obstacles.append((x - buffer_distance, y - buffer_distance))
+        buffered_obstacles.append((x - buffer_distance, y + buffer_distance))
+        buffered_obstacles.append((x + buffer_distance, y - buffer_distance))
+        buffered_obstacles.append((x + buffer_distance, y + buffer_distance))
+    return buffered_obstacles
+
+
+# Define the buffer distance around obstacles
+buffer_distance = 10
+
+
+def distance(p1, p2):
+    dx = p2[0] - p1[0]
+    dy = p2[1] - p1[1]
+    return (dx ** 2 + dy ** 2) ** 0.5
+
+
+def is_overlapping(point1, point2, size):
+    x1, y1 = point1
+    x2, y2 = point2
+    return abs(x2 - x1) < size and abs(y2 - y1) < size
+
+
+# Update the turning_point_threshold and turning_point_limit values
+turning_point_threshold = 100
+turning_point_limit = 4
+
+
+def optimize_path(path, turning_point_threshold, max_turning_points):
+    if len(path) <= 2 or max_turning_points <= 0:
+        return path
+
+    optimized_path = [path[0]]
+    turning_points = []
+    for i in range(1, len(path) - 1):
+        dx1 = path[i][0] - optimized_path[-1][0]
+        dy1 = path[i][1] - optimized_path[-1][1]
+        dx2 = path[i + 1][0] - path[i][0]
+        dy2 = path[i + 1][1] - path[i][1]
+        if dx1 != dx2 or dy1 != dy2:
+            if are_points_close(path[i], turning_points, turning_point_threshold):
+                optimized_path.append(path[i])
+                turning_points.append(path[i])
+                if len(turning_points) >= max_turning_points:
+                    break
+    optimized_path.append(path[-1])
+    return optimized_path
+
+
+def are_points_close(point, points, threshold):
+    for p in points:
+        dx = abs(point[0] - p[0])
+        dy = abs(point[1] - p[1])
+        distance = (dx ** 2 + dy ** 2) ** 0.5
+        if distance <= threshold:
+            return True
+    return False
+
 
 # Build a KD-tree from the obstacle coordinates
 obstacle_kdtree = cKDTree(obstacles)
 
+# Create a QuadTree and insert the obstacles (with buffer zone)
+buffered_obstacles = create_buffer_zone(obstacles, buffer_distance)
+obstacle_boundary = Boundary(0, 0, GRID_WIDTH, GRID_HEIGHT)
+obstacle_quadtree = QuadTree(obstacle_boundary)
+for obstacle in buffered_obstacles:
+    obstacle_quadtree.insert(obstacle)
+
+min_turning_point_distance = 50  # Adjust this value as needed
+
 # Find the path using A* algorithm
-path = astar(start, goal, obstacles, obstacle_threshold)
+path, _ = astar(start, goal, buffered_obstacles, obstacle_threshold, turning_point_limit)
+
+# Optimize the path by removing unnecessary turning points and limiting the number of turning points
+optimized_path = optimize_path(path, turning_point_threshold, obstacle_threshold)
+
+# Post-process the path to remove unnecessary intermediate points
+turning_points = []
+if path:
+    turning_points.append(path[0])  # Start point is always a turning point
+    for i in range(1, len(path) - 1):
+        current_direction = (path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1])
+        next_direction = (path[i + 1][0] - path[i][0], path[i + 1][1] - path[i][1])
+        if current_direction != next_direction:
+            turning_points.append(path[i])
+    turning_points.append(path[-1])  # Goal point is always a turning point
 
 # Visualize the grid, obstacles, and path
 plt.figure(figsize=(8, 8))
@@ -243,6 +347,27 @@ plt.title('A* Algorithm - Path Planning')
 plt.xlabel('X')
 plt.ylabel('Y')
 
+
+def filter_points(points, threshold):
+    filtered_points = []
+    for i in range(len(points)):
+        current_point = points[i]
+        exclude = False
+        for j in range(i + 1, len(points)):
+            next_point = points[j]
+            distance = ((current_point[0] - next_point[0]) ** 2 + (current_point[1] - next_point[1]) ** 2) ** 0.5
+            if distance <= threshold:
+                exclude = True
+                break
+        if not exclude:
+            filtered_points.append(current_point)
+    return filtered_points
+
+
+filtered_turning_points = filter_points(turning_points, 50)
+
+
+
 # Plot the obstacles
 for obstacle in obstacles:
     plt.scatter(obstacle[0], obstacle[1], color='red', marker='s', s=80)
@@ -251,13 +376,15 @@ for obstacle in obstacles:
 if path is not None:
     x_path, y_path = zip(*path)
     plt.plot(x_path, y_path, color='blue', linewidth=2, label='Path')
+    if filtered_turning_points is not None:
+        x_turning, y_turning = zip(*filtered_turning_points)
+        plt.scatter(x_turning, y_turning, color='pink', marker='o', s=80, label='Turning Points')
 else:
-    print("No path found.")
-
-# Plot the start and goal positions
-plt.scatter(start[0], start[1], color='green', marker='o', s=80, label='Start')
-plt.scatter(goal[0], goal[1], color='orange', marker='o', s=80, label='Goal')
+    print('No path found!')
 
 plt.legend()
 plt.grid(True)
 plt.show()
+
+
+print(filtered_turning_points)
