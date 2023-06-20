@@ -8,8 +8,6 @@ import detectField
 import State
 import robot_modes
 
-# Sleeping to make sure camera is focused before taking picture of the field to get better camera quality
-time.sleep(2)
 
 smallGoal, bigGoal, obstacle, corners = detectField.detect_field()
 balls = detectBalls.detect_balls()
