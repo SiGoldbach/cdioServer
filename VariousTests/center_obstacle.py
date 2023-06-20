@@ -3,21 +3,20 @@ import cv2
 import numpy as np
 
 
-def locate_center_obstacles(front_pos, back_pos, obstacles, corners):
-    center_obstacles = []
-    for obstacle in obstacles:
-        if not Pathfinder.is_ball_near_wall(front_pos, back_pos, obstacle, corners) == "false":
-            center_obstacles.append(obstacle)
+# def locate_center_obstacles(front_pos, back_pos, obstacles, corners):
+#   center_obstacles = []
+#  for obstacle in obstacles:
+#     if not Pathfinder.is_ball_near_wall(front_pos, back_pos, obstacle, corners) == "false":
+#        center_obstacles.append(obstacle)
 
-    if center_obstacles:
-        return center_obstacles
+# if center_obstacles:
+#    return center_obstacles
 
-    raise Exception("No obstacles in center")
+#   raise Exception("No obstacles in center")
 
 
-def create_smallest_rectangle(front_pos, back_pos, obstacles, corners):
-    coordinates = locate_center_obstacles(front_pos, back_pos, obstacles, corners)
-    points = np.array(coordinates)
+def create_smallest_rectangle(obstacles):
+    points = np.array(obstacles)
     rect = cv2.minAreaRect(points)
     box = cv2.boxPoints(rect)
     box = np.intp(box)
@@ -25,13 +24,13 @@ def create_smallest_rectangle(front_pos, back_pos, obstacles, corners):
     return box
 
 
-def is_ball_in_center_obstacle(rectangle_corners, ball_location):
-    rect_center, rect_size, rect_angle = cv2.minAreaRect(rectangle_corners)
-
-    min_x = min(rectangle_corners[:, 0])
-    max_x = max(rectangle_corners[:, 0])
-    min_y = min(rectangle_corners[:, 1])
-    max_y = max(rectangle_corners[:, 1])
+def is_ball_in_center_obstacle(obstacles, ball_location):
+    box = create_smallest_rectangle(obstacles=obstacles)
+    rect_center, rect_size, rect_angle = cv2.minAreaRect(box)
+    min_x = min(box[:, 0])
+    max_x = max(box[:, 0])
+    min_y = min(box[:, 1])
+    max_y = max(box[:, 1])
     print("min_x:", min_x, "max_x:", max_x, "min_y:", min_y, "max_y:", max_y)
 
     # Calculate the rotation matrix based on the angle
@@ -47,17 +46,15 @@ def is_ball_in_center_obstacle(rectangle_corners, ball_location):
         return False
 
 
-
-
 front_pos = (2, 2)
 back_pos = (1, 1)
 obstacles = [(20, 30), (30, 20), (40, 30), (30, 40), (10, 10), (20, 10), (20, 20), (10, 20)]
 corners = [(0, 0), (100, 0), (0, 100), (100, 200)]
 ball_location = [30, 20]
 
-rectangle_corners = create_smallest_rectangle(front_pos, back_pos, obstacles, corners)
+rectangle_corners = create_smallest_rectangle(obstacles)
 
-if is_ball_in_center_obstacle(rectangle_corners, ball_location):
+if is_ball_in_center_obstacle(obstacles, ball_location):
     print("Ball is within the rectangle.")
 else:
     print("Ball is not within the rectangle.")
