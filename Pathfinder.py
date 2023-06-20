@@ -533,6 +533,19 @@ def is_ball_near_corner(balls, corners):
     return False
 
 
+def correction_angle(front_pos, back_pos, corners):
+    quadrant = robot_quadrant(front_pos, back_pos, corners)
+
+    if quadrant == 1:
+        return -5
+    if quadrant == 2:
+        return 5
+    if quadrant == 3:
+        return 5
+    if quadrant == 4:
+        return -5
+
+
 def robot_quadrant(front_pos, back_pos, corners):
     robot_center = robot_center_coordinates(front_pos, back_pos)
     minX = min(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
