@@ -531,3 +531,19 @@ def is_ball_near_corner(balls, corners):
                 return True, ball, corner
 
     return False
+
+
+def robot_quadrant(front_pos, back_pos, corners):
+    robot_center = robot_center_coordinates(front_pos, back_pos)
+    minX = min(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+    maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+    minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    if robot_center[0] >= (maxX + minX) / 2 and robot_center <= (maxY + minY) / 2:
+        return 1
+    if robot_center[0] >= (maxX + minX) / 2 and robot_center >= (maxY + minY) / 2:
+        return 2
+    if robot_center[0] <= (maxX + minX) / 2 and robot_center >= (maxY + minY) / 2:
+        return 3
+    if robot_center[0] <= (maxX + minX) / 2 and robot_center <= (maxY + minY) / 2:
+        return 4
