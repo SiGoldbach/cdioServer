@@ -95,7 +95,7 @@ class Boundary:
 
 
 # Define the A* algorithm function
-def astar(start, goal, obstacles, obstacle_threshold):
+def astar(start, goal, obstacles, obstacle_threshold, max_turning_points):
     open_set = []
     closed_set = set()
     came_from = {}
@@ -162,8 +162,9 @@ GRID_WIDTH = 1280
 GRID_HEIGHT = 720
 
 # Define the start and goal coordinates
-start = (742, 370)
-goal = (464, 334)
+start = (600, 0)
+goal = (450, 450)
+
 
 # Define the coordinates of the obstacles
 obstacles = [[583, 309], [584, 308], [585, 308], [586, 308], [587, 308], [588, 308], [589, 308], [590, 308], [591, 308],
@@ -242,7 +243,7 @@ obstacles = [[583, 309], [584, 308], [585, 308], [586, 308], [587, 308], [588, 3
              [587, 308], [586, 308], [585, 308]]
 
 # Define the distance threshold to avoid obstacles
-obstacle_threshold = 34
+obstacle_threshold = 40
 
 
 # Define a function to create a buffer zone around the obstacles
@@ -260,12 +261,26 @@ def create_buffer_zone(obstacles, buffer_distance):
 # Define the buffer distance around obstacles
 buffer_distance = 10
 
-turning_point_threshold = 10  # Specify the threshold for turning point proximity
-turning_point_limit = 4  # Specify the desired number of turning points
+
+def distance(p1, p2):
+    dx = p2[0] - p1[0]
+    dy = p2[1] - p1[1]
+    return (dx ** 2 + dy ** 2) ** 0.5
+
+
+def is_overlapping(point1, point2, size):
+    x1, y1 = point1
+    x2, y2 = point2
+    return abs(x2 - x1) < size and abs(y2 - y1) < size
+
+
+# Update the turning_point_threshold and turning_point_limit values
+turning_point_threshold = 100
+turning_point_limit = 4
 
 
 def optimize_path(path, turning_point_threshold, max_turning_points):
-    if turning_point_threshold <= 0 or max_turning_points <= 0:
+    if len(path) <= 2 or max_turning_points <= 0:
         return path
 
     optimized_path = [path[0]]
@@ -276,7 +291,7 @@ def optimize_path(path, turning_point_threshold, max_turning_points):
         dx2 = path[i + 1][0] - path[i][0]
         dy2 = path[i + 1][1] - path[i][1]
         if dx1 != dx2 or dy1 != dy2:
-            if not are_points_close(path[i], turning_points, turning_point_threshold):
+            if are_points_close(path[i], turning_points, turning_point_threshold):
                 optimized_path.append(path[i])
                 turning_points.append(path[i])
                 if len(turning_points) >= max_turning_points:
@@ -308,10 +323,10 @@ for obstacle in buffered_obstacles:
 min_turning_point_distance = 50  # Adjust this value as needed
 
 # Find the path using A* algorithm
-path, _ = astar(start, goal, buffered_obstacles, obstacle_threshold)
+path, _ = astar(start, goal, buffered_obstacles, obstacle_threshold, turning_point_limit)
 
-# Optimize the path by removing unnecessary turning points
-optimized_path = optimize_path(path, turning_point_threshold, turning_point_limit)
+# Optimize the path by removing unnecessary turning points and limiting the number of turning points
+optimized_path = optimize_path(path, turning_point_threshold, obstacle_threshold)
 
 # Post-process the path to remove unnecessary intermediate points
 turning_points = []
@@ -332,6 +347,27 @@ plt.title('A* Algorithm - Path Planning')
 plt.xlabel('X')
 plt.ylabel('Y')
 
+
+def filter_points(points, threshold):
+    filtered_points = []
+    for i in range(len(points)):
+        current_point = points[i]
+        exclude = False
+        for j in range(i + 1, len(points)):
+            next_point = points[j]
+            distance = ((current_point[0] - next_point[0]) ** 2 + (current_point[1] - next_point[1]) ** 2) ** 0.5
+            if distance <= threshold:
+                exclude = True
+                break
+        if not exclude:
+            filtered_points.append(current_point)
+    return filtered_points
+
+
+filtered_turning_points = filter_points(turning_points, 50)
+
+
+
 # Plot the obstacles
 for obstacle in obstacles:
     plt.scatter(obstacle[0], obstacle[1], color='red', marker='s', s=80)
@@ -340,18 +376,15 @@ for obstacle in obstacles:
 if path is not None:
     x_path, y_path = zip(*path)
     plt.plot(x_path, y_path, color='blue', linewidth=2, label='Path')
-    if turning_points is not None:
-        x_turning, y_turning = zip(*turning_points)
+    if filtered_turning_points is not None:
+        x_turning, y_turning = zip(*filtered_turning_points)
         plt.scatter(x_turning, y_turning, color='pink', marker='o', s=80, label='Turning Points')
 else:
-    print("No path found.")
-
-# Plot the start and goal positions
-plt.scatter(start[0], start[1], color='green', marker='o', s=80, label='Robot')
-plt.scatter(goal[0], goal[1], color='orange', marker='o', s=80, label='Ball')
+    print('No path found!')
 
 plt.legend()
 plt.grid(True)
 plt.show()
 
-print(len(turning_points))
+
+print(filtered_turning_points)
