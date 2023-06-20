@@ -51,9 +51,6 @@ def center_field(corners):
     return field_center
 
 
-# Location of a given goal
-import numpy as np
-
 # Remade with numpy array
 def big_goal_location(corners):
     corners = np.array(corners)
@@ -233,7 +230,7 @@ def check_borders(corners, front_pos, back_pos):
 # At current time:
 # The robot can turn and align itself to a ball
 # It can move forward if is aligned
-# Change has been added to this function so it is now a collect balls method
+# Change has been added to this function, so it is now a collect balls method
 def collect_balls(state):
     front_pos, back_pos = detectRobot.detect_robot()
     if front_pos is None and back_pos is None:
@@ -274,7 +271,7 @@ def move_to_goal(state, goal, offset):
     if front_pos is None and back_pos is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 30)
 
-    # First i am checking if the robot is at the goal already
+    # First I am checking if the robot is at the goal already
     if state.delivery_mode == robot_modes.AT_GOAL:
         return deliver(front_pos, back_pos, state, goal)
 
@@ -367,8 +364,8 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
     return smallest_angle, largest_angle
 
 
-def getAngle(F, D, O):
-    ang = math.degrees(math.atan2(O[1] - D[1], O[0] - D[0]) - math.atan2(F[1] - D[1], F[0] - D[0]))
+def getAngle(f, d, o):
+    ang = math.degrees(math.atan2(o[1] - d[1], o[0] - d[0]) - math.atan2(f[1] - d[1], f[0] - d[0]))
     return ang
 
 
