@@ -244,13 +244,6 @@ def collect_balls(state):
         nearest_ball, distance_to_nearest_ball = find_nearest_ball(front_pos, state.balls)
         state.goal_ball = nearest_ball
     distance_to_goal_ball = distance_to_point(front_pos, state.goal_ball)
-    if is_ball_near_wall(front_pos, back_pos, state.goal_ball, state.corners) is not DIRECTION_NOT_NEAR:
-        is_aligned, is_aligned_move = wall_robot_align(front_pos, back_pos, state.goal_ball, state.corners)
-        if is_aligned or state.has_wall_alignment_been_done:
-            state.has_wall_alignment_been_done = True
-            return move_to_wall_ball(front_pos, back_pos, state.goal_ball, state)
-        else:
-            return is_aligned_move
     print("Back: ", str(back_pos))
     print("Front: ", str(front_pos))
     print("Closest ball: ", str(state.goal_ball))
@@ -259,30 +252,31 @@ def collect_balls(state):
                                    ball_pos=state.goal_ball)
     print(angle_to_turn)
 
-    if angle_to_turn > 1 or angle_to_turn < -5:
+    if angle_to_turn > 5 or angle_to_turn < -15:
         print("I should turn: " + str(angle_to_turn))
-        print(str(angle_to_turn) + " degrees")
         return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
         if distance_to_goal_ball > 300:
-            return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_goal_ball / 2)
+            return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_goal_ball * 1.8)
         else:
             state.goal_ball = None
             state.need_new_detect_balls = True
             state.ball_amount_guess = state.ball_amount_guess + 1
             state.has_wall_alignment_been_done = False
-            if state.ball_amount_guess == 5:
+            if should_the_robot_deliver(state):
                 state.mode = robot_modes.DELIVER
                 state.ball_amount_guess = 0
-            return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance_to_goal_ball) + 30)
+            return Moves.MoveClass(MoveTypes.FORWARD, 500, calculate_drive_distance(distance_to_goal_ball) * 1.5)
 
 
+# This method decides if the robot should deliver the balls or continue trying to collect them
 def should_the_robot_deliver(state):
     balls = detectBalls.detect_balls()
     if balls is None:
         return True
-    if state.ball_amount_guess + 3 + len(balls) > state.non_delivered_balls:
-        return True
+    if state.ball_amount_guess == 5:
+        if state.ball_amount_guess + len(balls) > state.non_delivered_balls:
+            return True
     return False
 
 
@@ -327,7 +321,7 @@ def drive_back_to_goal(front_pos, back_pos, state, goal):
 def deliver(front_pos, back_pos, state, goal):
     # Here I am calculating the angle reverse of usual because the back needs to line up instead of the front
     angle_to_goal = calculate_turn(front_pos, back_pos, goal)
-    if 3 > angle_to_goal > -3:
+    if 1 > angle_to_goal > -1:
         # Now the robot will deliver the balls and go back to collect mode and reset is delivery_mode
         state.mode = robot_modes.COLLECT
         state.delivery_mode = robot_modes.AT_RANDOM_PLACE
@@ -474,14 +468,12 @@ def move_to_wall_ball(front_pos, back_pos, ball_location, state):
         return Moves.MoveClass(MoveTypes.TURN, 500, turn_align_ball)
     if distance_to_ball > 400:
         return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_ball * 1.5)
-
     state.goal_ball = None
     state.need_new_detect_balls = True
     state.ball_amount_guess = state.ball_amount_guess + 1
-    if state.ball_amount_guess == 5:
-        state.mode = robot_modes.DELIVER
-        state.ball_amount_guess = 0
-    return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_ball * 2)
+    state.has_wall_alignment_been_done = False
+    should_the_robot_deliver(state)
+    return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_ball * 2 + 20)
 
 
 # To make sure the robot is aligned with the ball either horizontally or vertically depending on ball location
@@ -508,10 +500,10 @@ def wall_robot_align(front_pos, back_pos, ball_location, corners):
             turn_pos = (ball_location[0], robot_center[1])
             turn_align_pos = calculate_turn(back_pos, front_pos, turn_pos)
             dist_pos_align = distance_to_point(front_pos, turn_pos)
-            if turn_align_pos <= 5 or turn_align_pos >= -5:
+            if turn_align_pos >= 4 or turn_align_pos <= -4:
                 print("i have to turn 123 : ", turn_align_pos)
                 return False, Moves.MoveClass(MoveTypes.TURN, 500, turn_align_pos)
-            if 5 > turn_align_pos > -5:
+            if 4 > turn_align_pos > -4:
                 print("i have to move: ", dist_pos_align)
                 return False, Moves.MoveClass(MoveTypes.FORWARD, 500, dist_pos_align * 2 + 20)
 
