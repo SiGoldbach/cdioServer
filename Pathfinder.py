@@ -234,7 +234,8 @@ def check_borders(corners, front_pos, back_pos):
 # At current time:
 # The robot can turn and align itself to a ball
 # It can move forward if is aligned
-# Change has been added to this function so it is now a collect balls method
+# Change has been added to this function, so it is now a collect balls method
+# We will soon be able to collect balls that are close to a wall
 def collect_balls(state):
     front_pos, back_pos = detectRobot.detect_robot()
     if front_pos is None and back_pos is None:
@@ -245,15 +246,9 @@ def collect_balls(state):
     distance_to_goal_ball = distance_to_point(front_pos, state.goal_ball)
     if is_ball_near_wall(front_pos, back_pos, state.goal_ball, state.corners) is not DIRECTION_NOT_NEAR:
         is_aligned, is_aligned_move = wall_robot_align(front_pos, back_pos, state.goal_ball, state.corners)
-        if is_aligned:
-            move = move_to_wall_ball(front_pos, back_pos, state.goal_ball, state.corners)
-            state.goal_ball = None
-            state.need_new_detect_balls = True
-            state.ball_amount_guess = state.ball_amount_guess + 1
-            if state.ball_amount_guess == 5:
-                state.mode = robot_modes.DELIVER
-                state.ball_amount_guess = 0
-            return move
+        if is_aligned or state.has_wall_alignment_been_done:
+            state.has_wall_alignment_been_done = True
+            return move_to_wall_ball(front_pos, back_pos, state.goal_ball, state)
         else:
             return is_aligned_move
     print("Back: ", str(back_pos))
@@ -275,6 +270,7 @@ def collect_balls(state):
             state.goal_ball = None
             state.need_new_detect_balls = True
             state.ball_amount_guess = state.ball_amount_guess + 1
+            state.has_wall_alignment_been_done = False
             if state.ball_amount_guess == 5:
                 state.mode = robot_modes.DELIVER
                 state.ball_amount_guess = 0
@@ -469,24 +465,35 @@ def max_turn(front_pos, back_pos, obstacles, side):
 
 
 # The method to pick up ball near wall
-def move_to_wall_ball(front_pos, back_pos, ball_location, corners):
+def move_to_wall_ball(front_pos, back_pos, ball_location, state):
     front_pos1 = robot_center_coordinates(front_pos, back_pos)
     distance_to_ball = distance_to_point(front_pos, ball_location)
-    return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_ball)
+    turn_align_ball = calculate_turn(back_pos, front_pos, ball_location)
+    if turn_align_ball >= 3 or turn_align_ball <= -3:
+        print("i have to turn: ", turn_align_ball)
+        return Moves.MoveClass(MoveTypes.TURN, 500, turn_align_ball)
+    if distance_to_ball > 400:
+        return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_ball * 1.5)
+
+    state.goal_ball = None
+    state.need_new_detect_balls = True
+    state.ball_amount_guess = state.ball_amount_guess + 1
+    if state.ball_amount_guess == 5:
+        state.mode = robot_modes.DELIVER
+        state.ball_amount_guess = 0
+    return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_ball * 2)
 
 
 # To make sure the robot is aligned with the ball either horizontally or vertically depending on ball location
 def wall_robot_align(front_pos, back_pos, ball_location, corners):
     robot_center = robot_center_coordinates(front_pos, back_pos)
     direction = is_ball_near_wall(front_pos, back_pos, ball_location, corners)
-    turn_align_ball = calculate_turn(back_pos, front_pos, ball_location)
-    print("turn_align_ball: ", turn_align_ball)
 
     if direction == DIRECTION_LEFT or direction == DIRECTION_RIGHT:
         if robot_center[1] <= ball_location[1] - 10 or robot_center[1] >= ball_location[1] + 10:
             turn_pos = (robot_center[0], ball_location[1])
             turn_align_pos = calculate_turn(back_pos, front_pos, turn_pos)
-            dist_pos_align = distance_to_point(front_pos, turn_pos)
+            dist_pos_align = distance_to_point(robot_center, turn_pos)
             print("turn_align_pos: ", turn_align_pos)
             if turn_align_pos >= 4 or turn_align_pos <= -4:
                 print("hadsdasdadasdsdasdasdsdasa")
@@ -494,10 +501,7 @@ def wall_robot_align(front_pos, back_pos, ball_location, corners):
             print("i have to turn: ", turn_align_pos)
             if 4 > turn_align_pos > -4:
                 print("i have to move: ", dist_pos_align)
-                return False, Moves.MoveClass(MoveTypes.FORWARD, 500, dist_pos_align * 2)
-            if turn_align_ball <= 4 or turn_align_ball >= -4:
-                print("i have to turn: ", turn_align_ball)
-                return False, Moves.MoveClass(MoveTypes.TURN, 500, turn_align_ball)
+                return False, Moves.MoveClass(MoveTypes.FORWARD, 500, dist_pos_align * 2 + 20)
 
     if direction == DIRECTION_TOP or direction == DIRECTION_BOTTOM:
         if robot_center[0] <= ball_location[0] + 10 or robot_center[0] >= ball_location[0] - 10:
@@ -509,10 +513,8 @@ def wall_robot_align(front_pos, back_pos, ball_location, corners):
                 return False, Moves.MoveClass(MoveTypes.TURN, 500, turn_align_pos)
             if 5 > turn_align_pos > -5:
                 print("i have to move: ", dist_pos_align)
-                return False, Moves.MoveClass(MoveTypes.FORWARD, 500, dist_pos_align)
-            if turn_align_ball <= 5 or turn_align_ball >= -5:
-                print("i have to turn: ", turn_align_ball)
-                return False, Moves.MoveClass(MoveTypes.TURN, 500, turn_align_ball)
+                return False, Moves.MoveClass(MoveTypes.FORWARD, 500, dist_pos_align * 2 + 20)
+
     else:
         print("no need for alignment")
         return True, None
