@@ -260,33 +260,39 @@ def create_buffer_zone(obstacles, buffer_distance):
 # Define the buffer distance around obstacles
 buffer_distance = 10
 
-turning_point_threshold = 10
+turning_point_threshold = 10  # Specify the threshold for turning point proximity
+turning_point_limit = 4  # Specify the desired number of turning points
 
 
-# Define a function to optimize the path by removing unnecessary turning points
-def optimize_path(path, turning_point_threshold):
-    if turning_point_threshold <= 0:
+def optimize_path(path, turning_point_threshold, max_turning_points):
+    if turning_point_threshold <= 0 or max_turning_points <= 0:
         return path
 
     optimized_path = [path[0]]
+    turning_points = []
     for i in range(1, len(path) - 1):
         dx1 = path[i][0] - optimized_path[-1][0]
         dy1 = path[i][1] - optimized_path[-1][1]
         dx2 = path[i + 1][0] - path[i][0]
         dy2 = path[i + 1][1] - path[i][1]
         if dx1 != dx2 or dy1 != dy2:
-            if not are_points_close(path[i - 1], path[i + 1], turning_point_threshold):
+            if not are_points_close(path[i], turning_points, turning_point_threshold):
                 optimized_path.append(path[i])
+                turning_points.append(path[i])
+                if len(turning_points) >= max_turning_points:
+                    break
     optimized_path.append(path[-1])
     return optimized_path
 
 
-def are_points_close(point1, point2, threshold):
-    dx = abs(point1[0] - point2[0])
-    dy = abs(point1[1] - point2[1])
-    distance = (dx ** 2 + dy ** 2) ** 0.5
-    return distance <= threshold
-
+def are_points_close(point, points, threshold):
+    for p in points:
+        dx = abs(point[0] - p[0])
+        dy = abs(point[1] - p[1])
+        distance = (dx ** 2 + dy ** 2) ** 0.5
+        if distance <= threshold:
+            return True
+    return False
 
 
 # Build a KD-tree from the obstacle coordinates
@@ -299,11 +305,13 @@ obstacle_quadtree = QuadTree(obstacle_boundary)
 for obstacle in buffered_obstacles:
     obstacle_quadtree.insert(obstacle)
 
+min_turning_point_distance = 50  # Adjust this value as needed
+
 # Find the path using A* algorithm
 path, _ = astar(start, goal, buffered_obstacles, obstacle_threshold)
 
 # Optimize the path by removing unnecessary turning points
-optimized_path = optimize_path(path, turning_point_threshold)
+optimized_path = optimize_path(path, turning_point_threshold, turning_point_limit)
 
 # Post-process the path to remove unnecessary intermediate points
 turning_points = []
@@ -346,4 +354,4 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
-print(turning_points)
+print(len(turning_points))
