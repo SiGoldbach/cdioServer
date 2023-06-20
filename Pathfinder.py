@@ -51,6 +51,9 @@ def center_field(corners):
     return field_center
 
 
+# Location of a given goal
+import numpy as np
+
 # Remade with numpy array
 def big_goal_location(corners):
     corners = np.array(corners)
@@ -230,7 +233,7 @@ def check_borders(corners, front_pos, back_pos):
 # At current time:
 # The robot can turn and align itself to a ball
 # It can move forward if is aligned
-# Change has been added to this function, so it is now a collect balls method
+# Change has been added to this function so it is now a collect balls method
 def collect_balls(state):
     front_pos, back_pos = detectRobot.detect_robot()
     if front_pos is None and back_pos is None:
@@ -271,7 +274,7 @@ def move_to_goal(state, goal, offset):
     if front_pos is None and back_pos is None:
         return Moves.MoveClass(MoveTypes.TURN, 500, 30)
 
-    # First I am checking if the robot is at the goal already
+    # First i am checking if the robot is at the goal already
     if state.delivery_mode == robot_modes.AT_GOAL:
         return deliver(front_pos, back_pos, state, goal)
 
@@ -364,8 +367,8 @@ def calculate_obstacle_angle(back_pos, front_pos, obstacles, side):
     return smallest_angle, largest_angle
 
 
-def getAngle(f, d, o):
-    ang = math.degrees(math.atan2(o[1] - d[1], o[0] - d[0]) - math.atan2(f[1] - d[1], f[0] - d[0]))
+def getAngle(F, D, O):
+    ang = math.degrees(math.atan2(O[1] - D[1], O[0] - D[0]) - math.atan2(F[1] - D[1], F[0] - D[0]))
     return ang
 
 
@@ -530,7 +533,9 @@ def is_ball_near_corner(balls, corners):
     return False
 
 
-def correction_angle(quadrant):
+def correction_angle(front_pos, back_pos, corners):
+    quadrant = robot_quadrant(front_pos, back_pos, corners)
+
     if quadrant == 1:
         return -5
     if quadrant == 2:
@@ -539,3 +544,19 @@ def correction_angle(quadrant):
         return 5
     if quadrant == 4:
         return -5
+
+
+def robot_quadrant(front_pos, back_pos, corners):
+    robot_center = robot_center_coordinates(front_pos, back_pos)
+    minX = min(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+    maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
+    minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
+    if robot_center[0] >= (maxX + minX) / 2 and robot_center <= (maxY + minY) / 2:
+        return 1
+    if robot_center[0] >= (maxX + minX) / 2 and robot_center >= (maxY + minY) / 2:
+        return 2
+    if robot_center[0] <= (maxX + minX) / 2 and robot_center >= (maxY + minY) / 2:
+        return 3
+    if robot_center[0] <= (maxX + minX) / 2 and robot_center <= (maxY + minY) / 2:
+        return 4
