@@ -2,7 +2,8 @@
 class State:
     def __init__(self, small_goal, large_goal, obstacle, corners, balls, mode, need_new_detect_balls, goal_ball,
                  ball_amount_guess, non_delivered_balls, robot_delivery_location_small,
-                 robot_delivery_location_big, delivery_mode, big_or_small_goal, has_wall_alignment_been_done
+                 robot_delivery_location_big, delivery_mode, big_or_small_goal, has_wall_alignment_been_done,
+                 robot_has_made_correction_turn
                  ):
         self.small_goal = small_goal
         self.large_goal = large_goal
@@ -19,6 +20,7 @@ class State:
         self.delivery_mode = delivery_mode
         self.big_or_small_goal = big_or_small_goal
         self.has_wall_alignment_been_done = has_wall_alignment_been_done
+        self.robot_has_made_correction_turn = robot_has_made_correction_turn
 
 
 def __str__(self):

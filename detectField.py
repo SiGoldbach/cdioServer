@@ -12,6 +12,8 @@ def detect_field():
 
     while 1:
         ret, image = videoCapture.read()
+        # cv.imshow('Before calibration', image)
+
         if ret is None:
             print("No image found")
 

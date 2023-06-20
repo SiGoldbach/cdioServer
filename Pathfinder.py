@@ -252,10 +252,12 @@ def collect_balls(state):
                                    ball_pos=state.goal_ball)
     print(angle_to_turn)
 
-    if angle_to_turn > 5 or angle_to_turn < -15:
+    if angle_to_turn > 3 or angle_to_turn < -3:
         print("I should turn: " + str(angle_to_turn))
+        state.robot_has_made_correction_turn = True
         return Moves.MoveClass(MoveTypes.TURN, 500, angle_to_turn)
     else:
+        state.robot_has_made_correction_turn = False
         if distance_to_goal_ball > 300:
             return Moves.MoveClass(MoveTypes.FORWARD, 500, distance_to_goal_ball * 1.8)
         else:
@@ -552,15 +554,16 @@ def is_ball_near_corner(balls, corners):
 
 def correction_angle(front_pos, back_pos, corners):
     quadrant = robot_quadrant(front_pos, back_pos, corners)
+    print("The robot is in the quadrant: ", quadrant)
 
     if quadrant == 1:
-        return -5
+        return -3
     if quadrant == 2:
-        return 5
+        return 3
     if quadrant == 3:
-        return 5
+        return 3
     if quadrant == 4:
-        return -5
+        return -6
 
 
 def robot_quadrant(front_pos, back_pos, corners):
@@ -569,11 +572,11 @@ def robot_quadrant(front_pos, back_pos, corners):
     maxX = max(corners[0][0], corners[1][0], corners[2][0], corners[3][0])
     minY = min(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
     maxY = max(corners[0][1], corners[1][1], corners[2][1], corners[3][1])
-    if robot_center[0] >= (maxX + minX) / 2 and robot_center <= (maxY + minY) / 2:
+    if robot_center[0] >= (maxX + minX) / 2 and robot_center[1] <= (maxY + minY) / 2:
         return 1
-    if robot_center[0] >= (maxX + minX) / 2 and robot_center >= (maxY + minY) / 2:
+    if robot_center[0] >= (maxX + minX) / 2 and robot_center[1] >= (maxY + minY) / 2:
         return 2
-    if robot_center[0] <= (maxX + minX) / 2 and robot_center >= (maxY + minY) / 2:
+    if robot_center[0] <= (maxX + minX) / 2 and robot_center[1] >= (maxY + minY) / 2:
         return 3
-    if robot_center[0] <= (maxX + minX) / 2 and robot_center <= (maxY + minY) / 2:
+    if robot_center[0] <= (maxX + minX) / 2 and robot_center[1] <= (maxY + minY) / 2:
         return 4

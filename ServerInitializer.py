@@ -17,7 +17,7 @@ state = State.State(small_goal=smallGoal, large_goal=bigGoal, obstacle=obstacle,
                     robot_delivery_location_small=(smallGoal[0] + 200, smallGoal[1]),
                     robot_delivery_location_big=(bigGoal[0] - 200, bigGoal[1]),
                     delivery_mode=robot_modes.AT_RANDOM_PLACE, big_or_small_goal=robot_modes.SMALL_GOAL,
-                    has_wall_alignment_been_done=False)
+                    has_wall_alignment_been_done=False, robot_has_made_correction_turn=False)
 print(state.__str__())
 
 
