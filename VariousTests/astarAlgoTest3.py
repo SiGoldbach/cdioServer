@@ -345,3 +345,5 @@ plt.scatter(goal[0], goal[1], color='orange', marker='o', s=80, label='Ball')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+print(turning_points)
