@@ -53,7 +53,6 @@ def center_field(corners):
 # Location of a given goal
 import numpy as np
 
-
 # Remade with numpy array
 def big_goal_location(corners):
     corners = np.array(corners)
@@ -531,3 +530,15 @@ def is_ball_near_corner(balls, corners):
                 return True, ball, corner
 
     return False
+
+
+def correction_angle(quadrant):
+    if quadrant == 1:
+        return -5
+    if quadrant == 2:
+        return 5
+    if quadrant == 3:
+        return 5
+    if quadrant == 4:
+        return -5
+
