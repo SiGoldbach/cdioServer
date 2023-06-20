@@ -4,9 +4,9 @@ from scipy.spatial import cKDTree
 
 
 # Define the heuristic function (Manhattan distance)
-def heuristic(node, goal):
-    dx = abs(node[0] - goal[0])
-    dy = abs(node[1] - goal[1])
+def heuristic(node, end):
+    dx = abs(node[0] - end[0])
+    dy = abs(node[1] - end[1])
     diagonal_moves = min(dx, dy)
     straight_moves = abs(dx - dy)
     return diagonal_moves * 1.4 + straight_moves
@@ -334,13 +334,13 @@ if path is not None:
     plt.plot(x_path, y_path, color='blue', linewidth=2, label='Path')
     if turning_points is not None:
         x_turning, y_turning = zip(*turning_points)
-        plt.scatter(x_turning, y_turning, color='orange', marker='o', s=80, label='Turning Points')
+        plt.scatter(x_turning, y_turning, color='pink', marker='o', s=80, label='Turning Points')
 else:
     print("No path found.")
 
 # Plot the start and goal positions
-plt.scatter(start[0], start[1], color='green', marker='o', s=80, label='Start')
-plt.scatter(goal[0], goal[1], color='orange', marker='o', s=80, label='Goal')
+plt.scatter(start[0], start[1], color='green', marker='o', s=80, label='Robot')
+plt.scatter(goal[0], goal[1], color='orange', marker='o', s=80, label='Ball')
 
 plt.legend()
 plt.grid(True)
