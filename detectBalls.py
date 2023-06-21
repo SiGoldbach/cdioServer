@@ -7,7 +7,7 @@ import Calibration.cameraCalibrationv2 as calibration
 # Image recognition now takes a videoInput instead of a frame, so it does not return anything and wait until
 # the robot is found
 def detect_balls():
-    videoCapture = cv.VideoCapture(0, cv.CAP_DSHOW)  # 0 is the default camera
+    videoCapture = cv.VideoCapture(1, cv.CAP_DSHOW)  # 0 is the default camera
     videoCapture.set(cv.CAP_PROP_FRAME_WIDTH, 1280)  # 1280x720 is the default resolution
     videoCapture.set(cv.CAP_PROP_FRAME_HEIGHT, 720)
     for i in range(40):  # Loop until the robot is found
@@ -54,8 +54,8 @@ def detect_balls():
                     hsv_pixel = hsv[b, a]  # Get the HSV value of the pixel
 
                 # Orange color range in HSV
-                orange_lower = np.array([5, 100, 100], dtype=np.uint8)
-                orange_upper = np.array([15, 255, 255], dtype=np.uint8)
+                orange_lower = np.array([10, 100, 100], dtype=np.uint8)
+                orange_upper = np.array([35, 255, 255], dtype=np.uint8)
 
                 if np.all(cv.inRange(hsv_pixel, orange_lower, orange_upper)):  # If the pixel is orange
                     print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
