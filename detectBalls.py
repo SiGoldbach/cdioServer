@@ -54,8 +54,8 @@ def detect_balls():
                     hsv_pixel = hsv[b, a]  # Get the HSV value of the pixel
 
                 # Orange color range in HSV
-                orange_lower = np.array([0, 50, 50], dtype=np.uint8)
-                orange_upper = np.array([20, 255, 255], dtype=np.uint8)
+                orange_lower = np.array([5, 100, 100], dtype=np.uint8)
+                orange_upper = np.array([15, 255, 255], dtype=np.uint8)
 
                 if np.all(cv.inRange(hsv_pixel, orange_lower, orange_upper)):  # If the pixel is orange
                     print("CENTER OF ORANGE BALL SHOULD BE: " + str(a) + " " + str(b))
