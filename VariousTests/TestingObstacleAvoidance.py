@@ -90,7 +90,7 @@ obstacles = [[583, 309], [584, 308], [585, 308], [586, 308], [587, 308], [588, 3
              [587, 308], [586, 308], [585, 308]]
 
 # Define the distance threshold to avoid obstacles
-obstacle_threshold = 10
+obstacle_threshold = 30
 start_time = time.time()
 # Find the path using A* algorithm
 path = astarAlgoTest3.astar(start, goal, obstacles, obstacle_threshold)

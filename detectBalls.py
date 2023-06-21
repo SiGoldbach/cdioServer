@@ -37,7 +37,7 @@ def detect_balls():
             cv.HOUGH_GRADIENT,
             1,
             20,
-            param1=70,
+            param1=50,
             param2=12,
             minRadius=8,
             maxRadius=11
